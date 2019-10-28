@@ -84,6 +84,33 @@
 \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
 
 
+\definecolor{Maroon}{cmyk}{0.4,0.87,0.68,0.32} 
+\definecolor{RoyalBlue}{rgb}{0.0,0.14,0.6}
+\definecolor{mygreen}{rgb}{0.45,0.62,0.51}
+\definecolor{UscGold}{rgb}{1.0,0.8,0.0}
+\definecolor{mygray}{rgb}{0.35,0.35,0.35}
+\definecolor{mypurple}{rgb}{0.69,0.50,0.63}
+\definecolor{myrose}{rgb}{0.78,0.50,0.63}
+%%%%%%%%%%% for comments %%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{color-edits}
+\usepackage[suppress]{color-edits}
+\addauthor{ivp}{Maroon}
+\addauthor{adg}{RoyalBlue}
+\addauthor{cas}{mygreen}
+\addauthor{ebr}{UscGold}
+
+%\newcommand{\adg}[1]{\adgmargincomment{#1}}
+
+% \ivpedit {} writes with color within the original text, if we uncomment
+% suppress and comment plain color edits we will have black color
+
+% \ivpcomment {} comments in brackets additional to the text if we use
+% suppress comments are no longer visible
+
+% \ivpdelete{} indicates that something has been deleted in case you want
+% to see it again, when using suppress is no longer visible
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %% JavaScript
 % JavaScript support
 \usepackage{listings}
@@ -295,10 +322,11 @@ than previous approaches from the research literature.
 \ccsdesc[300]{Social and professional topics~History of programming languages}
 %% End of generated code
 
-
 %% Keywords
 %% comma separated list
-\keywords{keyword1, keyword2, keyword3}  %% \keywords are mandatory in final camera-ready submission
+\keywords{Type Inference, Dynamic Languages, TypeScript, Continuous 
+Relaxation, Numerical Optimization, Deep Learning}
+%% \keywords are mandatory in final camera-ready submission
 
 
 %% \maketitle
@@ -309,8 +337,572 @@ than previous approaches from the research literature.
 
 
 \section{Introduction}
+Statically-typed programming languages aim to enforce correctness and safety  properties
+on programs by guaranteeing constraints on program behaviour.
+Large scale user-studies
+suggest that programmers 
+benefit from type safety in tasks 
+such as class identification and type error fixing  \citep{hanenberg14}.
+However, type safety comes at a cost: these languages require explicit type annotations,
+this comes with additional cost \ivpcomment{different word instead of cost?} for the programmer who needs to declare and maintain the annotations. 
+Strongly statically-typed, usually functional languages, like Haskell or ML, offer strong type inference procedures that reduce 
+the cost of explicitly writing types but come with
+a steep learning curve. 
+On the other hand, dynamically typed languages are intuitive
+and popular \cite{meyerovich12}, at the expense of being more error-prone. To compromise between static and dynamic typing, the programming language community has developed hybrid approaches for type systems such as gradual typing systems \cite{siek06} or rich type inference procedures, see \cref{sec:related}. 
+Although these approaches literally provide static and dynamic typing in the same program, they also do require adding some optional type annotations to 
+enable more precise inference. As a result, performing type inference for dynamic
+languages without having the programmer provide at a least a subset of 
+the type annotations is still an open challenge.
 
-Text of paper \ldots
+Probabilistic type inference
+has recently been proposed as an attempt to reduce the burden
+of writing and maintaining type
+annotations \cite{raychev15,xu16,hellendoorn18}.
+Just as the availability of large data sets has transformed artificial intelligence, 
+in a similar way the increased amount of publicly available source code, through
+code repositories like GitHub\footnote{\href{https://github.com}{https://github.com}}
+or GitLab\footnote{\href{https://gitlab.com}{https://gitlab.com}}, 
+enables a new class of applications that leverage statistical
+patterns in large codebases.
+For type inference, machine learning 
+allows us to developing less strict type inference systems,
+that learn to predict types from probabilistic information, 
+such as comments, names, and lexical context,
+even in cases where traditional type inference procedures
+fail to infer a useful type. For instance,
+JSNice~\cite{raychev15} uses probabilistic graphical models to statistically infer types of identifiers in programs written in JavaScript, while DeepTyper~\cite{hellendoorn18} targets TypeScript~\cite{typescript} via deep learning techniques.
+%see \cref{sec:related} for a more elaborate comparison to related work.
+These approaches all use machine learning to capture the structural
+similarities between typed and untyped source code and extract a statistical model for
+the text. However, none of them takes into account explicitly the underlying
+type inference rules, and thus their prediction loses important flow information.
+This is a missed opportunity that we aim to address in this work.
+
+\subsection{Our Contribution}
+Current type inference systems rely
+on one of two sources of information:
+\begin{enumerate}[label=(\Roman*)]
+  \item \emph{Logical constraints} on type annotations that follow from the type system. These are the  constraints used by standard deterministic approaches for static type inference.
+  \item \emph{Natural constraints} are statistical constraints on type annotations
+  which can be inferred from relationships between types and surface-level properties such as names, types, and lexical context. 
+  These constraints can be learned by applying machine learning to large code bases.
+  These are the constraints that are currently employed by probabilistic typing systems.
+\end{enumerate}
+Our goal is to improve the accuracy of probabilistic type
+inference by combining both kinds of constraints into a single analysis, unifying logic and learning.
+To do this, we define a new probabilistic type inference procedure that combines 
+programming language and machine learning techniques into a single framework.
+We start with a formula that defines the logical constraints on the types of a set of identifiers in the program,
+and a machine learning model, such as a deep network, that makes a probabilistic prediction
+of the type of each identifier.
+
+Our method is based on two key ideas.
+First, we relax the logical formula into a continuous function by relaxing type environments
+to probability matrices and defining 
+a continuous semantic interpretation of logical expressions; the relaxed logical constraints
+are now commensurate with the predicted probability distribution.
+This allows us to define a continuous function over the continuous version of the type environment
+that sums the logical and natural constraints.
+Second, once we have a continuous function, we can optimize it:
+we set up an optimization problem that returns the most natural type assignment for a
+program while at the same time respecting the logical constraints.
+To the best of our knowledge, no prior work has applied machine learning to infer types while simultaneously taking into account logical constraints extracted from a static type analysis.
+
+We investigate the above challenge in a real-world language by building \prodts, 
+which is a tool that mitigates the effort of generating a
+TypeScript declaration files for existing JavaScript libraries. TypeScript is a superset
+of JavaScript that adds static typing to the language.
+In fact, as JavaScript libraries and frameworks are very popular, many
+TypeScript applications need to use untyped JavaScript libraries.
+To support static type
+checking of such applications the typed
+APIs of the libraries are expressed as separate TypeScript
+declaration files \emph{(.d.ts)}.  Although this manual approach has been proven
+effective, it raises the challenge of how to automatically maintain valid declaration files as library implementations evolve.
+
+Our contributions can be summarized as:
+\begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
+  \item We introduce a principled framework to combine logical and natural constraints for type inference, based on transforming a type inference procedure into a numerical optimization problem.
+        %\item Use fuzzy logic in the context of programming languages.
+  \item As an instantiation of this framework, we implement \prodts, a tool to generate probabilistic type signatures on
+        TypeScript from JavaScript libraries. \prodts aims at predicting types for methods that are declared in a TypeScript
+        declaration file.
+  \item We evaluate \prodts on a corpus of 5,800 JavaScript libraries that have type annotations on
+  the DefinitelyTyped repository. We find that combining natural and logical constraints
+  yields improved performance over either alone.
+  Further, \prodts outperforms previous state-of-the-art research systems, JSNice \cite{raychev15} and DeepTyper \cite{hellendoorn18}.
+  \prodts achieves a  \emph{50\% reduction in error} (measured relatively) over these previous systems. \ivpcomment{*This* is how
+  you present a Zeller number ;-)}
+\end{itemize}
+
+\subsection{Our Framework via an Example}
+
+Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
+Our input is a minimal TypeScript function without any type annotations 
+on its parameters. TypeScipt's compiler will by default consider the
+parameters as the top-level type \texttt{any}. Our goal is by exploiting different sources of information to suggest to the programmer a type
+lower in the type lattice. To do so we correspond a 
+type parameter for each of the formal parameters and the return type of the function and inject them in the definition of the function, see Fig. 1(a). This step limits the scope of the parameters to this function, but
+now we can extract more elaborate information about the usage of the 
+parameters in this function. For instance, we can now capture the 
+fact that the parameters are used as terms in a binary operation. This
+could give us a complex set of logical constraint about the possible combinations of the two operands, however for the purpose of this
+paper we limit ourselves in a minimal set of constraints shown in Fig. 1(c), where both the two operands should have the same type. In this stage a classical type inference approach would not be able to give us back a user-friendly type and would probably roll back to its top-level type. To alleviate that we are willing to take into account other sources of 
+information, which try to capture the human intuition about the source code itself. As an instantiation of this scenario we use a machine learning model to capture naming conventions over types, see Fig. 1(d).
+Intuitively, what the table in Fig. 1(d) is showing is that a programmer
+is much more likely to name a variable \texttt{start} or \texttt{end} 
+if she intents to use it as a \texttt{number} than as a \texttt{string}.
+This kind of information is given to us not with a binary probability, 
+but as a fraction of probability that describes the confidence we have for this information. To combine the two sources of information we present the logical constraints as a matrix of probabilities vectors shown in Fig. 1(b). Doing that, enable us to relax the boolean operators to a numerical
+operators as shown in Fig. 1(e). When we numerically optimize the resulting expression we obtain that both variables are strings with high probability.
+At the end we setup and solve an optimization problem that combines both sources of information into one and tries to satisfy the constraints from both sources as much as possible to improve the results.
+This is shown in Fig. 1(f), where the predicted type is now \texttt{number}.
+Finally, we obtain the correctly annotated function signature shown in Fig. 1(g).
+
+\begin{figure}[!t]
+    \centering
+    \def\svgwidth{0.95\linewidth}
+    %\input{./figs/example/example.pdf_tex}
+    \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
+\end{figure}
+
+\section{General Framework for Probabilistic Type Inference} \label{sec:framework}
+
+\begin{figure}[!t]
+    \centering
+    \def\svgwidth{\linewidth}
+    %\input{./figs/overview/framework.pdf_tex}
+    \caption{Overview of general framework that combines logical
+    and natural constraints in a single optimization problem.} \label{fig:overview}
+\end{figure}
+
+
+In this section we introduce our general framework, shown in \cref{fig:overview}, 
+which we instantiate in the next section by building a tool for 
+predicting types in TypeScript.
+%
+Our goal is to enhance the type inference
+procedure for dynamic languages by incorporating into a single engine
+both information learned from a corpus of typed code
+as well as information derived directly from the code that is to be typed.
+%
+We distinguish between two main kinds of constraints that we eventually 
+combine in an optimization problem.
+The next few subsections formalize this approach.
+
+\subsection{An Outline of Probabilistic Type Inference}
+
+We consider a dynamic language of untyped programs that is equipped with an existing deterministic type system, that requires type annotations on identifiers.
+%
+Given a program $U$ plus a type environment $\Gamma$ let $\Gamma \vdash U$ mean that the program $U$ is well-typed according to the (deterministic) type system, given types for identifiers provided by $\Gamma$.
+%
+\ivpcomment{Andy, Charles: I am not sure should the variable
+identifiers have a different symbol (v) as opposed to x that we are using to the continuous relaxation part? I believe it should be x so I am changing it, please check!} \cascomment{Not 100\% sure I understand the question,
+but it looked to me like $x_v$ was referring to identifiers
+both in Section 2.1 and in Section 2.2, which seems OK}
+The environment takes the form $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$ where each $x$ is an identifier and each $t$ is a literal type.
+%
+Given an untyped program $U$,
+let \emph{probabilistic type inference} consist of these steps:
+\begin{enumerate}
+    \item We choose a finite universe consisting of $T$ distinct concrete types.
+    \item We compute a set $\{ x_v \mid v \in 1 \ldots V\}$ of a number $V$ of distinct identifiers in $U$ that need to be assigned types.
+    \item \label{step:constraints} We extract a set of constraints from $U$.
+    \item \label{step:optimize} By optimizing these constraints, we construct a matrix $M$ with $V$ rows and $T$ columns, such that each row is a probability vector (over the $T$ concrete types).
+    \item For each identifier $x_v$, we set type $t_v$ to the concrete type $l_\tau$ where column $\tau$ has the maximum probability in the $v$th probability vector (the one for identifier $x_v$).
+    \item The outcome is the environment $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$.
+\end{enumerate}
+
+We say that probabilistic type inference is \emph{successful} if $\Gamma \vdash U$, that is, the untyped program $U$ is well-typed according to the deterministic type system.
+%
+Since several steps may involve approximation, the prediction $\Gamma$ may only be partially correct.
+%
+Still, given a known $\hat{\Gamma}$ such that $\hat{\Gamma} \vdash U$ we can measure how well $\Gamma$ has predicted the identifiers and types of $\hat{\Gamma}$.
+%
+A key idea is that there are two sorts of constraints generated in step~(\ref{step:constraints}): logical constraints and natural 
+constraints. 
+
+A logical constraint is a formula $E$ that describes
+necessary conditions for $U$ to be well-typed. In principle,
+$E$ can be any formula such that if $\Gamma \vdash U,$
+then $\Gamma$ satisfies $E.$
+Thus, the logical constraints 
+do not need to uniquely determine $\Gamma$.
+% CS: I'm not sure if we want to use the phrase "type hints",
+% because I feel like I have heard this phrase as a technical term elsewhere?
+For this reason, the natural constraints
+encode less-certain information about $\Gamma$,
+for example, based on comments or names.
+Just as we can conceptualize the logical
+constraints as a function to $\{0, 1\},$
+we can conceptualize the natural constraints as functions
+that map $\Gamma$ to $[0, 1]$, which can be interpreted
+as a prediction of the probability that $\Gamma$ would
+be successful. To combine these two constraints, we relax the boolean operations to continuous operators on $[0, 1]$.
+Since we can conceptualize $E$ as a function
+that maps $\Gamma$ to a boolean value $\{0, 1\},$
+we relax this function to map to $[0,1]$, using
+a continuous interpretation of the semantics of $E.$
+Similarly, we relax $\Gamma$ to a $V \times T$ matrix of probabilities. 
+Having done this, we
+formalize the type inference problem as a problem in 
+numerical optimization, in which the goal to find a relaxed type
+assignment
+that satisfies as much as possible both sort of constraints.
+The result of this optimization procedure is the 
+$M$ matrix of probabilities described in step~(\ref{step:optimize}).
+We explain the above formalization
+in more detail in the remainder of this section.
+
+\subsection{Logical Constraints in Continuous Space}\label{ssec:logcon}
+
+The first source of information concerns classical and deterministic sources of
+information about types, which we abstract as logical relationships between type
+parameters. 
+% In programming languages terms, a type inference process
+% introduces   and could be abstracted as
+% generating logical constraints between them. 
+%CS: commenting out the use of definition, because this isn't formal.
+%\begin{defn}[\emph{Logical Constraints}]
+ A \emph{logical constraint} is the kind of  
+  constraint that arises from classical 
+  type inference rules and consist of logical formulas about
+  the type assignment.\cascomment{Does this repeat / belong with
+  what is earlier?} 
+%   Using the logical constraints---generated by the compiler and our augmented  
+%analysis---we construct logical formulas.
+%\end{defn}
+%
+% Classic program analysis aims to provide guarantees about properties of the
+% code such as correctness or safety. For such tasks most commonly formal
+% methods are being recruited to generate a set of constraints that has to be
+% respected by the program.
+The logical constraints
+restrict the space 
+of valid type annotations. However, especially for untyped programs, the resulting space might be large,
+% CS: this is a meta-type error: a space is not a type
+% the resulting space might turns out to be a general type, such
+% as the top type, or a complicated sum type, which does not 
+% add useful information to the system.
+% and so is not on its own useful for type inference.
+Therefore, instead of solving the problem
+with classical approaches, like a SAT solver, we interpret the boolean 
+type expressions as numerical expressions in a continuous space. This
+interpretation enables us to mix together the logical constraints with
+information coming from statistical analysis in a constructive way and hence to
+narrow down the predicted type. 
+Logical constraints can be extracted from $U$ using
+standard program analysis techniques.
+\cascomment{ALL: Is "augmented static program analysis" an accurate term?}
+We employ an augmented static program analysis (\textit{Aug-Static}) that 
+takes into account a set of rules that the type system enforces and 
+generates a corresponding boolean expression for them.
+We will refer to this mechanism as the \emph{Constraints Generator}, see \cref{fig:overview}.
+
+In this work, we consider the following simple grammar of logical constraints:
+\begin{defn}[\emph{Grammar of Logical Constraints}]\label{def:log-gram}
+A logical constraint is an expression of the form
+  \begin{align*}
+    E & ::= x_v \mathrel{is} l_\tau  \\ \numberthis\label{eq:gram}
+    & \mid{} \mathrel{not} E\\
+    & \mid E \mathrel{and} E   \\
+    & \mid E \mathrel{or} E    
+  \end{align*}
+We use $\mathcal{E}$ to denote the set of all syntactically valid
+logical constraints.
+\end{defn}
+
+
+% CS: Commenting out notation that is already defined in the setup now.
+\paragraph{Continuous Relaxation}
+We explain how to specify a \emph{continuous relaxation} of the discrete logical semantics.
+A formula $E$ can be viewed as a boolean function $f_E: \{0, 1\}^{V \times T} \rightarrow \{0, 1\}$
+that maps binary matrices to $\{0, 1\}.$ To see this, we can convert an environment
+$\Gamma$ into a $V \times T$ binary matrix $M$ by setting $m_{v\tau} = 1$ if 
+$(x_v, l_\tau) \in \Gamma,$ and 0 otherwise. Let $M(\Gamma)$ be the binary
+matrix corresponding to $\Gamma.$ Also, define $\Pi^{V \times T}$ to be the set
+of all probability matrices of size $V \times T$,
+that is matrices of the form
+$P = \begin{bmatrix} \bm{p}_1 & \ldots & \bm{p}_{V} \end{bmatrix}^\mathsf{T}$,
+where each row $\bm{p}_v = \begin{bmatrix} p_{v,1} & \ldots & p_{v,{T}} \end{bmatrix}^\mathsf{T}$ 
+is a vector that defines probability distribution over concrete types.
+Finally, a \emph{relaxed semantics} is a continuous function
+that always agrees with the logical semantics, that is, 
+a relaxed semantics is a function 
+$\tilde{f}_{E} : \Pi^{V \times T}  \rightarrow [0, 1]$
+such that all formulas $E$ and environments $\Gamma$,
+$\tilde{f}_{E}(M(\Gamma)) = f_E(M(\Gamma)).$
+
+To define a relaxed semantics, we introduce a continuous semantics of $E$ based on generalizations of two-valued logical conjuctions to many-valued~\cite{hajek1998}.
+In specific, we use the product $t$-norm, because the binary operation associated with it is smooth and fits with our optimization-based approach.
+Product $t$-norm has already been used for obtaining continuous semantics in machine learning, for example by~\citet{rocktaschel15}.
+
+The continuous semantics $\qqpi{P}{E}$ is a function $\Pi^{V \times T} \times \mathcal{E} \rightarrow [0, 1],$ 
+defined as
+%an expression~$E$ as a probability~$\qqpi{P}{E} \in [0,1]$ as  follows.
+%we are in log-space
+%\ivpcomment{Mention explicitly that this formulation maps scalar from [0,1] to [0,1], that is probability vectors do not require some extra form of scaling}
+\begin{align*}
+  \qqpi{P}{x_v \mathrel{is} l_\tau}  & = p_{v,\tau} \\  \numberthis \label{eq:logical}
+  \qqpi{P}{\mathrel{not} E}       & = 1-\qqpi{P}{E}                \\
+  \qqpi{P}{E_1 \mathrel{and} E_2} & = \qqpi{P}{E_1} \cdot \qqpi{P}{E_2} \\
+  \qqpi{P}{E_1 \mathrel{or} E_2}  & =
+  \qqpi{P}{E_1} + \qqpi{P}{E_2} - \qqpi{P}{E_1}\cdot\qqpi{P}{E_2}
+\end{align*}
+%The $\mathrel{is}$ relation describes that the probability that the type variable $x_v$ is the literal type $l_\tau$. 
+We note that in the actual implementation we use logits instead of probabilities
+for numerical stability, see \cref{app:appendix-logit}.
+
+\cascomment{This bit is important. It's a pretty simple fact, though, does it merit a theorem?}
+\cascomment{It would be better to have the 'only if' direction as well,
+and I think that there is a sense in which this is indeed true,
+but there are some more tricky corner cases, e.g., if E does not depend
+on all of the variables in $\Gamma$.}
+To motivate this continuous semantics, recall that in our setting, we know $E$ but
+do not know $P$. We argue that the continuous semantics,
+when considered as a function of $P$, can serve as a sensible
+objective for an optimization problem to infer $P.$ This is because it relaxes
+the deterministic logical semantics of $E$, and it is maximized
+by probability matrices $P$ which correspond to satisfying type environments. This is stated
+more formally in the following theorem.
+\begin{theorem}
+    For any $E$, if $P = M(\Gamma)$ for some $\Gamma$ that satisfies $E$, then $P \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
+\end{theorem}
+
+To sketch the proof, two facts can be seen immediately.
+First, for any formula $E$, the function $\tilde{f}(P) = \qqpi{P}{E}$ is a relaxation
+of the true logical semantics. That is, for any environment $\Gamma$, we have that
+$\tilde{f}(M(\Gamma)) = \qqpi{M(\Gamma)}{E} = 1$ if and only if $\Gamma$ satisfies $E.$ This can be shown
+by induction. Second, for any matrix $P \in \Pi^{V \times T}$,
+we have the bound $\tilde{f}(P) \leq 1$. Putting these two facts together
+immediately yields the theorem.
+
+
+\subsection{Natural Constraints via Machine Learning}\label{ssec:natcon}
+
+A complementary source of information about types arises from statistical dependencies 
+in the source code of the program.  For example, names of variables provide
+information about their types \cite{xu16}, natural language in 
+method-level comments provide information about function types \cite{malik19},
+and lexically nearby tokens provide information
+about a variable's type \cite{hellendoorn18}.
+This information is indirect, and extremely difficult to formalize,
+but we can still hope to exploit it by applying machine learning
+to large scale corpora of source code.
+
+Recently, the software engineering
+community has adopted the term \emph{naturalness of source code} to refer to
+the concept that programs have statistical regularities because
+they are written by humans to be
+understood by humans~\citep{hindle12}. 
+Following the idea that the naturalness in source code may be in part responsible
+for the effectiveness of this information, we 
+refer generically to indirect, statistical
+constraints about types as \emph{natural constraints}.
+Because natural constraints are uncertain, they are naturally formalized
+as probabilities.
+A \emph{natural constraint} is a mapping from a type variable to a vector
+of probabilities
+over possible types.
+% Natural because they (the LSTM constraints) arise from a naturally occurring corpus 
+% cf "On the naturalness of software".  But our method is modular and we could plug in
+% other forms of language model, for instance.
+\begin{defn}[\emph{Natural Constraints}]\label{eq:natural}
+ For each identifier $x_v$ in a program $U$,
+  a \emph{natural constraint} is a probability vector $\bm{\mu}_v = [\mu_{v1}, \ldots, \mu_{vT}]^\mathsf{T}$. Correspondingly, we aggregate the probability vectors of the learning model in a matrix defined as $\mathcal{M} = \begin{bmatrix} \bm{\mu}_1 & \ldots & \bm{\mu}_{V} \end{bmatrix}^\mathsf{T}$.
+% Given such a matrix, we denote $M[v]$ for the probability vector $\bm{\mu}_v$.
+%
+\end{defn}
+
+In principle, naturalness constraints could be defined based on any property of $U,$
+including names and comments.
+In this paper, we consider a simple but practically effective example of
+naturalness constraint, namely, a deep network that predicts the type
+of a variable from the characters in its name.
+For the the type variable $x_v,$ denote the name of the associated identifier as $w_v = (c_{v1} \ldots c_{vN}),$
+where each $c_{vi}$ is a character.
+(This instantiation of the naturalness constraint is defined
+only for those each type variable $x_v$ corresponds to an identifier in the source code, 
+such as a function identifier or a parameter identifier.)
+This is a classification problem, where the input is $w_v,$
+and the output classes are the set of $T$ concrete types.
+Ideally, the classifier would learn that identifier names that are lexically similar
+tend to have similar types, and specifically which subsequences of the character names,
+like \texttt{lst}, are highly predictive of the type, and which subsequences are less predictive.
+One simple way to do this is to use a recurrent neural network (RNN).
+
+For our purposes, an RNN is simply a function $(\bm{h}_{i-1}, z_i) \mapsto \bm{h}_{i}$
+that maps a so-called state vector $\bm{h}_{i-1} \in \mathbb{R}^H$
+and an arbitrary input $z_i$ to an updated state vector $\bm{h}_{i}  \in \mathbb{R}^H$.
+(The dimension $H$ is one of the hyperparameters of the model, which can be tuned 
+to obtain the best performance.)
+The RNN has continuous parameters that are learned to fit a given data set,
+but we elide these parameters to lighten the notation, because they are trained in a standard way.
+We use a particular variant of an RNN called a
+long-short term memory network (LSTM)~\cite{hochreiter97},
+which has proven to be particularly effective both for natural language
+and for source code~\cite{sundermeyer2012,melis17,white2015,dam16}. We write the LSTM as 
+$\text{LSTM}(\bm{h}_{i-1}, z_i).$
+
+With this background, we can describe the specific natural constraint that we use.
+Given the name $w_v = (c_{v1} \ldots c_{vN}),$ we input each character $c_{vi}$ to the LSTM,
+obtaining a final state vector $\bm{h}_N,$ which is then passed as input to a small
+neural network that outputs the naturalness constraint $\bm{\mu}_v$.
+That is, we define
+\begin{subequations}\label{eq:lstm}
+\begin{align}
+  \bm{h}_i & = \text{LSTM}(\bm{h}_{i-1}, c_{vi}) \qquad i \in 1, \ldots, N\\
+  \bm{\mu}_v & = F(\bm{h}_N), \label{eq:lstmb}
+\end{align}
+\end{subequations}
+where $F: \mathbb{R}^H \rightarrow \mathbb{R}^T$ is a simple neural network.
+In our instantiation of this natural constraint, we choose $F$ to be a feedforward neural network with
+no additional hidden layers, as defined in \eqref{eq:feedforward}.
+We provide more details regarding the particular structure of our neural network in \cref{ssec:natprodts}.
+
+This network structure 
+is by now a fairly standard architectural motif in deep learning. More sophisticated networks could certainly
+be employed, which are left to future work. 
+
+\subsection{Combining Logical and Natural Constraints to an Optimization
+Problem} \label{ssec:optimisation}
+%\ivpcomment{Explain why we need this part: NNs cannot handle hard constraints so this
+%is our way to enforce them}
+
+The logical constraints pose challenges to the probabilistic world of
+machine learning. It is not straightforward to incorporate them along with 
+the logical rules that they should follow to a probabilistic model. To combine the logical and the natural constraints we define a continuous 
+optimization problem.
+
+\noindent \ivpcomment{Brief motivation of Lagrange multiplier/ridge regression}
+
+Intuitively, we design the optimization problem to be over
+probability matrices $P \in \Pi^{V \times T};$ we wish to find
+$P$ that is as close as possible to the natural constraints $M,$
+subject to the logical constraints being satisfied. A simple
+way to quantify
+distance via the \emph{euclidean norm} $|| \cdot ||_2$, i.e., the square root of the sum of the squares of its elements.
+\cascomment{This could alternately be formalized as a multi-objective problem. I do not know what is best. Maybe it is better to talk about maximizing [[ E ]], because our theorem talks about maximization.} This leads to the optimization problem
+\begin{equation}
+\begin{aligned}\label{eq:opt_naive}
+ \underset{P \in \mathbb{R}^{V \times T}}{\mathrm{min}} &
+    \sum_v || \bm{p}_v - \bm{\mu}_v ||_2^2 \\
+ \text{subject to } & p_{v\tau} \in [0, 1] \qquad \forall v, \tau \\
+ &\sum_{\tau=1}^T p_{v\tau} = 1 \qquad \forall v \\
+  & \qqpi{P}{E} = 1,
+\end{aligned}
+\end{equation}
+This is a constrained optimization problem. Although there is an extensive
+literature on constrained optimization, it is often the case
+that the most effective way to solve a constrained optimization
+problem is to transform it into an equivalent unconstrained one.
+This can be done in two steps. First we reparameterize the problem 
+to remove the probability constraints. The softmax function \eqref{eq:softmax} maps real-valued vectors to probability vectors.
+Thus we define 
+\begin{equation}
+\begin{aligned}\label{eq:opt_no_prob}
+ \underset{Y \in \mathbb{R}^{V \times T}}{\mathrm{min}} &
+    \sum_v || \sigma(\bm{y}_v)^\mathsf{T} - \bm{\mu}_v ||_2^2 \\
+ \text{subject to } & \qqpi{[\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}}{E} = 1.
+\end{aligned}
+\end{equation}
+It is easy to see that if $Y$ minimizes \eqref{eq:opt_no_prob}, 
+then $P = [\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}$
+minimizes \eqref{eq:opt_naive}. To remove the final constraint,
+we introduce a Lagrange multiplier $\lambda > 0$ to weight 
+the two terms, yielding our final optimization problem
+\begin{equation}\label{eq:objective}
+ \underset{Y \in \mathbb{R}^{V \times T}}{\mathrm{min}} 
+    \sum_v || \sigma(\bm{y}_v)^\mathsf{T} - \bm{\mu}_v ||_2^2 
+    - \lambda \qqpi{[\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}}{E}.
+\end{equation}
+% \begin{equation}\label{eq:objective}
+%  \underset{P}{\mathrm{min}}
+%     \sum_v || \bm{p}_v - \bm{\mu}_v ||_2^2
+%   -\lambda \qqpi{[\bm{p}_1, \ldots, \bm{p}_{V}]}{E},
+% \end{equation}
+% \noindent
+% \begin{align}\label{eq:objective}
+%  \underset{P}{\mathrm{min}}
+%   \left( \left(\sum_v || \bm{p}_v - \bm{\mu}_v ||_2^2\right)
+%   -\lambda \qqpi{[\bm{p}_1, \ldots, \bm{p}_\mathcal{V}]}{E} \right),
+% \end{align}
+This can now be solved numerically using standard optimization
+techniques, such as gradient descent.
+The parameter $\lambda$ trades off the importance
+of the two different kinds of constraints.
+In the limiting case where $\lambda \rightarrow \infty$, the second term in the objective function \eqref{eq:objective} is dominant and we obtain the solution that best satisfies the relaxed
+logical constraints.
+If these constraints are consistent then the obtained probability vectors correspond to one-hot vectors. 
+Similarly, for $\lambda \rightarrow 0$ the first term dominates and we obtain the solution that best matches the natural constraints, 
+which is naturally $M$ itself. By choosing $\lambda$ well, 
+we can trace the Pareto frontier between the two types of constraints,
+and identify a value that minimizes the original problem \eqref{eq:opt_naive}.
+
+To obtain a final hard assignment $\Gamma,$ we first solve \eqref{eq:objective} to obtain the optimal $Y$, compute the 
+associated probability vector $P = [\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}$. Then, for each identifier $x_v,$ 
+we select the element of the 
+corresponding probability vector which is closest to one.
+
+\section{\prodts: Predict TypeScript Type Signatures for JavaScript Libraries} 
+\label{sec:prodts}
+To evaluate our type inference approach in a real-word scenario we
+implement an end-to-end application, called \prodts, which aims
+to alleviate the process of inferring a TypeScript declaration file
+for an underlying JavaScript library.
+
+\subsection{Introduction: TypeScript's Type System}\label{ssec:intro-typescript}
+Syntactically, TypeScript~\citep{typescript} is a typed superset of
+JavaScript that allows us to develop large-scale, stable applications.
+To leverage the fact that JavaScript is the only true cross-platform
+language that runs in any browser, any host, and any OS the TypeScript's
+compiler typechecks TypeScript programs and eventually emits plain JavaScript.
+To compromise between static and dynamic typing, TypeScript supports a
+structural type system. In structural type systems record types (classes) whose fields or members have the same names and types are considered to be equal. This way TypeScript's static type system can work well with a lot of JavaScript code that is dynamically typed. The aforementioned implementation decisions
+reveal that one of the main intentions of TypeScript's designers is to
+provide a smooth transition from JavaScript. As a result TypeScript's type
+system is deliberately unsound~\citep{understandtypescript}. TypeScript uses the
+\texttt{any} type as an intermediate
+step in cases it needs to statically assign a type to variables whose type is determined at runtime or is otherwise unknown at compile time. 
+In fact, TypeScript applications and libraries commonly take advantage of JavaScript's flourishing ecosystem and use untyped JavaScript
+libraries. To support static type checking of such applications, the types of such JavaScript libraries' APIs are expressed as separate TypeScript
+~\emph{declaration files} \textit{(.d.ts)}. The TypeScript community has already
+made a huge effort to support this process by manually writing and maintaining
+declaration files for over five thousand of the most popular JavaScript
+libraries. These files are available on the DefinitelyTyped
+\citep{definitelytyped} repository. Although this approach has proven
+useful, it raises the challenge of keeping declaration files
+in sync with the library implementations.
+
+Ideally we would like to automatically infer the typed APIs of such
+libraries. TypeScript supports a peculiar flavor of type inference: TypeScript's soft type system \citep{softtyping} 
+defaults to the \texttt{any} type. Consequently, in the case where a parameter does not
+have a type annotation, the type system assumes that it is of type
+\texttt{any} and does not try to infer it further. The type system is allowed to infer
+more precisely, lower on the type lattice, the return type of a function, for
+which the scope is clear. To make things more complex, it is impractical for
+TypeScript code to implement run-time casts---typical for gradual type
+systems---due to necessary type erasure to transform back to plain
+JavaScript \citep{understandtypescript}.
+
+Therefore traditional static or dynamic analyses are not adequate to generate
+ready-to-use definition files. Towards this direction DefinitelyTyped
+community officially suggests a tool called dts-gen \citep{dtsgen}. The
+dts-gen tool uses runtime information to produce a .d.ts file that gives a
+clear shape of the input API but does not provide type information for
+function arguments and return types. As
+suggested in the instructions, it is only meant to be used as a starting
+point for writing a high-quality declaration file. Dts-gen only collects
+dynamic information and as a result it is bound to produce a file full of
+\texttt{any}s that the developer has to fill by hand. \citet{tstools2017}
+created the TSINFER and TSEVOLVE tools with the same goal that is assist
+programmers to create and maintain TypeScript declaration files. The tools are
+designed to exploit information from a static analysis performed in a
+recorded snapshot of a concretely initialized library. The results, as
+before, are quite good---although less user-friendly--- at capturing the
+structure of the file but often do not predict readable types. \ivpcomment{this needs 
+more explanation}
 
 
 %% Acknowledgments
