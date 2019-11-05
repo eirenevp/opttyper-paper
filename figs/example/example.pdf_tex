@@ -1,0 +1,84 @@
+%% Creator: Inkscape inkscape 0.92.4, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file './figs/example/example.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{595.27559055bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,1.41428571)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{./figs/example/example.pdf}}%
+    \put(0.02432443,1.00199694){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code3.tex}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{./figs/example/example.pdf}}%
+    \put(0.61676258,0.78665866){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/eqE.tex}}}}%
+    \put(0.01943878,0.89850337){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption3.tex}}}}%
+    \put(0.64108676,0.69846809){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code6.tex}}}}%
+    \put(0.57572556,0.60401931){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption6.tex}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{./figs/example/example.pdf}}%
+    \put(0.31090102,1.13774316){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/arrow2.tex}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{./figs/example/example.pdf}}%
+    \put(0.56324645,1.1377451){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/arrow3.tex}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{./figs/example/example.pdf}}%
+    \put(0.13055378,1.32615407){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/arrow1.tex}}}}%
+    \put(0.31996318,1.33714541){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code2.tex}}}}%
+    \put(0.29416911,1.18795277){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption2.tex}}}}%
+    \put(0.57572686,0.89850504){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption4.tex}}}}%
+    \put(0.570506,1.00020661){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code4.tex}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{./figs/example/example.pdf}}%
+    \put(0.01944114,0.60401931){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption5.tex}}}}%
+    \put(0.29668875,0.30953362){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption7.tex}}}}%
+    \put(0.29668875,0.01504793){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption8.tex}}}}%
+    \put(0.53341032,0.85098401){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/arrow5.tex}}}}%
+    \put(0.23961004,0.85098637){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/arrow4.tex}}}}%
+    \put(0.0873181,0.69846736){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code5.tex}}}}%
+    \put(0.36238025,0.40372402){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code7.tex}}}}%
+    \put(0.35090118,0.49175669){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/eqC.tex}}}}%
+    \put(0.36028246,0.13662153){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code8.tex}}}}%
+  \end{picture}%
+\endgroup%
