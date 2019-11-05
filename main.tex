@@ -65,7 +65,7 @@
 \usepackage{graphpap,amscd,mathrsfs,graphicx,lscape,dsfont,bm,url,color}
 \usepackage{verbatim}
 \usepackage{parcolumns}
-\usepackage{mathtools}
+\usepackage{mathtools, cuted}
 \usepackage[capitalise,nameinlink]{cleveref}
 \usepackage{bold-extra}
 \usepackage{threeparttable}
@@ -479,22 +479,22 @@ At the end we setup and solve an optimization problem that combines both sources
 This is shown in Fig. 1(f), where the predicted type is now \texttt{number}.
 Finally, we obtain the correctly annotated function signature shown in Fig. 1(g).
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
   \centering
-  \def\svgwidth{0.95\linewidth}
-  %\input{./figs/example/example.pdf_tex}
+  \def\svgwidth{0.85\linewidth}
+  \input{./figs/example/example.pdf_tex}
   \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
-\end{figure}
+\end{figure*}
 
 \section{General Framework for Probabilistic Type Inference} \label{sec:framework}
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
   \centering
   \def\svgwidth{\linewidth}
-  %\input{./figs/overview/framework.pdf_tex}
+  \input{./figs/overview/framework.pdf_tex}
   \caption{Overview of general framework that combines logical
     and natural constraints in a single optimization problem.} \label{fig:overview}
-\end{figure}
+\end{figure*}
 
 
 In this section we introduce our general framework, shown in \cref{fig:overview},
@@ -930,7 +930,7 @@ structure of the file but often do not predict readable types. \ivpcomment{this 
   % \end{minipage}
   % \end{center}
   
-  \begin{figure}[t]
+  \begin{figure*}[t]
     \centering
     \begin{minipage}[c]{.6\textwidth}
       \begin{lstlisting}[language=JavaScript,numbers=left]
@@ -966,7 +966,7 @@ structure of the file but often do not predict readable types. \ivpcomment{this 
     \caption{ Center: Example of untyped JavaScript
        code. This an excerpt from the library \texttt{base64-js}. Left: Declaration file after the \textit{Structure} stage, Right: Declaration file after the \textit{Type} stage.}
     \label{fig:declarations-b64a}
-  \end{figure}
+  \end{figure*}
   
   Specifically, we consider the specific problem of predicting a TypeScript declaration file
   for an underlying JavaScript library.
@@ -997,24 +997,24 @@ structure of the file but often do not predict readable types. \ivpcomment{this 
   process. For detailed metrics and evaluation see
   \cref{sec:eval}.
   
-  \begin{table}[t]
+  \begin{table*}[t]
     \centering
-  %  \caption{The five different types of type errors that we are taking into account to generate the \textit{logical constraints}.}\label{tab:constraints}
-  %   \begin{tabularx}{\textwidth}{lX}
-  %     \toprule \\
-  %     Constraint-Id  & Description\\
-  %     \midrule \\
-  %     Property &  Property $X$ does not exist on type $Y$.\\
-  %     Binop & Operator $x$ cannot be applied 
-  %     to types $X$ and $Y$. \\
-  %     Index & Type X cannot be used to index type $Y$.\\
-  %     ArithmLHS & The left-hand side of an arithmetic operation must be 
-  %     of type 'any', 'number' or an enum type. \\
-  %     ArithmRHS & The right-hand side of an arithmetic operation must be 
-  %     of type 'any', 'number' or an enum type. \\
-  %     \bottomrule
-  %   \end{tabularx}
-  \end{table}
+    \caption{The five different types of type errors that we are taking into account to generate the \textit{logical constraints}.}\label{tab:constraints}
+     \begin{tabularx}{\textwidth}{lX}
+       \toprule \\
+       Constraint-Id  & Description\\
+       \midrule \\
+       Property &  Property $X$ does not exist on type $Y$.\\
+       Binop & Operator $x$ cannot be applied 
+       to types $X$ and $Y$. \\
+       Index & Type X cannot be used to index type $Y$.\\
+       ArithmLHS & The left-hand side of an arithmetic operation must be 
+       of type 'any', 'number' or an enum type. \\
+       ArithmRHS & The right-hand side of an arithmetic operation must be 
+       of type 'any', 'number' or an enum type. \\
+       \bottomrule
+     \end{tabularx}
+  \end{table*}
 
   \subsection{Logical Constraints for TypeScript}\label{ssec:logprodts}
 To generate the logical constraints of \cref{ssec:logcon}, 
@@ -1053,7 +1053,7 @@ type constraint. For a concrete example of this procedure,
 see~\cref{fig:jscode-base64,fig:log-base64a}.
 
 
-\begin{figure}[t]
+\begin{figure*}[t]
     \begin{minipage}[c]{\textwidth}
 \begin{lstlisting}[language=JavaScript,numbers=left]
     function toByteArray<B64, TOBYTEARRAY>(b64: B64): TOBYTEARRAY {
@@ -1071,45 +1071,45 @@ see~\cref{fig:jscode-base64,fig:log-base64a}.
         % \end{tablenotes}
     \end{minipage}
     \caption{TypeScript code snippet of base64-js library augmented with type parameters for each of the formal variables and the return type, along with two constraint on lines 3 and 5.}\label{fig:jscode-base64}
-\end{figure}
+\end{figure*}
 
-\begin{table}[t]
-%     \centering
-%     \caption{Left: Logical constraints extracted from TypeScript code,
-%     Center: Interfaces that include the property length,
-%     Right: Final logical constraints.}\label{fig:log-base64a}
-%     \begin{tabular}{ccc}
-%         \toprule\\
-%         \multicolumn{3}{c}{Types $\coloneqq$ String $\mathbin{|}$ Number $\mathbin{|}$ \textit{Array<any>}}\\
-%         \midrule\\
-%         \begin{minipage}{0.25\textwidth}
-%             {\begin{align*}
-%                 B64 & <: .length\\
-%                 B64 & <: .charCodeAt()
-%             \end{align*}}
-%         \end{minipage} &
-%         \begin{minipage}{0.35\textwidth}
-% {\begin{lstlisting}[language=JavaScript,numbers=none]
-% interface String {
-%     readonly length: number;
-%     charCodeAt(index: number): number;
-%     ...
-% }
-% interface Array<any> {
-%     readonly length: number;
-%     ...
-% }
-% \end{lstlisting}}
-%         \end{minipage} &
-%         \begin{minipage}{0.3\textwidth}
-%             {\begin{align*}
-%                 B64 & = String \mathbin{or} \textit{Array<any>}\\
-%                 B64 & = String
-%             \end{align*}}
-%         \end{minipage}\\
-%         \bottomrule
-%     \end{tabular}
-\end{table}
+\begin{table*}[t]
+    \centering
+    \caption{Left: Logical constraints extracted from TypeScript code,
+    Center: Interfaces that include the property length,
+    Right: Final logical constraints.}\label{fig:log-base64a}
+    \begin{tabular}{ccc}
+        \toprule\\
+        \multicolumn{3}{c}{Types $\coloneqq$ String $\mathbin{|}$ Number $\mathbin{|}$ \textit{Array<any>}}\\
+        \midrule\\
+        \begin{minipage}{0.25\textwidth}
+            {\begin{align*}
+                B64 & <: .length\\
+                B64 & <: .charCodeAt()
+            \end{align*}}
+        \end{minipage} &
+        \begin{minipage}{0.35\textwidth}
+{\begin{lstlisting}[language=JavaScript,numbers=none]
+interface String {
+    readonly length: number;
+    charCodeAt(index: number): number;
+    ...
+}
+interface Array<any> {
+    readonly length: number;
+    ...
+}
+\end{lstlisting}}
+        \end{minipage} &
+        \begin{minipage}{0.3\textwidth}
+            {\begin{align*}
+                B64 & = String \mathbin{or} \textit{Array<any>}\\
+                B64 & = String
+            \end{align*}}
+        \end{minipage}\\
+        \bottomrule
+    \end{tabular}
+\end{table*}
 
 \subsection{Natural Constraints for TypeScript}\label{ssec:natprodts}
 
@@ -1166,10 +1166,10 @@ from the DefinitelyTyped repository on a particular date (17th February 2019).
 We have trained our model for $1,000$ epochs, for 78 different types, and obtained a validation accuracy of \emph{validation acc: $0.79$}.
 This information is also summarized in \cref{fig:Char-Level}. Our dataset was randomly split by project into $80\%$ training data, $10\%$ validation data and $10\%$ test data. To split the available data in these three different sets is a common practice in machine learning which ensures that the learning model doesn't simply memorize the training data but is able to generalize to unseen inputs.
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
     \centering
     \def\svgwidth{\linewidth}
-   % \input{./figs/char-level/char-level.pdf_tex}
+    \input{./figs/char-level/char-level.pdf_tex}
 \begin{subfigure}{\textwidth}
   \centering
 %\begin{minipage}[!h]{\textwidth}
@@ -1189,7 +1189,7 @@ This information is also summarized in \cref{fig:Char-Level}. Our dataset was ra
   including function and parameter identifiers.
   }
   \label{fig:Char-Level}
-  \end{figure}
+  \end{figure*}
 
  \subsection{Combining Logical and Natural Constraints for TypeScript}\label{ssec:combprodts}
 
@@ -1339,29 +1339,29 @@ The results presented in \cref{tab:typeprec1} are normalized based on these uppe
 
 \adgcomment{Are there 1272 identifiers for all types, or just for the universe of 78 types?for all types  Best to give both totals.}
 
-\begin{table}[t]
+\begin{table*}[t]
   \centering
   \caption{Aggregate \textit{Type} precision and recall for 58 JavaScript libraries with 1272 identifiers in total (610 $funRet$, 662 $param$).
   We use the notation $P(T^N_\text{fnRet})$ for $P(T_\text{fnRet} \cap N)$, where $N$ is the number of types in our universe of types.}\label{tab:typeprec1}
-%   \begin{tabular}{ccccccc}
-%     \toprule \\
-%     Tool        & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$\\
-%     \midrule \\
+  \begin{tabular}{ccccccc}
+    \toprule \\
+    Tool        & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$\\
+    \midrule \\
   
-% %   \textit{DeepTyper}\tiny{(78-types)}   & 0.20                   & 0.20                   & 0.50                  & 0.52  & 0.35                  & 0.36  \\
+%   \textit{DeepTyper}\tiny{(78-types)}   & 0.20                   & 0.20                   & 0.50                  & 0.52  & 0.35                  & 0.36  \\
     
-% %   % \multicolumn{7}{@{}c@{}}{\dashrule} \\
-% %     \textit{JSNice} \tiny{(6-types)}      & 0.15                   & 0.15                   & 0.78                 & 0.80  & 0.47                & 0.48\\
-% %     \textit{JSNice} \tiny{(78-types)}  & 0.12                   & 0.12                   & 0.62                  & 0.64 & 0.37                  & 0.38 \\
-% %  \multicolumn{7}{@{}c@{}}{\dashrule} \\
-%     \textit{Aug-Static} \tiny{($N=78$)}  & 0.42                   & 0.41                   & 0.15  & 0.15  & 0.29  & 0.28 \\
-%     \textit{LSTM} \tiny{($N=78$)} & 0.48                   & 0.48                   & 0.61 & 0.56  & 0.55 & 0.52\\
-%     \textbf{\prodts} \tiny{($N=78$)}    & \textbf{0.61}          & \textbf{0.59}  & \textbf{0.63}         & \textbf{0.58}
-%     & \textbf{0.62}  & \textbf{0.58} \\
-%     % limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
-%     \bottomrule
-%   \end{tabular}
-\end{table}
+%   % \multicolumn{7}{@{}c@{}}{\dashrule} \\
+%     \textit{JSNice} \tiny{(6-types)}      & 0.15                   & 0.15                   & 0.78                 & 0.80  & 0.47                & 0.48\\
+%     \textit{JSNice} \tiny{(78-types)}  & 0.12                   & 0.12                   & 0.62                  & 0.64 & 0.37                  & 0.38 \\
+%  \multicolumn{7}{@{}c@{}}{\dashrule} \\
+    \textit{Aug-Static} \tiny{($N=78$)}  & 0.42                   & 0.41                   & 0.15  & 0.15  & 0.29  & 0.28 \\
+    \textit{LSTM} \tiny{($N=78$)} & 0.48                   & 0.48                   & 0.61 & 0.56  & 0.55 & 0.52\\
+    \textbf{\prodts} \tiny{($N=78$)}    & \textbf{0.61}          & \textbf{0.59}  & \textbf{0.63}         & \textbf{0.58}
+    & \textbf{0.62}  & \textbf{0.58} \\
+    % limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
 Regarding the augmented static analysis, the results are significantly better for function return types rather than parameters' types.
 This happens because the TypeScript compiler generates much richer constraints for all---exported or not---return types of functions.
 For the parameters' types, the compiler disregards any information and infers all types as \texttt{any}; a situation that produces no useful logical constraints.
@@ -1391,25 +1391,25 @@ The two tools that we compare against are:
 \end{itemize}
 We summarize the results of our comparisons in \cref{tab:typeprec2}.
 
-\begin{table}[t]
+\begin{table*}[t]
   \centering
   \caption{Aggregate \textit{Type} precision and recall across all evaluated modules for DeepTyper and JSNice; as input we use 41 JavaScript libraries with 860 identifiers in total (270 funRet, 590 param).
   The superscript $N$ has the same meaning as in \cref{tab:typeprec1}, where $N = 6$ consists of the six types predicted by JSNice.
   Boldface indicates the best results of the full set of $N=78$ types.}\label{tab:typeprec2}
-  % \begin{tabular}{ccccccc}
-  %   \toprule \\
-  %   Tool        & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$ \\
-  %   \midrule \\
-  %   DeepTyper\tiny{($N=78$)}  & 0.20                   & 0.20                   & 0.50                  & 0.52  & 0.35                  & 0.36  \\
+   \begin{tabular}{ccccccc}
+     \toprule \\
+     Tool        & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$ \\
+     \midrule \\
+     DeepTyper\tiny{($N=78$)}  & 0.20                   & 0.20                   & 0.50                  & 0.52  & 0.35                  & 0.36  \\
     
-  %   JSNice \tiny{($N=6$)}      & 0.15                   & 0.15                   & 0.78                 & 0.80  & 0.47                & 0.48\\
-  %   JSNice \tiny{($N=78$)}  & 0.12                   & 0.12                   & 0.62                  & 0.64 & 0.37                  & 0.38 \\
-  %   % limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
-  %   \textbf{\prodts} \tiny{($N=78$)}    & \textbf{0.68}          & \textbf{0.68}  & \textbf{0.67}         & \textbf{0.67}
-  %   & \textbf{0.68}  & \textbf{0.68} \\
-  %   \bottomrule
-  % \end{tabular}
-\end{table}
+     JSNice \tiny{($N=6$)}      & 0.15                   & 0.15                   & 0.78                 & 0.80  & 0.47                & 0.48\\
+     JSNice \tiny{($N=78$)}  & 0.12                   & 0.12                   & 0.62                  & 0.64 & 0.37                  & 0.38 \\
+     % limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
+     \textbf{\prodts} \tiny{($N=78$)}    & \textbf{0.68}          & \textbf{0.68}  & \textbf{0.67}         & \textbf{0.67}
+     & \textbf{0.68}  & \textbf{0.68} \\
+     \bottomrule
+   \end{tabular}
+\end{table*}
 
 \paragraph{Comparison with DeepTyper}
 
@@ -1516,19 +1516,19 @@ information. For example, we could simply add more terms to the combined objecti
 % We define as the structure of a declaration file another file which contains
 % merely the shape of a particular module while every type is being annotated as
 
-\begin{table}[t]
+\begin{table*}[t]
   \centering
   \caption{Aggregate \textit{Structure} precision and recall across all modules.
   Our type universe consists of $78$ types, while we use 48 JavaScript libraries as input with 2012 identifiers in total.} \label{tab:structprec}
-  % \begin{tabular}{ccccccc}
-  %   \toprule \\
-  %   Tool     & $P(S_\text{fnRet})$ & $R(S_\text{fnRet})$ & $P(S_\text{param})$ & $R(S_\text{param})$ & $P(S_\text{total})$ & $R(S_\text{total})$\\
-  %   \midrule \\
-  %   \textit{declFlag} & 0.09                  & 0.11                  & 0.08                  & 0.11  & 0.08                  & 0.11  \\
-  %   \textit{dts-gen}  & 0.88                  & 0.84                  & 0.83                  & 0.79   & 0.83                  & 0.79 \\
-  %   \bottomrule
-  % \end{tabular}
-\end{table} 
+   \begin{tabular}{ccccccc}
+     \toprule \\
+     Tool     & $P(S_\text{fnRet})$ & $R(S_\text{fnRet})$ & $P(S_\text{param})$ & $R(S_\text{param})$ & $P(S_\text{total})$ & $R(S_\text{total})$\\
+     \midrule \\
+     \textit{declFlag} & 0.09                  & 0.11                  & 0.08                  & 0.11  & 0.08                  & 0.11  \\
+     \textit{dts-gen}  & 0.88                  & 0.84                  & 0.83                  & 0.79   & 0.83                  & 0.79 \\
+     \bottomrule
+   \end{tabular}
+\end{table*} 
 
 We now turn our attention on the first stage that predicts the structure of our JavaScript library.
 Here, we compare two tools that can output a structure file: \textit{declFlag} and \textit{dts-gen}.
