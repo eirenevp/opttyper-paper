@@ -1,5 +1,5 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
-\documentclass[sigplan,10pt,review,anonymous]{acmart}
+\documentclass[sigplan,10pt,anonymous]{acmart} % restore "review" option before submission
 \settopmatter{printfolios=true,printccs=false,printacmref=false}
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
@@ -99,7 +99,8 @@
 \addauthor{cas}{mygreen}
 \addauthor{ebr}{UscGold}
 
-%\newcommand{\adg}[1]{\adgmargincomment{#1}}
+\newcommand{\margincomment}[2]{\marginpar{\color{Maroon}#1 says: #2}}
+\newcommand{\adg}[1]{\margincomment{ADG}{#1}}
 
 % \ivpedit {} writes with color within the original text, if we uncomment
 % suppress and comment plain color edits we will have black color
@@ -354,7 +355,7 @@ linewidth=\linewidth
 %% environment and commands, and keywords command.
 \maketitle
 
-\marginpar{Each paper should have no more than 12 pages, excluding bibliography, in 10pt font.}
+\adg{Each paper should have no more than 12 pages, excluding bibliography, in 10pt font.}
 
 \section{Introduction}
 Statically-typed programming languages aim to enforce correctness and safety  properties
@@ -364,14 +365,19 @@ suggest that programmers
 benefit from type safety in tasks
 such as class identification and type error fixing  \citep{hanenberg14}.
 However, type safety comes at a cost: these languages require explicit type annotations,
-this comes with additional cost \ivpcomment{different word instead of cost?} for the programmer who needs to declare and maintain the annotations.
-Strongly statically-typed, usually functional languages, like Haskell or ML, offer strong type inference procedures that reduce
+which imposes the burden of declaring and maintaining these annotations on the programmer.
+Strongly statically-typed, usually functional languages, like Haskell or ML,
+offer type inference procedures that reduce
 the cost of explicitly writing types but come with
 a steep learning curve.
 On the other hand, dynamically typed languages are intuitive
-and popular \cite{meyerovich12}, at the expense of being more error-prone. To compromise between static and dynamic typing, the programming language community has developed hybrid approaches for type systems such as gradual typing systems \cite{siek06} or rich type inference procedures, see \cref{sec:related}.
-Although these approaches literally provide static and dynamic typing in the same program, they also do require adding some optional type annotations to
-enable more precise inference. As a result, performing type inference for dynamic
+and popular \cite{meyerovich12}, at the expense of being more error-prone.
+To compromise between static and dynamic typing,
+the programming language community has developed hybrid approaches for type systems
+such as gradual typing systems \cite{siek06} or rich type inference procedures, see \cref{sec:related}.
+Although these approaches provide both static and dynamic typing in the same program,
+they also require adding some optional type annotations to enable more precise inference.
+As a result, performing type inference for dynamic
 languages without having the programmer provide at a least a subset of
 the type annotations is still an open challenge.
 
@@ -380,34 +386,37 @@ has recently been proposed as an attempt to reduce the burden
 of writing and maintaining type
 annotations \cite{raychev15,xu16,hellendoorn18}.
 Just as the availability of large data sets has transformed artificial intelligence,
-in a similar way the increased amount of publicly available source code, through
+the increased volume of publically available source code, through
 code repositories like GitHub\footnote{\href{https://github.com}{https://github.com}}
 or GitLab\footnote{\href{https://gitlab.com}{https://gitlab.com}},
 enables a new class of applications that leverage statistical
 patterns in large codebases.
 For type inference, machine learning
-allows us to developing less strict type inference systems,
-that learn to predict types from probabilistic information,
+allows us to develop less strict type inference systems,
+that learn to predict types from uncertain information,
 such as comments, names, and lexical context,
-even in cases where traditional type inference procedures
-fail to infer a useful type. For instance,
+even when traditional type inference procedures
+fail to infer a useful type.
+For instance,
 JSNice~\cite{raychev15} uses probabilistic graphical models to statistically infer types of identifiers in programs written in JavaScript, while DeepTyper~\cite{hellendoorn18} targets TypeScript~\cite{typescript} via deep learning techniques.
 %see \cref{sec:related} for a more elaborate comparison to related work.
 These approaches all use machine learning to capture the structural
-similarities between typed and untyped source code and extract a statistical model for
-the text. However, none of them takes into account explicitly the underlying
-type inference rules, and thus their prediction loses important flow information.
-This is a missed opportunity that we aim to address in this work.
+similarities between typed and untyped source code and to extract a statistical model for
+the text. However, none of them explicitly models the underlying
+type inference rules, and thus their predictions ignore useful logical information.
+%This is a missed opportunity that we aim to address in this work.
+We sieze the opportunity to plug this gap.
 
 \subsection{Our Contribution}
 Current type inference systems rely
 on one of two sources of information:
 \begin{enumerate}[label=(\Roman*)]
-  \item \emph{Logical constraints} on type annotations that follow from the type system. These are the  constraints used by standard deterministic approaches for static type inference.
+  \item \emph{Logical constraints} on type annotations that follow from the type system.
+        These are the  constraints used by standard deterministic approaches for static type inference.
   \item \emph{Natural constraints} are statistical constraints on type annotations
         which can be inferred from relationships between types and surface-level properties such as names, types, and lexical context.
         These constraints can be learned by applying machine learning to large code bases.
-        These are the constraints that are currently employed by probabilistic typing systems.
+        They are the constraints that are currently employed by probabilistic typing systems.
 \end{enumerate}
 Our goal is to improve the accuracy of probabilistic type
 inference by combining both kinds of constraints into a single analysis, unifying logic and learning.
@@ -427,48 +436,58 @@ that sums the logical and natural constraints.
 Second, once we have a continuous function, we can optimize it:
 we set up an optimization problem that returns the most natural type assignment for a
 program while at the same time respecting the logical constraints.
-To the best of our knowledge, no prior work has applied machine learning to infer types while simultaneously taking into account logical constraints extracted from a static type analysis.
+To the best of our knowledge, no prior work has applied machine learning to infer types
+while simultaneously taking into account logical constraints extracted from a static type analysis.
 
 We investigate the above challenge in a real-world language by building \prodts,
 which is a tool that mitigates the effort of generating a
-TypeScript declaration files for existing JavaScript libraries. TypeScript is a superset
-of JavaScript that adds static typing to the language.
+TypeScript declaration file for existing JavaScript libraries.
+TypeScript is a superset of JavaScript that adds static typing to the language.
 In fact, as JavaScript libraries and frameworks are very popular, many
 TypeScript applications need to use untyped JavaScript libraries.
 To support static type
 checking of such applications the typed
 APIs of the libraries are expressed as separate TypeScript
 declaration files \emph{(.d.ts)}.  Although this manual approach has been proven
-effective, it raises the challenge of how to automatically maintain valid declaration files as library implementations evolve.
+effective, it raises the challenge of how to automatically maintain valid declaration files
+as library implementations evolve.
 
 Our contributions can be summarized as:
 \begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
-  \item We introduce a principled framework to combine logical and natural constraints for type inference, based on transforming a type inference procedure into a numerical optimization problem.
+  \item We introduce a principled framework to combine logical and natural constraints for type inference,
+        based on transforming a type inference procedure into a numerical optimization problem.
         %\item Use fuzzy logic in the context of programming languages.
-  \item As an instantiation of this framework, we implement \prodts, a tool to generate probabilistic type signatures on
-        TypeScript from JavaScript libraries. \prodts aims at predicting types for methods that are declared in a TypeScript
-        declaration file.
-  \item We evaluate \prodts on a corpus of 5,800 JavaScript libraries that have type annotations on
-        the DefinitelyTyped repository. We find that combining natural and logical constraints
+  \item As an instantiation of this framework, we implement \prodts, a tool to generate probabilistic type
+        signatures on TypeScript from JavaScript libraries.
+        \prodts seeks to predict types for methods that are declared in a TypeScript declaration file.
+  \item We evaluate \prodts on a corpus of 5,800 JavaScript libraries for which
+        the DefinitelyTyped repository provides type declaration files.
+        We find that combining natural and logical constraints
         yields improved performance over either alone.
-        Further, \prodts outperforms previous state-of-the-art research systems, JSNice \cite{raychev15} and DeepTyper \cite{hellendoorn18}.
-        \prodts achieves a  \emph{50\% reduction in error} (measured relatively) over these previous systems. \ivpcomment{*This* is how
-          you present a Zeller number ;-)}
+        Further, \prodts outperforms previous state-of-the-art research systems,
+        JSNice \cite{raychev15} and DeepTyper \cite{hellendoorn18}.
+        \prodts achieves a \emph{50\% reduction in error} (measured relatively) over these previous systems.
+        \ivpcomment{*This* is how you present a Zeller number ;-)}
 \end{itemize}
 
 \subsection{Our Framework via an Example}
 
+\adg{Unsure we should lead on this in section 1; explaining the hack of type vars may be alarming so early!}
 Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
-Our input is a minimal TypeScript function without any type annotations
-on its parameters. TypeScipt's compiler will by default consider the
-parameters as the top-level type \texttt{any}. Our goal is by exploiting different sources of information to suggest to the programmer a type
-lower in the type lattice. To do so we correspond a
-type parameter for each of the formal parameters and the return type of the function and inject them in the definition of the function, see Fig. 1(a). This step limits the scope of the parameters to this function, but
+Our input is a minimal TypeScript function without any type annotations on its parameters.
+TypeScript's compiler by default considers the parameters as the top type \texttt{any}.
+Our goal is by exploiting different sources of information to suggest to the programmer
+a type lower in the type hierarchy.
+To do so we propose a type parameter for each of the formal parameters and the return type of the function
+and inject them in the definition of the function, see Fig. 1(a).
+This step limits the scope of the parameters to this function, but
 now we can extract more elaborate information about the usage of the
-parameters in this function. For instance, we can now capture the
-fact that the parameters are used as terms in a binary operation. This
-could give us a complex set of logical constraint about the possible combinations of the two operands, however for the purpose of this
-paper we limit ourselves in a minimal set of constraints shown in Fig. 1(c), where both the two operands should have the same type. In this stage a classical type inference approach would not be able to give us back a user-friendly type and would probably roll back to its top-level type. To alleviate that we are willing to take into account other sources of
+parameters in this function.
+For instance, we can now capture the
+fact that the parameters are used as terms in a binary operation.
+This could give us a complex set of logical constraint about the possible combinations of the two operands.
+Still, for the purpose of this paper we limit ourselves to a minimal set of constraints shown in Fig. 1(c),
+where both the two operands should have the same type. In this stage a classical type inference approach would not be able to give us back a user-friendly type and would probably roll back to its top-level type. To alleviate that we are willing to take into account other sources of
 information, which try to capture the human intuition about the source code itself. As an instantiation of this scenario we use a machine learning model to capture naming conventions over types, see Fig. 1(d).
 Intuitively, what the table in Fig. 1(d) is showing is that a programmer
 is much more likely to name a variable \texttt{start} or \texttt{end}
@@ -497,7 +516,7 @@ Finally, we obtain the correctly annotated function signature shown in Fig. 1(g)
     and natural constraints in a single optimization problem.} \label{fig:overview}
 \end{figure*}
 
-
+\adg{feels repetitive, could trim}
 In this section we introduce our general framework, shown in \cref{fig:overview},
 which we instantiate in the next section by building a tool for
 predicting types in TypeScript.
@@ -513,7 +532,8 @@ The next few subsections formalize this approach.
 
 \subsection{An Outline of Probabilistic Type Inference}
 
-We consider a dynamic language of untyped programs that is equipped with an existing deterministic type system, that requires type annotations on identifiers.
+We consider a dynamic language of untyped programs that is equipped with an existing deterministic type system,
+that requires type annotations on identifiers.
 %
 Given a program $U$ plus a type environment $\Gamma$ let $\Gamma \vdash U$ mean that the program $U$ is well-typed according to the (deterministic) type system, given types for identifiers provided by $\Gamma$.
 %
@@ -620,6 +640,7 @@ takes into account a set of rules that the type system enforces and
 generates a corresponding boolean expression for them.
 We will refer to this mechanism as the \emph{Constraints Generator}, see \cref{fig:overview}.
 
+\adg{do we actually need all of these?}
 In this work, we consider the following simple grammar of logical constraints:
 \begin{defn}[\emph{Grammar of Logical Constraints}]\label{def:log-gram}
   A logical constraint is an expression of the form
@@ -671,7 +692,7 @@ defined as
   \qqpi{P}{E_1} + \qqpi{P}{E_2} - \qqpi{P}{E_1}\cdot\qqpi{P}{E_2}
 \end{align*}
 %The $\mathrel{is}$ relation describes that the probability that the type variable $x_v$ is the literal type $l_\tau$. 
-We note that in the actual implementation we use logits instead of probabilities
+In the actual implementation we use logits instead of probabilities
 for numerical stability, see \cref{app:appendix-logit}.
 
 \cascomment{This bit is important. It's a pretty simple fact, though, does it merit a theorem?}
@@ -735,14 +756,15 @@ over possible types.
   %
 \end{defn}
 
-In principle, naturalness constraints could be defined based on any property of $U,$
+\adg{changing "naturalness constraints" to "natural constraints" as per the definition}
+In principle, natural constraints could be defined based on any property of $U,$
 including names and comments.
 In this paper, we consider a simple but practically effective example of
-naturalness constraint, namely, a deep network that predicts the type
+natural constraint, namely, a deep network that predicts the type
 of a variable from the characters in its name.
 For the the type variable $x_v,$ denote the name of the associated identifier as $w_v = (c_{v1} \ldots c_{vN}),$
 where each $c_{vi}$ is a character.
-(This instantiation of the naturalness constraint is defined
+(This instantiation of the natural constraint is defined
 only for those each type variable $x_v$ corresponds to an identifier in the source code,
 such as a function identifier or a parameter identifier.)
 This is a classification problem, where the input is $w_v,$
@@ -763,12 +785,12 @@ We use a particular variant of an RNN called a
 long-short term memory network (LSTM)~\cite{hochreiter97},
 which has proven to be particularly effective both for natural language
 and for source code~\cite{sundermeyer2012,melis17,white2015,dam16}. We write the LSTM as
-$\text{LSTM}(\bm{h}_{i-1}, z_i).$
+$\text{LSTM}(\bm{h}_{i-1}, z_i)$.
 
 With this background, we can describe the specific natural constraint that we use.
 Given the name $w_v = (c_{v1} \ldots c_{vN}),$ we input each character $c_{vi}$ to the LSTM,
 obtaining a final state vector $\bm{h}_N,$ which is then passed as input to a small
-neural network that outputs the naturalness constraint $\bm{\mu}_v$.
+neural network that outputs the natural constraint $\bm{\mu}_v$.
 That is, we define
 \begin{subequations}\label{eq:lstm}
   \begin{align}
@@ -783,9 +805,9 @@ We provide more details regarding the particular structure of our neural network
 
 This network structure
 is by now a fairly standard architectural motif in deep learning. More sophisticated networks could certainly
-be employed, which are left to future work.
+be employed, but are left to future work.
 
-\subsection{Combining Logical and Natural Constraints to an Optimization
+\subsection{Combining Logical and Natural Constraints to Form an Optimization
   Problem} \label{ssec:optimisation}
 %\ivpcomment{Explain why we need this part: NNs cannot handle hard constraints so this
 %is our way to enforce them}
@@ -969,7 +991,7 @@ structure of the file but often do not predict readable types. \ivpcomment{this 
     \label{fig:declarations-b64a}
   \end{figure*}
   
-  Specifically, we consider the specific problem of predicting a TypeScript declaration file
+  We consider the problem of predicting a TypeScript declaration file
   for an underlying JavaScript library.
   
   \paragraph{Input:} 
@@ -1638,7 +1660,7 @@ https://ml4code.github.io/publications/dash2018refinym/ (<- arguably, we take in
 % predict finer-grained type constraints.
 
 
-\cascomment{I agree it would be fairly simple to extend the method to handle DeepTyper or NL2Type constraints; we could simply add more terms to combined objective function, one for each kind of LSTM that we want to add. I'd view the character-level LSTM that we use as a representative kind of naturalness constraint, but not necessarily the best, and certainly not the only one. We should mention that in the paper..
+\cascomment{I agree it would be fairly simple to extend the method to handle DeepTyper or NL2Type constraints; we could simply add more terms to combined objective function, one for each kind of LSTM that we want to add. I'd view the character-level LSTM that we use as a representative kind of natural constraint, but not necessarily the best, and certainly not the only one. We should mention that in the paper..
 Finally, it seems like there is quite some opportunity for a hybrid here; in fact, a fairly simple extension to e.g. DeepTyper (or NL2Type) could allow your "natural" component to factor in a much broader context and likely work much better correspondingly. Happy to chat about that sometime 
 richer type
 annotation holds the promise of a more precise, modular and extensible analysis, and
