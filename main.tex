@@ -508,13 +508,13 @@ Finally, we obtain the correctly annotated function signature shown in Fig. 1(g)
 
 \section{General Framework for Probabilistic Type Inference} \label{sec:framework}
 
-\begin{figure*}[!t]
-  \centering
-  \def\svgwidth{\linewidth}
-  \input{./figs/overview/framework.pdf_tex}
-  \caption{Overview of general framework that combines logical
-    and natural constraints in a single optimization problem.} \label{fig:overview}
-\end{figure*}
+% \begin{figure*}[!t]
+%   \centering
+%   \def\svgwidth{\linewidth}
+%   \input{./figs/overview/framework.pdf_tex}
+%   \caption{Overview of general framework that combines logical
+%     and natural constraints in a single optimization problem.} \label{fig:overview}
+% \end{figure*}
 
 \adg{feels repetitive, could trim}
 In this section we introduce our general framework, shown in \cref{fig:overview},
@@ -638,7 +638,7 @@ standard program analysis techniques.
 We employ an augmented static program analysis (\textit{Aug-Static}) that
 takes into account a set of rules that the type system enforces and
 generates a corresponding boolean expression for them.
-We will refer to this mechanism as the \emph{Constraints Generator}, see \cref{fig:overview}.
+We will refer to this mechanism as the \emph{Constraints Generator} see \cref{fig:overview}.
 
 \adg{do we actually need all of these?}
 In this work, we consider the following simple grammar of logical constraints:
