@@ -498,16 +498,13 @@ operators as shown in Fig. 1(e). When we numerically optimize the resulting expr
 At the end we setup and solve an optimization problem that combines both sources of information into one and tries to satisfy the constraints from both sources as much as possible to improve the results.
 This is shown in Fig. 1(f), where the predicted type is now \texttt{number}.
 Finally, we obtain the correctly annotated function signature shown in Fig. 1(g).
-
 \begin{figure*}[!t]
   \centering
   \def\svgwidth{0.85\linewidth}
   \input{./figs/example/example.pdf_tex}
   \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
 \end{figure*}
-
 \section{General Framework for Probabilistic Type Inference} \label{sec:framework}
-
 % \begin{figure*}[!t]
 %   \centering
 %   \def\svgwidth{\linewidth}
@@ -515,10 +512,9 @@ Finally, we obtain the correctly annotated function signature shown in Fig. 1(g)
 %   \caption{Overview of general framework that combines logical
 %     and natural constraints in a single optimization problem.} \label{fig:overview}
 % \end{figure*}
-
 \adg{feels repetitive, could trim}
-In this section we introduce our general framework, shown in \cref{fig:overview},
-which we instantiate in the next section by building a tool for
+In this section we introduce our general framework
+which we will then instantiate in the next section by building a tool for
 predicting types in TypeScript.
 %
 Our goal is to enhance the type inference
@@ -638,8 +634,7 @@ standard program analysis techniques.
 We employ an augmented static program analysis (\textit{Aug-Static}) that
 takes into account a set of rules that the type system enforces and
 generates a corresponding boolean expression for them.
-We will refer to this mechanism as the \emph{Constraints Generator} see \cref{fig:overview}.
-
+We will refer to this mechanism as the \emph{Constraints Generator}.
 \adg{do we actually need all of these?}
 In this work, we consider the following simple grammar of logical constraints:
 \begin{defn}[\emph{Grammar of Logical Constraints}]\label{def:log-gram}
@@ -653,8 +648,6 @@ In this work, we consider the following simple grammar of logical constraints:
   We use $\mathcal{E}$ to denote the set of all syntactically valid
   logical constraints.
 \end{defn}
-
-
 % CS: Commenting out notation that is already defined in the setup now.
 \paragraph{Continuous Relaxation}
 We explain how to specify a \emph{continuous relaxation} of the discrete logical semantics.
@@ -953,47 +946,45 @@ structure of the file but often do not predict readable types. \ivpcomment{this 
   % \end{minipage}
   % \end{center}
   
-  \begin{figure*}[t]
-    \centering
-    \begin{minipage}[c]{.6\textwidth}
-      \begin{lstlisting}[language=JavaScript,numbers=left]
-      exports.byteLength = byteLength
-      ...
+%   \begin{figure*}[t]
+%     \centering
+%     \begin{minipage}[c]{.6\textwidth}
+%       \begin{lstlisting}[language=JavaScript,numbers=left]
+%       exports.byteLength = byteLength
+%       ...
       
-      function getLens (b64) {
-      ... return validLen, placeHoldersLen] 
-      }
+%       function getLens (b64) {
+%       ... return validLen, placeHoldersLen] 
+%       }
       
-      function byteLength (b64) {
-          var lens = getLens(b64)      
-          var validLen = lens[0]
-          var placeHoldersLen = lens[1]
-          return ((validLen + placeHoldersLen) * 3 / 4)
-                 - placeHoldersLen 
-      } 
-      ...
-  \end{lstlisting}
-  \end{minipage}
-    \begin{minipage}[t]{.5\textwidth}
-      \raggedleft
-      \begin{lstlisting}[language=JavaScript, numbers=none]
-      export function byteLength(b64: any): any;
-      \end{lstlisting}
-    \end{minipage}\hfill
-    \begin{minipage}[t]{.5\textwidth}
-      \raggedright
-      \begin{lstlisting}[language=JavaScript,numbers=none]
-      export function byteLength(b64: string): number;
-      \end{lstlisting}
-    \end{minipage}
-    \caption{ Center: Example of untyped JavaScript
-       code. This an excerpt from the library \texttt{base64-js}. Left: Declaration file after the \textit{Structure} stage, Right: Declaration file after the \textit{Type} stage.}
-    \label{fig:declarations-b64a}
-  \end{figure*}
-  
+%       function byteLength (b64) {
+%           var lens = getLens(b64)      
+%           var validLen = lens[0]
+%           var placeHoldersLen = lens[1]
+%           return ((validLen + placeHoldersLen) * 3 / 4)
+%                  - placeHoldersLen 
+%       } 
+%       ...
+%   \end{lstlisting}
+%   \end{minipage}
+%     \begin{minipage}[t]{.5\textwidth}
+%       \raggedleft
+%       \begin{lstlisting}[language=JavaScript, numbers=none]
+%       export function byteLength(b64: any): any;
+%       \end{lstlisting}
+%     \end{minipage}\hfill
+%     \begin{minipage}[t]{.5\textwidth}
+%       \raggedright
+%       \begin{lstlisting}[language=JavaScript,numbers=none]
+%       export function byteLength(b64: string): number;
+%       \end{lstlisting}
+%     \end{minipage}
+%     \caption{ Center: Example of untyped JavaScript
+%       code. This an excerpt from the library \texttt{base64-js}. Left: Declaration file after the \textit{Structure} stage, Right: Declaration file after the \textit{Type} stage.}
+%     \label{fig:declarations-b64a}
+%   \end{figure*}
   We consider the problem of predicting a TypeScript declaration file
   for an underlying JavaScript library.
-  
   \paragraph{Input:} 
   Our implementation takes as input three files:
   \begin{enumerate}
@@ -1039,7 +1030,7 @@ structure of the file but often do not predict readable types. \ivpcomment{this 
      \end{tabularx}
   \end{table*}
 
-  \subsection{Logical Constraints for TypeScript}\label{ssec:logprodts}
+\subsection{Logical Constraints for TypeScript}\label{ssec:logprodts}
 To generate the logical constraints of \cref{ssec:logcon}, 
 we exploit the information that the TypeScript
 compiler provides \cite{typescript} in conjunction with a refining static
@@ -1075,67 +1066,76 @@ possible built-in types we could assign to the type parameter and therefore a pr
 type constraint. For a concrete example of this procedure, 
 see~\cref{fig:jscode-base64,fig:log-base64a}.
 
+Our purpose is to establish the principle that a combination of natural and logical constraints can outperform either on its own, and outperforms the state-of-the-art.
+%
+To measure our method versus other tools on our gold files we had to find a way to generate logical constraints from the TypeScript compiler.
+%
+We judged it better to generate a limited set of constraints by processing the TypeScript error messages than to attempt to modify the TypeScript compiler, a highly optimized and complex piece of software.
+%
+This technique seems a useful device that could be employed in other situations, and serves our purpose.
+%
+Having established the general principle, in future work we'd aim to show how to modify a type-checker to omit constraints directly.
+%
+Our logical constraints include propositional logic, and therefore seem able to express a wide range of interesting type constraints.
 
-\begin{figure*}[t]
-    \begin{minipage}[c]{\textwidth}
-\begin{lstlisting}[language=JavaScript,numbers=left]
-    function toByteArray<B64, TOBYTEARRAY>(b64: B64): TOBYTEARRAY {
-        ...
-        var len = b64.length; // B64<:.length
-        ...
-        tmp = (revLookup[b64.charCodeAt(i)] << 18) // B64<:.charCodeAt()
-    }
-\end{lstlisting}
-        % \begin{tablenotes}
-        % \item \scriptsize{
-        %     (line 3): Type-Error: The left-hand side of an arithmetic operation should be of type any,number or an enum type.
-        %     The error corresponds to the following constraint:
-        %     $NUM = any \mathrel{|} number \mathrel{|} enum$ }
-        % \end{tablenotes}
-    \end{minipage}
-    \caption{TypeScript code snippet of base64-js library augmented with type parameters for each of the formal variables and the return type, along with two constraint on lines 3 and 5.}\label{fig:jscode-base64}
-\end{figure*}
+% \begin{figure*}[t]
+%     \begin{minipage}[c]{\textwidth}
+% \begin{lstlisting}[language=JavaScript,numbers=left]
+%     function toByteArray<B64, TOBYTEARRAY>(b64: B64): TOBYTEARRAY {
+%         ...
+%         var len = b64.length; // B64<:.length
+%         ...
+%         tmp = (revLookup[b64.charCodeAt(i)] << 18) // B64<:.charCodeAt()
+%     }
+% \end{lstlisting}
+%         % \begin{tablenotes}
+%         % \item \scriptsize{
+%         %     (line 3): Type-Error: The left-hand side of an arithmetic operation should be of type any,number or an enum type.
+%         %     The error corresponds to the following constraint:
+%         %     $NUM = any \mathrel{|} number \mathrel{|} enum$ }
+%         % \end{tablenotes}
+%     \end{minipage}
+%     \caption{TypeScript code snippet of base64-js library augmented with type parameters for each of the formal variables and the return type, along with two constraint on lines 3 and 5.}\label{fig:jscode-base64}
+% \end{figure*}
 
-\begin{table*}[t]
-    \centering
-    \caption{Left: Logical constraints extracted from TypeScript code,
-    Center: Interfaces that include the property length,
-    Right: Final logical constraints.}\label{fig:log-base64a}
-    \begin{tabular}{ccc}
-        \toprule\\
-        \multicolumn{3}{c}{Types $\coloneqq$ String $\mathbin{|}$ Number $\mathbin{|}$ \textit{Array<any>}}\\
-        \midrule\\
-        \begin{minipage}{0.25\textwidth}
-            {\begin{align*}
-                B64 & <: .length\\
-                B64 & <: .charCodeAt()
-            \end{align*}}
-        \end{minipage} &
-        \begin{minipage}{0.35\textwidth}
-{\begin{lstlisting}[language=JavaScript,numbers=none]
-interface String {
-    readonly length: number;
-    charCodeAt(index: number): number;
-    ...
-}
-interface Array<any> {
-    readonly length: number;
-    ...
-}
-\end{lstlisting}}
-        \end{minipage} &
-        \begin{minipage}{0.3\textwidth}
-            {\begin{align*}
-                B64 & = String \mathbin{or} \textit{Array<any>}\\
-                B64 & = String
-            \end{align*}}
-        \end{minipage}\\
-        \bottomrule
-    \end{tabular}
-\end{table*}
-
+% \begin{table*}[t]
+%     \centering
+%     \caption{Left: Logical constraints extracted from TypeScript code,
+%     Center: Interfaces that include the property length,
+%     Right: Final logical constraints.}\label{fig:log-base64a}
+%     \begin{tabular}{ccc}
+%         \toprule\\
+%         \multicolumn{3}{c}{Types $\coloneqq$ String $\mathbin{|}$ Number $\mathbin{|}$ \textit{Array<any>}}\\
+%         \midrule\\
+%         \begin{minipage}{0.25\textwidth}
+%             {\begin{align*}
+%                 B64 & <: .length\\
+%                 B64 & <: .charCodeAt()
+%             \end{align*}}
+%         \end{minipage} &
+%         \begin{minipage}{0.35\textwidth}
+% {\begin{lstlisting}[language=JavaScript,numbers=none]
+% interface String {
+%     readonly length: number;
+%     charCodeAt(index: number): number;
+%     ...
+% }
+% interface Array<any> {
+%     readonly length: number;
+%     ...
+% }
+% \end{lstlisting}}
+%         \end{minipage} &
+%         \begin{minipage}{0.3\textwidth}
+%             {\begin{align*}
+%                 B64 & = String \mathbin{or} \textit{Array<any>}\\
+%                 B64 & = String
+%             \end{align*}}
+%         \end{minipage}\\
+%         \bottomrule
+%     \end{tabular}
+% \end{table*}
 \subsection{Natural Constraints for TypeScript}\label{ssec:natprodts}
-
 We now focus our attention on extracting natural constraints for
 this particular problem.
 The TypeScript community has already
@@ -1188,32 +1188,30 @@ We have used all the available projects $5,800$
 from the DefinitelyTyped repository on a particular date (17th February 2019).
 We have trained our model for $1,000$ epochs, for 78 different types, and obtained a validation accuracy of \emph{validation acc: $0.79$}.
 This information is also summarized in \cref{fig:Char-Level}. Our dataset was randomly split by project into $80\%$ training data, $10\%$ validation data and $10\%$ test data. To split the available data in these three different sets is a common practice in machine learning which ensures that the learning model doesn't simply memorize the training data but is able to generalize to unseen inputs.
-
-\begin{figure*}[!t]
-    \centering
-    \def\svgwidth{\linewidth}
-    \input{./figs/char-level/char-level.pdf_tex}
-\begin{subfigure}{\textwidth}
-  \centering
-%\begin{minipage}[!h]{\textwidth}
-     %\raggedleft
-    \begin{lstlisting}[numbers=none]
-  LSTMClassifier(
-  (embedding): Embedding(90, 128)
-  (lstm): LSTM(128, 64)
-  (hidden2out): Linear(in_features=64, out_features=78, bias=True)
-  (softmax): LogSoftmax()
-  (optimization fun): ADAM)
-\end{lstlisting}
-%  \end{minipage}
-  \end{subfigure}
-   \caption{Pipeline of learning naming conventions with 
-  a Char-Level \textit{LSTM}, represented by a probability vector for each identifier,
-  including function and parameter identifiers.
-  }
-  \label{fig:Char-Level}
-  \end{figure*}
-
+% \begin{figure*}[!t]
+%     \centering
+%     \def\svgwidth{\linewidth}
+%     \input{./figs/char-level/char-level.pdf_tex}
+% \begin{subfigure}{\textwidth}
+%   \centering
+% %\begin{minipage}[!h]{\textwidth}
+%      %\raggedleft
+%     \begin{lstlisting}[numbers=none]
+%   LSTMClassifier(
+%   (embedding): Embedding(90, 128)
+%   (lstm): LSTM(128, 64)
+%   (hidden2out): Linear(in_features=64, out_features=78, bias=True)
+%   (softmax): LogSoftmax()
+%   (optimization fun): ADAM)
+% \end{lstlisting}
+% %  \end{minipage}
+%   \end{subfigure}
+%   \caption{Pipeline of learning naming conventions with 
+%   a Char-Level \textit{LSTM}, represented by a probability vector for each identifier,
+%   including function and parameter identifiers.
+%   }
+%   \label{fig:Char-Level}
+%   \end{figure*}
  \subsection{Combining Logical and Natural Constraints for TypeScript}\label{ssec:combprodts}
 
 We now describe the particular implementations details used to combine the two sources of information.
@@ -1693,7 +1691,7 @@ derived from data flow, attribute accesses, and naming conventions for types.
 %The closest related works to this end are 
 %discussed in~\cref{sec:related}. We can view the problem of matching an identifier to a type as a form supervised text classification problem~\cite{aggarwal12}.
 
-\section{Conclusion} \label{sec:conclusion}
+\section{Conclusion and Future Work} \label{sec:conclusion}
 This paper addresses the lack of rich type inference process for 
 dynamically typed languages. To tackle this problem we define a 
 general probabilistic framework that combines
@@ -1708,6 +1706,11 @@ We believe that the probabilistic type inference approach presented
 in this work can serve as a basis for exploring ways of constructively
 combining different type analyses by using numerical methods.
 
+Our system can be trained on the most common types occurring in any codebase.
+%
+We limit ourselves to simple common types and product of them, primarily because we did not want to introduce types unknown to compiler imported from other libraries.
+%
+We leave the challenging task of introducing user defined types from scratch as future research. It's straightforward though to extend our set of types to whatever type as long as we provide also its interface. We consider as a more challenging problem the extension to user-defined types that emerge as logical constraints and predict user-friendly names for them.
 
 
 %Doing so one can literally achieve the best of both the dynamically and statically-typed worlds.
