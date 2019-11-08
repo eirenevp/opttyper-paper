@@ -473,6 +473,13 @@ Our contributions can be summarized as:
         \ivpcomment{*This* is how you present a Zeller number ;-)}
 \end{itemize}
 
+\begin{figure*}
+  \centering
+  \def\svgwidth{0.85\linewidth}
+  \input{./figs/example/example.pdf_tex}
+  \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
+\end{figure*}
+
 \subsection{Our Framework via an Example}
 
 \adg{Unsure we should lead on this in section 1; explaining the hack of type vars may be alarming so early!}
@@ -501,12 +508,7 @@ operators as shown in Fig. 1(e). When we numerically optimize the resulting expr
 At the end we setup and solve an optimization problem that combines both sources of information into one and tries to satisfy the constraints from both sources as much as possible to improve the results.
 This is shown in Fig. 1(f), where the predicted type is now \texttt{number}.
 Finally, we obtain the correctly annotated function signature shown in Fig. 1(g).
-\begin{figure*}[!t]
-  \centering
-  \def\svgwidth{0.85\linewidth}
-  \input{./figs/example/example.pdf_tex}
-  \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
-\end{figure*}
+
 \section{General Framework for Probabilistic Type Inference} \label{sec:framework}
 % \begin{figure*}[!t]
 %   \centering
@@ -1738,11 +1740,9 @@ We leave the challenging task of introducing user defined types from scratch as 
 
 %% Bibliography
 %\bibliographystyle{natbib}
+\clearpage
 \citestyle{acmnumeric}
 \bibliography{references}
-
-
-
 
 % %% Acknowledgments
 % \begin{acks}                            %% acks environment is optional
@@ -1762,7 +1762,7 @@ We leave the challenging task of introducing user defined types from scratch as 
 % \end{acks}
 
 %% Appendix
-\appendix
+\appendix\clearpage
 
 \section{Appendix}
 
