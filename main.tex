@@ -10,9 +10,6 @@
 %% For final camera-ready submission, w/ required CCS and ACM Reference
 %\documentclass[sigplan]{acmart}\settopmatter{}
 
-% hello there
-
-
 %% Conference information
 %% Supplied to authors by publisher for camera-ready submission;
 %% use defaults for review submission.
@@ -101,7 +98,7 @@
 \addauthor{cas}{mygreen}
 \addauthor{ebr}{UscGold}
 
-\newcommand{\margincomment}[2]{\marginpar{\color{Maroon}#1 says: #2}}
+\newcommand{\margincomment}[2]{\marginpar{\scriptsize\color{Maroon}#1 says: #2}}
 \newcommand{\adg}[1]{\margincomment{ADG}{#1}}
 \newcommand{\ivp}[1]{\margincomment{Irene}{#1}}
 
@@ -480,9 +477,29 @@ Our contributions can be summarized as:
   \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
 \end{figure*}
 
-\subsection{Our Framework via an Example}
+\section{General Framework for Probabilistic Type Inference} \label{sec:framework}
+% \begin{figure*}[!t]
+%   \centering
+%   \def\svgwidth{\linewidth}
+%   \input{./figs/overview/framework.pdf_tex}
+%   \caption{Overview of general framework that combines logical
+%     and natural constraints in a single optimization problem.} \label{fig:overview}
+% \end{figure*}
 
-\adg{Unsure we should lead on this in section 1; explaining the hack of type vars may be alarming so early!}
+This section introduces our general framework,
+which we instantiate in the next section by building a tool for
+predicting types in TypeScript.
+% \adg{felt repetitive re introduction, so trimmed}
+% Our goal is to enhance the type inference
+% procedure for dynamic languages by incorporating into a single engine
+% both information learned from a corpus of typed code
+% as well as information derived directly from the code that is to be typed.
+%
+% We distinguish between two main kinds of constraints that we eventually
+% combine in an optimization problem.
+% The next few subsections formalize this approach.
+
+\subsection{Our Framework by Example}
 Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
 Our input is a minimal TypeScript function without any type annotations on its parameters.
 TypeScript's compiler by default considers the parameters as the top type \texttt{any}.
@@ -509,28 +526,6 @@ At the end we setup and solve an optimization problem that combines both sources
 This is shown in Fig. 1(f), where the predicted type is now \texttt{number}.
 Finally, we obtain the correctly annotated function signature shown in Fig. 1(g).
 
-\section{General Framework for Probabilistic Type Inference} \label{sec:framework}
-% \begin{figure*}[!t]
-%   \centering
-%   \def\svgwidth{\linewidth}
-%   \input{./figs/overview/framework.pdf_tex}
-%   \caption{Overview of general framework that combines logical
-%     and natural constraints in a single optimization problem.} \label{fig:overview}
-% \end{figure*}
-\adg{feels repetitive, could trim}
-In this section we introduce our general framework
-which we will then instantiate in the next section by building a tool for
-predicting types in TypeScript.
-%
-Our goal is to enhance the type inference
-procedure for dynamic languages by incorporating into a single engine
-both information learned from a corpus of typed code
-as well as information derived directly from the code that is to be typed.
-%
-We distinguish between two main kinds of constraints that we eventually
-combine in an optimization problem.
-The next few subsections formalize this approach.
-
 \subsection{An Outline of Probabilistic Type Inference}
 
 We consider a dynamic language of untyped programs that is equipped with an existing deterministic type system,
@@ -538,12 +533,15 @@ that requires type annotations on identifiers.
 %
 Given a program $U$ plus a type environment $\Gamma$ let $\Gamma \vdash U$ mean that the program $U$ is well-typed according to the (deterministic) type system, given types for identifiers provided by $\Gamma$.
 %
-\ivpcomment{Andy, Charles: I am not sure should the variable
+\ivp{Andy, Charles: I am not sure should the variable
   identifiers have a different symbol (v) as opposed to x that we are using to the continuous relaxation part? I believe it should be x so I am changing it, please check!} \cascomment{Not 100\% sure I understand the question,
   but it looked to me like $x_v$ was referring to identifiers
   both in Section 2.1 and in Section 2.2, which seems OK}
 The environment takes the form $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$ where each $x$ is an identifier and each $t$ is a literal type.
 %
+\adg{This is the statement of our general framework.
+We should tighten the connection to Figure 1.
+eg $V=3$ and $T=3$}
 Given an untyped program $U$,
 let \emph{probabilistic type inference} consist of these steps:
 \begin{enumerate}
@@ -998,7 +996,9 @@ structure of the file but often do not predict readable types. \ivpcomment{this 
     This file comes from a third party tool and thus
     why we use as an input in the formal problem statement, in the actual 
     implementation this stage is completely integrated to the process. \ivpcomment{rephrase?}
-    \item The TypeScript's default library declaration file \footnote{\url{https://github.com/Microsoft/TypeScript/blob/master/lib/lib.d.ts}}, that is the built-in types defined  TypeScript's standard library.
+    \item TypeScript's default library declaration
+    file\footnote{\url{https://github.com/Microsoft/TypeScript/blob/master/lib/lib.d.ts}},
+    that is, the built-in types defined by the standard library.
   \end{enumerate}
   
   \paragraph{Output:} A corresponding TypeScript declaration file for the
@@ -1249,7 +1249,7 @@ We use these two metrics to evaluate the output structure and types for each of 
 Here, we focus solely on functions while we discard the other exported entities, such as variables, methods, and properties; the metrics presented next can be extended to evaluate all exported entities straightforwardly.
 The following definitions formalize these metrics.
 
-\subsection{Precision and Recall for TypeScript Declaration Files}
+\subsection{Precision and Recall for Declaration Files}
 
 \begin{defn}[\emph{Paths}]
   Let a \emph{path} be either a \emph{structural path}, or a
@@ -1564,16 +1564,22 @@ We summarise each tool as follows:
   \item \textit{dts-gen}: A tool that attempts to address this problem by examining JavaScript objects that appear during runtime, rather than analysing the code statically.
   % \item \texttt{prodts-gen}: Our tool which implements a more sophisticated static analysis.
 \end{itemize}
-The result of their comparison is shown in \cref{tab:structprec}.
-It is clear that \textit{dts-gen} outperforms \textit{declFlag} across all tasks.
+\cref{tab:structprec} shows the results of the comparison.
+Clearly \textit{dts-gen} outperforms \textit{declFlag} across all tasks.
 As a result, we used the output of \textit{dts-gen} as input in our type prediction stage.
 
 \section{Related Work} \label{sec:related}
 \subsection{Classical Type Inference}
+
+\adg{There are purely statically typed languages, with powerful inference, so that annotations are infrequent.
+Any work to date on ML for statically typed languages?  Not AFAIK}
+
 Rich type inference mitigates the cost
 of explicitly annotating types. This feature is an
-inherent trait of strongly, statically-typed, functional languages (like Haskell or ML). In this direction, some procedural languages attempt to
-include type inference as a feature. For instance, in C\texttt{++}
+inherent trait of strongly, statically-typed, functional languages (like Haskell or ML).
+In this direction, some procedural languages attempt to
+include type inference as a feature.
+For instance, in C\texttt{++}
 programmers can use the auto keyword to avoid writing the type in the
 definition of a variable with an explicit initialization, while in
 C{\#} (starting with version 3) the var keyword can be used as a
@@ -1583,26 +1589,40 @@ enhancements are implemented via compiler tricks and thus are considered as a
 small step towards a world of static typing where possible, and dynamic
 typing when needed.
 
+\adg{gradual typing as compromise between static and dynamic.
+examples for JS, Python, and Ruby.
+none of this work makes use of natural constraints.}
+
 Dynamic languages have also started to pay more attention to typings. Several
 JavaScript extensions, like Closure Compiler \citep{closure} and
 TypeScript, see \cref{ssec:intro-typescript} add optional type annotations to program
-variables using a gradual type system. In JavaScript, these annotations are
+variables using a gradual type system.
+%
+In JavaScript, these annotations are
 provided by specially formatted comments known as JSDoc \citep{jsdoc}. However, these
 extensions often fail to scale to realistic programs that make use of dynamic
 evaluation and complex libraries,for example jQuery, which cannot be analyzed
-precisely~\cite{jensen2009}. In line with this approach we have seen extensions
+precisely~\cite{jensen2009}.
+%
+In line with this approach we have seen extensions
 for other popular scripting languages, like \citep{mypy}, which is an
 optional static type checker for Python, or RuboCop \citep{rubycop}, which
 serves as a static analyzer for Ruby by enforcing many of the guidelines
 outlined in the community Ruby Style Guide \citep{rubystyle} and performing
 various check types known as cops.
 
+\adg{various systems of refinement types (or more generally dependent types).
+% no work on ML to infer such types (AFAIK), but could be future work.
+Trim down.}
+
 The quest for more modular and extensible static analysis techniques has
-resulted in the development of richer type systems. Refinement types, that is
+resulted in the development of richer type systems.
+Refinement types, that is
 subsets of types that satisfy a logical predicate (like Boolean expression),
 constrain the set of values described by the type, and hence allow the use of
 modern logic solvers (aka SAT and SMT engines) to dramatically extend the
-scope of invariants that can be statically verified. An implementation of
+scope of invariants that can be statically verified.
+An implementation of
 this concept comes with Logically Qualified Data Types, abbreviated to Liquid
 Types. DSOLVE is an early application of liquid type inference in
 OCAML \citep{liquid}. A type-checking algorithm, which relies on an SMT solver
@@ -1616,7 +1636,8 @@ these languages take as primitive the useful idea of data tagged with data
 constructors by providing kinds, and algebraic types as
 built-in notion. Although modern scripting languages have popularised the use
 of higher-order constructs, attempts to apply refinement typing to scripts
-have mostly proven to be impractical \citep{dependentJS}. However, the case is that as
+have mostly proven to be impractical \citep{dependentJS}.
+However, as
 each programming language has developed its own characteristics, all of the
 above solutions are entailed to a specific language.
 
@@ -1650,7 +1671,7 @@ above solutions are entailed to a specific language.
 % specifications emerges we should therefore search for novel and universally applicable solution
 
 
-\ivpcomment{miltos:Arguably this https://ml4code.github.io/publications/chibotaru2019scalable/ can claim to be doing this, but much more loosely compared to you. (but since you might get the authors of the paper to be your reviewers it might be worth mentioning them)
+\ivp{miltos:Arguably this https://ml4code.github.io/publications/chibotaru2019scalable/ can claim to be doing this, but much more loosely compared to you. (but since you might get the authors of the paper to be your reviewers it might be worth mentioning them)
 https://pdfs.semanticscholar.org/cfd1/b5c47aee34173033d7fcc4dda03ab4889e98.pdf (<- I have not yet read this paper, but the last time I skimmed this, it reminded me your method of converting logical constraints to arithmetic formulas. Some of the authors could be reviewers…) 
 https://dl.acm.org/citation.cfm?id=2950343 (<- probably worth mentioning) 
 https://ml4code.github.io/publications/dash2018refinym/ (<- arguably, we take into account [some] logical constraints)  }
