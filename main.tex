@@ -846,7 +846,10 @@ Thus we define
   \end{aligned}
 \end{equation}
 It is easy to see that if $Y$ minimizes \eqref{eq:opt_no_prob},
-then $P = [\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}$
+then 
+$P = [\sigma(\bm{y}_1), \ldots, \allowbreak \sigma(\bm{y}_{V})]^\mathsf{T}$
+
+
 minimizes \eqref{eq:opt_naive}. To remove the final constraint,
 we introduce a Lagrange multiplier $\lambda > 0$ to weight
 the two terms, yielding our final optimization problem
@@ -1325,12 +1328,14 @@ For example, we could perform a finer analysis if $X = S_\text{fnRet}$ for funct
 
 \begin{defn}[Precision \& Recall for $X$] \label{def:precision_recall}
   Given a declaration file \textit{predicted.d.ts}, an ideal declaration file \textit{gold.d.ts}, and a class of paths $X$, we define precision and recall for $X$ as:
+ 
   \begin{equation}
-    P(X) = \frac{|Filter_X(Paths(predicted.d.ts)) \cap Filter_X(Paths(gold.d.ts)) |}
-    {|Filter_X(Paths(predicted.d.ts)) |},
+     P(X) =
+     \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap}{Filter_X(Paths(gold.d.ts)) |}}{|Filter_X(Paths(predicted.d.ts)) |}
   \end{equation}
   \begin{equation}
-    R(X) = \frac{|Filter_X(Paths(predicted.d.ts)) \cap Filter_X(Paths(gold.d.ts)) |}
+    R(X) = 
+    \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap} {Filter_X(Paths(gold.d.ts)) |}}
     {|Filter_X(Paths(gold.d.ts))|}.
   \end{equation}
 \end{defn}
