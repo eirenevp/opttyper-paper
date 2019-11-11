@@ -414,7 +414,7 @@ on one of two sources of information:
   \item \emph{Logical constraints} on type annotations that follow from the type system.
         These are the  constraints used by standard deterministic approaches for static type inference.
   \item \emph{Natural constraints} are statistical constraints on type annotations
-        which can be inferred from relationships between types and surface-level properties such as names, types, and lexical context.
+        which can be inferred from relationships between types and surface-level properties such as names and lexical context.
         These constraints can be learned by applying machine learning to large code bases.
         They are the constraints that are currently employed by probabilistic typing systems.
 \end{enumerate}
@@ -430,7 +430,7 @@ Our method is based on two key ideas.
 First, we relax the logical formula into a continuous function by relaxing type environments
 to probability matrices and defining
 a continuous semantic interpretation of logical expressions; the relaxed logical constraints
-are now commensurate with the predicted probability distribution.
+are now commensurate \ivp{R1 didn't like the work commensurate, any suggestions?} with the predicted probability distribution.
 This allows us to define a continuous function over the continuous version of the type environment
 that sums the logical and natural constraints.
 Second, once we have a continuous function, we can optimize it:
@@ -503,7 +503,7 @@ predicting types in TypeScript.
 Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
 Our input is a minimal TypeScript function without any type annotations on its parameters.
 TypeScript's compiler by default considers the parameters as the top type \texttt{any}.
-Our goal is by exploiting different sources of information to suggest to the programmer
+Our goal is to exploit different sources of information to suggest to the programmer
 a type lower in the type hierarchy.
 To do so we propose a type parameter for each of the formal parameters and the return type of the function
 and inject them in the definition of the function, see Fig. 1(a).
@@ -512,15 +512,15 @@ now we can extract more elaborate information about the usage of the
 parameters in this function.
 For instance, we can now capture the
 fact that the parameters are used as terms in a binary operation.
-This could give us a complex set of logical constraint about the possible combinations of the two operands.
-Still, for the purpose of this paper we limit ourselves to a minimal set of constraints shown in Fig. 1(c),
+This could give us a complex set of logical constraints about the possible combinations of the two operands.
+Still, for the purpose of this example we limit ourselves to a minimal set of constraints shown in Fig. 1(c),
 where both the two operands should have the same type. In this stage a classical type inference approach would not be able to give us back a user-friendly type and would probably roll back to its top-level type. To alleviate that we are willing to take into account other sources of
 information, which try to capture the human intuition about the source code itself. As an instantiation of this scenario we use a machine learning model to capture naming conventions over types, see Fig. 1(d).
 Intuitively, what the table in Fig. 1(d) is showing is that a programmer
 is much more likely to name a variable \texttt{start} or \texttt{end}
 if she intents to use it as a \texttt{number} than as a \texttt{string}.
 This kind of information is given to us not with a binary probability,
-but as a fraction of probability that describes the confidence we have for this information. To combine the two sources of information we present the logical constraints as a matrix of probabilities vectors shown in Fig. 1(b). Doing that, enable us to relax the boolean operators to a numerical
+but as a fraction of probability that describes the confidence we have for this information. To combine the two sources of information we present the logical constraints as a matrix of probabilities vectors shown in Fig. 1(b). Doing that enable us to relax the boolean operators to a numerical
 operators as shown in Fig. 1(e). When we numerically optimize the resulting expression we obtain that both variables are strings with high probability.
 At the end we setup and solve an optimization problem that combines both sources of information into one and tries to satisfy the constraints from both sources as much as possible to improve the results.
 This is shown in Fig. 1(f), where the predicted type is now \texttt{number}.
@@ -540,8 +540,8 @@ Given a program $U$ plus a type environment $\Gamma$ let $\Gamma \vdash U$ mean 
 The environment takes the form $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$ where each $x$ is an identifier and each $t$ is a literal type.
 %
 \adg{This is the statement of our general framework.
-We should tighten the connection to Figure 1.
-eg $V=3$ and $T=3$}
+  We should tighten the connection to Figure 1.
+  eg $V=3$ and $T=3$}
 Given an untyped program $U$,
 let \emph{probabilistic type inference} consist of these steps:
 \begin{enumerate}
@@ -846,7 +846,7 @@ Thus we define
   \end{aligned}
 \end{equation}
 It is easy to see that if $Y$ minimizes \eqref{eq:opt_no_prob},
-then 
+then
 $P = [\sigma(\bm{y}_1), \ldots, \allowbreak \sigma(\bm{y}_{V})]^\mathsf{T}$
 
 
@@ -890,7 +890,7 @@ corresponding probability vector which is closest to one.
 \label{sec:prodts}
 To evaluate our type inference approach in a real-word scenario we
 implement an end-to-end application, called \prodts, which aims
-to alleviate the process of inferring a TypeScript declaration file
+to alleviate the process of inferring TypeScript declaration files
 for an underlying JavaScript library.
 
 \subsection{Introduction: TypeScript's Type System}\label{ssec:intro-typescript}
@@ -945,24 +945,24 @@ before, are quite good---although less user-friendly--- at capturing the
 structure of the file but often do not predict readable types. \ivpcomment{this needs
   more explanation}
 
-  \subsection{Problem Statement}\label{ssec:problem}
-  % \begin{center}
-  % \begin{minipage}{1\textwidth}
-  % \lstinputlisting[language=JavaScript, caption=JavaScript]{code/d3-format.js}
-  % \end{minipage}
-  % \end{center}
-  
+\subsection{Problem Statement}\label{ssec:problem}
+% \begin{center}
+% \begin{minipage}{1\textwidth}
+% \lstinputlisting[language=JavaScript, caption=JavaScript]{code/d3-format.js}
+% \end{minipage}
+% \end{center}
+
 %   \begin{figure*}[t]
 %     \centering
 %     \begin{minipage}[c]{.6\textwidth}
 %       \begin{lstlisting}[language=JavaScript,numbers=left]
 %       exports.byteLength = byteLength
 %       ...
-      
+
 %       function getLens (b64) {
 %       ... return validLen, placeHoldersLen] 
 %       }
-      
+
 %       function byteLength (b64) {
 %           var lens = getLens(b64)      
 %           var validLen = lens[0]
@@ -989,61 +989,61 @@ structure of the file but often do not predict readable types. \ivpcomment{this 
 %       code. This an excerpt from the library \texttt{base64-js}. Left: Declaration file after the \textit{Structure} stage, Right: Declaration file after the \textit{Type} stage.}
 %     \label{fig:declarations-b64a}
 %   \end{figure*}
-  We consider the problem of predicting a TypeScript declaration file
-  for an underlying JavaScript library.
-  \paragraph{Input:} 
-  Our implementation takes as input three files:
-  \begin{enumerate}
-    \item A JavaScript library file.
-    \item A declaration file containing the exported functions with every type annotated to \texttt{any}, which we call as \textit{Structure} stage.
-    This file comes from a third party tool and thus
-    why we use as an input in the formal problem statement, in the actual 
-    implementation this stage is completely integrated to the process. \ivpcomment{rephrase?}
-    \item TypeScript's default library declaration
-    file\footnote{\url{https://github.com/Microsoft/TypeScript/blob/master/lib/lib.d.ts}},
-    that is, the built-in types defined by the standard library.
-  \end{enumerate}
-  
-  \paragraph{Output:} A corresponding TypeScript declaration file for the
-  JavaScript library, that we from now on we call \textit{predicted.d.ts} and
-  includes type predictions for
-  \begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
-    \item the return type of the function, denoted as \emph{fnRet}, and
-    \item type annotations for the function's arguments, denoted as \emph{param}.
-  \end{itemize}
-  The output of our tool is essentially the output of the \textit{Structure} stage with some, or ideally all, of the \texttt{any} types substituted with built-in types---that is non user-defined types--- and sum/product types of those.
-  
-  We will refer to the process of filling up the typing holes from the previous stage with the correct typing information as \textit{Type} stage. \ivpcomment{An example input, showing all three files,
+We consider the problem of predicting a TypeScript declaration file
+for an underlying JavaScript library.
+\paragraph{Input:}
+Our implementation takes as input three files:
+\begin{enumerate}
+  \item A JavaScript library file.
+  \item A declaration file containing the exported functions with every type annotated to \texttt{any}, which we call as \textit{Structure} stage.
+        This file comes from a third party tool and thus
+        why we use as an input in the formal problem statement, in the actual
+        implementation this stage is completely integrated to the process. \ivpcomment{rephrase?}
+  \item TypeScript's default library declaration
+        file\footnote{\url{https://github.com/Microsoft/TypeScript/blob/master/lib/lib.d.ts}},
+        that is, the built-in types defined by the standard library.
+\end{enumerate}
+
+\paragraph{Output:} A corresponding TypeScript declaration file for the
+JavaScript library, that we from now on we call \textit{predicted.d.ts} and
+includes type predictions for
+\begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
+  \item the return type of the function, denoted as \emph{fnRet}, and
+  \item type annotations for the function's arguments, denoted as \emph{param}.
+\end{itemize}
+The output of our tool is essentially the output of the \textit{Structure} stage with some, or ideally all, of the \texttt{any} types substituted with built-in types---that is non user-defined types--- and sum/product types of those.
+
+We will refer to the process of filling up the typing holes from the previous stage with the correct typing information as \textit{Type} stage. \ivpcomment{An example input, showing all three files,
   is shown in \cref{fig:declarations-b64a}. change this} In other words, our main focus on this work is to apply our probabilistic
-  type inference of the types in the \textit{Structure} stage to meliorate the \textit{Type}
-  process. For detailed metrics and evaluation see
-  \cref{sec:eval}.
-  
-  \begin{table*}[t]
-    \centering
-    \caption{The five different types of type errors that we are taking into account to generate the \textit{logical constraints}.}\label{tab:constraints}
-     \begin{tabularx}{\textwidth}{lX}
-       \toprule \\
-       Constraint-Id  & Description\\
-       \midrule \\
-       Property &  Property $X$ does not exist on type $Y$.\\
-       Binop & Operator $x$ cannot be applied 
-       to types $X$ and $Y$. \\
-       Index & Type X cannot be used to index type $Y$.\\
-       ArithmLHS & The left-hand side of an arithmetic operation must be 
-       of type 'any', 'number' or an enum type. \\
-       ArithmRHS & The right-hand side of an arithmetic operation must be 
-       of type 'any', 'number' or an enum type. \\
-       \bottomrule
-     \end{tabularx}
-  \end{table*}
+type inference of the types in the \textit{Structure} stage to meliorate the \textit{Type}
+process. For detailed metrics and evaluation see
+\cref{sec:eval}.
+
+\begin{table*}[t]
+  \centering
+  \caption{The five different types of type errors that we are taking into account to generate the \textit{logical constraints}.}\label{tab:constraints}
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule                                                               \\
+    Constraint-Id & Description                                            \\
+    \midrule                                                               \\
+    Property      & Property $X$ does not exist on type $Y$.               \\
+    Binop         & Operator $x$ cannot be applied
+    to types $X$ and $Y$.                                                  \\
+    Index         & Type X cannot be used to index type $Y$.               \\
+    ArithmLHS     & The left-hand side of an arithmetic operation must be
+    of type 'any', 'number' or an enum type.                               \\
+    ArithmRHS     & The right-hand side of an arithmetic operation must be
+    of type 'any', 'number' or an enum type.                               \\
+    \bottomrule
+  \end{tabularx}
+\end{table*}
 
 \subsection{Logical Constraints for TypeScript}\label{ssec:logprodts}
-To generate the logical constraints of \cref{ssec:logcon}, 
+To generate the logical constraints of \cref{ssec:logcon},
 we exploit the information that the TypeScript
 compiler provides \cite{typescript} in conjunction with a refining static
 analysis. We include all the return types that the
-compiler is able to infer given a JavaScript function. The compiler does 
+compiler is able to infer given a JavaScript function. The compiler does
 not try to infer the parameter types, as mentioned before, but rather emits
 some flow information it gets from the static analysis of the code.
 To overcome this obstacle and prompt the compiler to reveal us more,
@@ -1057,21 +1057,21 @@ $l = String \mathrel{or} l = \text{Array<any>}$\footnote{There is a subtle diffe
 We initially use unconstrained type parameters and parse the resulting errors to
 introduce constraints.
 
-We can identify 5 common type errors (\cref{tab:constraints}) that the \texttt{tsc} 
-compiler emits, and turn those into type constraints. The main problem with using 
-this approach in isolation is that we produce an average total 
-of only around 10 constraints per library. As this information is quite 
-limited and incomplete, our work focuses on utilizing machine learning to augment 
+We can identify 5 common type errors (\cref{tab:constraints}) that the \texttt{tsc}
+compiler emits, and turn those into type constraints. The main problem with using
+this approach in isolation is that we produce an average total
+of only around 10 constraints per library. As this information is quite
+limited and incomplete, our work focuses on utilizing machine learning to augment
 the quality and amount of type constraints.
 
 The parsing of the first type error---constraint kind pair of \cref{tab:constraints}
-refers to identifying properties/methods that a type parameter should implement 
+refers to identifying properties/methods that a type parameter should implement
 and using them to generate a type constraint.
 \textit{lib.d.ts} includes interfaces for the built-in types of the language.
 These interfaces contain the typed signatures of each property and method
 that a built-in type implements. We use these interfaces to construct a set of
 possible built-in types we could assign to the type parameter and therefore a proper
-type constraint. For a concrete example of this procedure, 
+type constraint. For a concrete example of this procedure,
 see~\cref{fig:jscode-base64,fig:log-base64a}.
 
 Our purpose is to establish the principle that a combination of natural and logical constraints can outperform either on its own, and outperforms the state-of-the-art.
@@ -1160,18 +1160,18 @@ The main intuition behind the particular choice of the LSTM is that developers c
 Thus, this family of abbreviations share type and a Char-Level LSTM is well-suited to predict the type for every identifier in the family.
 
 Our universe of types consists of 78 built-in types or union of them appeared at least 10000 times in our training set.
-We choose to handle only built-in types 
+We choose to handle only built-in types
 to ensure that we do not introduce types that are not available to the compiler.
 
 Regarding the implementation details of the LSTM network, for the $F$ in \eqref{eq:lstmb}, we use a
 feedforward \ivpcomment{is that right??} neural network
 \begin{equation}
-    F(\bm{h}) = \log\left( \sigma\left(\bm{h}A^T + b \right) \right),\label{eq:feedforward}
+  F(\bm{h}) = \log\left( \sigma\left(\bm{h}A^T + b \right) \right),\label{eq:feedforward}
 \end{equation}
 where the $\log$ function is applied componentwise, $A$ and $b$ are learnable weights and bias.
 The softmax function is defined as
 \begin{equation}\label{eq:softmax}
-    \sigma(\bm{x}) = \left[\frac{\exp\{x_1\}}{\sum_i \exp\{x_i\}}, \frac{\exp\{x_2\}}{\sum_i \exp\{x_i\}}, \cdots \right]^\mathsf{T}.
+  \sigma(\bm{x}) = \left[\frac{\exp\{x_1\}}{\sum_i \exp\{x_i\}}, \frac{\exp\{x_2\}}{\sum_i \exp\{x_i\}}, \cdots \right]^\mathsf{T}.
 \end{equation}
 The softmax function corresponds to the last layer of our neural network and essentially maps the values of the previous layer to $[0, 1]$, while the sum of all values is $1$; as expected by a probability vector.
 The log function is applied for numerical stability since computing directly \eqref{eq:softmax} can be problematic.
@@ -1181,7 +1181,7 @@ The model is trained based on sequences of variable names of known type.
 This is done by minimizing a loss function.
 Our particular choice of loss function is the negative log likelihood function---conveniently combined with our log output---defined as
 \begin{equation}
-    L(\bm{y}) = -\sum_i log(\bm{y}_i).
+  L(\bm{y}) = -\sum_i log(\bm{y}_i).
 \end{equation}
 Essentially, we select during training the element that corresponds to the correct label from the output $F$ and sum all the values of the correct labels for the entire test set.
 
@@ -1190,7 +1190,7 @@ The main difference between \textsc{Adam} and classical stochastic gradient desc
 Although there exist other algorithms with adaptive learning rates like \textsc{AdaGrad}~\cite{duchi2011} and \textsc{RMSprop}~\cite{tieleman2014}, \textsc{Adam} tends to have better convergence~\cite{ruder2016}.
 
 \ivpcomment{From Charles: We should say where we obtained the data set from, i.e., these are all of the projects on DefinitelyTyped, and what that means (i.e.
-the project was popular enough that a Typescript definiton file was written for it.}
+  the project was popular enough that a Typescript definiton file was written for it.}
 % To do so we are using a \textit{Char-Level LSTM} which predicts for any identifier a probability vector over all the available types during the training.
 We have used all the available projects $5,800$
 from the DefinitelyTyped repository on a particular date (17th February 2019).
@@ -1220,13 +1220,13 @@ This information is also summarized in \cref{fig:Char-Level}. Our dataset was ra
 %   }
 %   \label{fig:Char-Level}
 %   \end{figure*}
- \subsection{Combining Logical and Natural Constraints for TypeScript}\label{ssec:combprodts}
+\subsection{Combining Logical and Natural Constraints for TypeScript}\label{ssec:combprodts}
 
 We now describe the particular implementations details used to combine the two sources of information.
 Most of our design choices here are empirical based on what we have noticed maximizes the performance of the framework.
 
 We implement the optimization problem described in~\eqref{eq:objective} for initial $\lambda = 10$.
-The adaptive optimization algorithm updates its value in subsequent iterations. 
+The adaptive optimization algorithm updates its value in subsequent iterations.
 To evaluate the minimum of the generated functions we use a different adaptive optimization algorithm, that is \textsc{RMSprop}~\cite{tieleman2014}.
 We set the maximum number of iterations to $2,000$ where we have noticed that the loss stabilizes.
 
@@ -1328,13 +1328,13 @@ For example, we could perform a finer analysis if $X = S_\text{fnRet}$ for funct
 
 \begin{defn}[Precision \& Recall for $X$] \label{def:precision_recall}
   Given a declaration file \textit{predicted.d.ts}, an ideal declaration file \textit{gold.d.ts}, and a class of paths $X$, we define precision and recall for $X$ as:
- 
+
   \begin{equation}
-     P(X) =
-     \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap}{Filter_X(Paths(gold.d.ts)) |}}{|Filter_X(Paths(predicted.d.ts)) |}
+    P(X) =
+    \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap}{Filter_X(Paths(gold.d.ts)) |}}{|Filter_X(Paths(predicted.d.ts)) |}
   \end{equation}
   \begin{equation}
-    R(X) = 
+    R(X) =
     \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap} {Filter_X(Paths(gold.d.ts)) |}}
     {|Filter_X(Paths(gold.d.ts))|}.
   \end{equation}
@@ -1357,9 +1357,9 @@ We summarise below the characteristics of each package and the provided input.
 \begin{itemize}[label={\tiny$\bullet$}]
   \item \textit{Aug-Static}: Using the JavaScript library and the declaration file as an input, we utilise the compiler in a pragmatic way allowing us to generate logical constraints as logical formulas and then solve them using fuzzy logic (\cref{ssec:logprodts}).
   \item \textit{LSTM}: We query our pre-trained Char-Level \textit{LSTM} to give us predictions for every id found in the declaration file (\cref{ssec:natprodts}).
-  It requires as input the declaration file only.
+        It requires as input the declaration file only.
   \item \prodts: The output of the optimization problem for the corresponding combination of the Character Level and fuzzy tool (\cref{ssec:combprodts}).
-  Since this tool depends on Aug-Static and Char-Level, we provide both the JavaScript library and the declaration file as input.
+        Since this tool depends on Aug-Static and Char-Level, we provide both the JavaScript library and the declaration file as input.
 \end{itemize}
 Furthermore, we report separately in \cref{tab:typeprec1} the precision and recall for predicting the function return types (first and second column) and the types of the functions' parameters (third and fourth column).
 
@@ -1373,22 +1373,22 @@ The results presented in \cref{tab:typeprec1} are normalized based on these uppe
 \begin{table*}[t]
   \centering
   \caption{Aggregate \textit{Type} precision and recall for 58 JavaScript libraries with 1272 identifiers in total (610 $funRet$, 662 $param$).
-  We use the notation $P(T^N_\text{fnRet})$ for $P(T_\text{fnRet} \cap N)$, where $N$ is the number of types in our universe of types.}\label{tab:typeprec1}
+    We use the notation $P(T^N_\text{fnRet})$ for $P(T_\text{fnRet} \cap N)$, where $N$ is the number of types in our universe of types.}\label{tab:typeprec1}
   \begin{tabular}{ccccccc}
-    \toprule \\
-    Tool        & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$\\
-    \midrule \\
-  
-%   \textit{DeepTyper}\tiny{(78-types)}   & 0.20                   & 0.20                   & 0.50                  & 0.52  & 0.35                  & 0.36  \\
-    
-%   % \multicolumn{7}{@{}c@{}}{\dashrule} \\
-%     \textit{JSNice} \tiny{(6-types)}      & 0.15                   & 0.15                   & 0.78                 & 0.80  & 0.47                & 0.48\\
-%     \textit{JSNice} \tiny{(78-types)}  & 0.12                   & 0.12                   & 0.62                  & 0.64 & 0.37                  & 0.38 \\
-%  \multicolumn{7}{@{}c@{}}{\dashrule} \\
-    \textit{Aug-Static} \tiny{($N=78$)}  & 0.42                   & 0.41                   & 0.15  & 0.15  & 0.29  & 0.28 \\
-    \textit{LSTM} \tiny{($N=78$)} & 0.48                   & 0.48                   & 0.61 & 0.56  & 0.55 & 0.52\\
-    \textbf{\prodts} \tiny{($N=78$)}    & \textbf{0.61}          & \textbf{0.59}  & \textbf{0.63}         & \textbf{0.58}
-    & \textbf{0.62}  & \textbf{0.58} \\
+    \toprule                                                                                                                                                                            \\
+    Tool                                & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$ \\
+    \midrule                                                                                                                                                                            \\
+
+    %   \textit{DeepTyper}\tiny{(78-types)}   & 0.20                   & 0.20                   & 0.50                  & 0.52  & 0.35                  & 0.36  \\
+
+    %   % \multicolumn{7}{@{}c@{}}{\dashrule} \\
+    %     \textit{JSNice} \tiny{(6-types)}      & 0.15                   & 0.15                   & 0.78                 & 0.80  & 0.47                & 0.48\\
+    %     \textit{JSNice} \tiny{(78-types)}  & 0.12                   & 0.12                   & 0.62                  & 0.64 & 0.37                  & 0.38 \\
+    %  \multicolumn{7}{@{}c@{}}{\dashrule} \\
+    \textit{Aug-Static} \tiny{($N=78$)} & 0.42                  & 0.41                  & 0.15                  & 0.15                  & 0.29                  & 0.28                  \\
+    \textit{LSTM} \tiny{($N=78$)}       & 0.48                  & 0.48                  & 0.61                  & 0.56                  & 0.55                  & 0.52                  \\
+    \textbf{\prodts} \tiny{($N=78$)}    & \textbf{0.61}         & \textbf{0.59}         & \textbf{0.63}         & \textbf{0.58}
+                                        & \textbf{0.62}         & \textbf{0.58}                                                                                                         \\
     % limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
     \bottomrule
   \end{tabular}
@@ -1404,7 +1404,7 @@ By comparing these two metric in \cref{def:precision_recall}, their similarity c
 As it will be analyzed in \cref{ssec:structure_comparison}, the \textit{Structure} stage is able to identify the majority (over $80\%$) of the function signatures; this gives rise to the closeness of the denominators and subsequently of the precision and recall.
 
 Finally, for \prodts we notice that the combination of the output of the augmented static analysis and the Char-Level LSTM improves our precision and recall for both tasks.
-A certain level of robustness can be also identified, because the low results of the augmented static analysis for parameters' types positively contributes to the optimizer results. 
+A certain level of robustness can be also identified, because the low results of the augmented static analysis for parameters' types positively contributes to the optimizer results.
 This means that on top of the predictions of the neural network, some constraints of the augmented static analysis tip the balance towards more reasonable predictions.
 \textit{Overall, the combination of the logical (Aug-Static) and natural (LSTM) constraints in \prodts greatly improves our type inference capabilities}.
 
@@ -1415,31 +1415,31 @@ None of these tools was made explicitly for predicting TypeScript declaration fi
 For all of our evaluations we have used the same Structure file, that it the one that dts-gen gives us.
 The two tools that we compare against are:
 \begin{itemize}[label={\tiny$\bullet$}]
-    \item DeepTyper: A tool based on deep learning which learns types for every identifier.
-    The training of the network is performed using already annotated TypeScript code.
+  \item DeepTyper: A tool based on deep learning which learns types for every identifier.
+        The training of the network is performed using already annotated TypeScript code.
 
-    \item JSNice: A tool based on graphical machine learning which analyzes relationships between program elements to infer types for JavaScript files.
+  \item JSNice: A tool based on graphical machine learning which analyzes relationships between program elements to infer types for JavaScript files.
 \end{itemize}
 We summarize the results of our comparisons in \cref{tab:typeprec2}.
 
 \begin{table*}[t]
   \centering
   \caption{Aggregate \textit{Type} precision and recall across all evaluated modules for DeepTyper and JSNice; as input we use 41 JavaScript libraries with 860 identifiers in total (270 funRet, 590 param).
-  The superscript $N$ has the same meaning as in \cref{tab:typeprec1}, where $N = 6$ consists of the six types predicted by JSNice.
-  Boldface indicates the best results of the full set of $N=78$ types.}\label{tab:typeprec2}
-   \begin{tabular}{ccccccc}
-     \toprule \\
-     Tool        & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$ \\
-     \midrule \\
-     DeepTyper\tiny{($N=78$)}  & 0.20                   & 0.20                   & 0.50                  & 0.52  & 0.35                  & 0.36  \\
-    
-     JSNice \tiny{($N=6$)}      & 0.15                   & 0.15                   & 0.78                 & 0.80  & 0.47                & 0.48\\
-     JSNice \tiny{($N=78$)}  & 0.12                   & 0.12                   & 0.62                  & 0.64 & 0.37                  & 0.38 \\
-     % limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
-     \textbf{\prodts} \tiny{($N=78$)}    & \textbf{0.68}          & \textbf{0.68}  & \textbf{0.67}         & \textbf{0.67}
-     & \textbf{0.68}  & \textbf{0.68} \\
-     \bottomrule
-   \end{tabular}
+    The superscript $N$ has the same meaning as in \cref{tab:typeprec1}, where $N = 6$ consists of the six types predicted by JSNice.
+    Boldface indicates the best results of the full set of $N=78$ types.}\label{tab:typeprec2}
+  \begin{tabular}{ccccccc}
+    \toprule                                                                                                                                                                         \\
+    Tool                             & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$ \\
+    \midrule                                                                                                                                                                         \\
+    DeepTyper\tiny{($N=78$)}         & 0.20                  & 0.20                  & 0.50                  & 0.52                  & 0.35                  & 0.36                  \\
+
+    JSNice \tiny{($N=6$)}            & 0.15                  & 0.15                  & 0.78                  & 0.80                  & 0.47                  & 0.48                  \\
+    JSNice \tiny{($N=78$)}           & 0.12                  & 0.12                  & 0.62                  & 0.64                  & 0.37                  & 0.38                  \\
+    % limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
+    \textbf{\prodts} \tiny{($N=78$)} & \textbf{0.68}         & \textbf{0.68}         & \textbf{0.67}         & \textbf{0.67}
+                                     & \textbf{0.68}         & \textbf{0.68}                                                                                                         \\
+    \bottomrule
+  \end{tabular}
 \end{table*}
 
 \paragraph{Comparison with DeepTyper}
@@ -1480,7 +1480,7 @@ Overall, we believe that this performance drop for DeepTyper and JSNice happens 
 \begin{enumerate}[label=(\roman*)]
   \item The identifiers for functions are not as repeatable as the identifiers for parameters; DeepTyper and JSNice have less training data for function identifiers, while our Char-Level LSTM can captures variations of the same identifier irrespectively of its source.
   \item The return type of a function is usually related to code at the bottom of the function's body.
-  As a result, a learning approach which takes into account a limited amount of context can miss relationships that are not spatially close.
+        As a result, a learning approach which takes into account a limited amount of context can miss relationships that are not spatially close.
   \item JSNice only captures shallow dependencies between identifiers and thus ther are occasionally not enough to capture the information flow, especially for the function's return types.
 \end{enumerate}
 
@@ -1489,9 +1489,9 @@ a deep learning approach to the problem which considers JSDoc comments as
 an additional type hint, we could not compare directly to them as
 we do not have many example with both JSDoc and available declaration
 files in the DefinitelyTyped repository.
-Finally, it is worth pointing out that it would be fairly simple to extend the method to handle constraints generated by DeepTyper, NL2Type or 
+Finally, it is worth pointing out that it would be fairly simple to extend the method to handle constraints generated by DeepTyper, NL2Type or
 in fact any other deep learning approach that give similar kind of
-information. For example, we could simply add more terms to the combined objective function, including an extra term for every source of natural constraint that we would like to add. 
+information. For example, we could simply add more terms to the combined objective function, including an extra term for every source of natural constraint that we would like to add.
 %42 libs, 106 parameters, 78 funRet, 184 total 
 % To compare \prodts against DeepTyper we run the tool for every library in  our dataset.
 % As a first step, we extract a dictionary with the prediction for each of the identifiers presented in the corresponding declaration file for that
@@ -1550,16 +1550,16 @@ information. For example, we could simply add more terms to the combined objecti
 \begin{table*}[t]
   \centering
   \caption{Aggregate \textit{Structure} precision and recall across all modules.
-  Our type universe consists of $78$ types, while we use 48 JavaScript libraries as input with 2012 identifiers in total.} \label{tab:structprec}
-   \begin{tabular}{ccccccc}
-     \toprule \\
-     Tool     & $P(S_\text{fnRet})$ & $R(S_\text{fnRet})$ & $P(S_\text{param})$ & $R(S_\text{param})$ & $P(S_\text{total})$ & $R(S_\text{total})$\\
-     \midrule \\
-     \textit{declFlag} & 0.09                  & 0.11                  & 0.08                  & 0.11  & 0.08                  & 0.11  \\
-     \textit{dts-gen}  & 0.88                  & 0.84                  & 0.83                  & 0.79   & 0.83                  & 0.79 \\
-     \bottomrule
-   \end{tabular}
-\end{table*} 
+    Our type universe consists of $78$ types, while we use 48 JavaScript libraries as input with 2012 identifiers in total.} \label{tab:structprec}
+  \begin{tabular}{ccccccc}
+    \toprule                                                                                                                                              \\
+    Tool              & $P(S_\text{fnRet})$ & $R(S_\text{fnRet})$ & $P(S_\text{param})$ & $R(S_\text{param})$ & $P(S_\text{total})$ & $R(S_\text{total})$ \\
+    \midrule                                                                                                                                              \\
+    \textit{declFlag} & 0.09                & 0.11                & 0.08                & 0.11                & 0.08                & 0.11                \\
+    \textit{dts-gen}  & 0.88                & 0.84                & 0.83                & 0.79                & 0.83                & 0.79                \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
 
 We now turn our attention on the first stage that predicts the structure of our JavaScript library.
 Here, we compare two tools that can output a structure file: \textit{declFlag} and \textit{dts-gen}.
@@ -1567,7 +1567,7 @@ We summarise each tool as follows:
 \begin{itemize}[label={\tiny$\bullet$}]
   \item \textit{declFlag}: The TypeScript compiler, when called with the flag \texttt{--declaration}, generates statically some of the exported definitions.
   \item \textit{dts-gen}: A tool that attempts to address this problem by examining JavaScript objects that appear during runtime, rather than analysing the code statically.
-  % \item \texttt{prodts-gen}: Our tool which implements a more sophisticated static analysis.
+        % \item \texttt{prodts-gen}: Our tool which implements a more sophisticated static analysis.
 \end{itemize}
 \cref{tab:structprec} shows the results of the comparison.
 Clearly \textit{dts-gen} outperforms \textit{declFlag} across all tasks.
@@ -1577,7 +1577,7 @@ As a result, we used the output of \textit{dts-gen} as input in our type predict
 \subsection{Classical Type Inference}
 
 \adg{There are purely statically typed languages, with powerful inference, so that annotations are infrequent.
-Any work to date on ML for statically typed languages?  Not AFAIK}
+  Any work to date on ML for statically typed languages?  Not AFAIK}
 
 Rich type inference mitigates the cost
 of explicitly annotating types. This feature is an
@@ -1595,8 +1595,8 @@ small step towards a world of static typing where possible, and dynamic
 typing when needed.
 
 \adg{gradual typing as compromise between static and dynamic.
-examples for JS, Python, and Ruby.
-none of this work makes use of natural constraints.}
+  examples for JS, Python, and Ruby.
+  none of this work makes use of natural constraints.}
 
 Dynamic languages have also started to pay more attention to typings. Several
 JavaScript extensions, like Closure Compiler \citep{closure} and
@@ -1617,8 +1617,8 @@ outlined in the community Ruby Style Guide \citep{rubystyle} and performing
 various check types known as cops.
 
 \adg{various systems of refinement types (or more generally dependent types).
-% no work on ML to infer such types (AFAIK), but could be future work.
-Trim down.}
+  % no work on ML to infer such types (AFAIK), but could be future work.
+  Trim down.}
 
 The quest for more modular and extensible static analysis techniques has
 resulted in the development of richer type systems.
@@ -1633,7 +1633,7 @@ Types. DSOLVE is an early application of liquid type inference in
 OCAML \citep{liquid}. A type-checking algorithm, which relies on an SMT solver
 to compute subtyping efficiently for a core, first order functional language
 enhanced with refinement types \citep{semanticSMT}, provides a different
-approach. LiquidHaskell \citep{refHaskell} is a static verifier of 
+approach. LiquidHaskell \citep{refHaskell} is a static verifier of
 Haskell based on Liquid Types via SMT and predicate
 abstraction. The brainy and expressive type system of functional languages
 made the task of adding refinement types easier to achieve. For instance,
@@ -1677,9 +1677,9 @@ above solutions are entailed to a specific language.
 
 
 \ivp{miltos:Arguably this https://ml4code.github.io/publications/chibotaru2019scalable/ can claim to be doing this, but much more loosely compared to you. (but since you might get the authors of the paper to be your reviewers it might be worth mentioning them)
-https://pdfs.semanticscholar.org/cfd1/b5c47aee34173033d7fcc4dda03ab4889e98.pdf (<- I have not yet read this paper, but the last time I skimmed this, it reminded me your method of converting logical constraints to arithmetic formulas. Some of the authors could be reviewers…) 
-https://dl.acm.org/citation.cfm?id=2950343 (<- probably worth mentioning) 
-https://ml4code.github.io/publications/dash2018refinym/ (<- arguably, we take into account [some] logical constraints)  }
+  https://pdfs.semanticscholar.org/cfd1/b5c47aee34173033d7fcc4dda03ab4889e98.pdf (<- I have not yet read this paper, but the last time I skimmed this, it reminded me your method of converting logical constraints to arithmetic formulas. Some of the authors could be reviewers…)
+  https://dl.acm.org/citation.cfm?id=2950343 (<- probably worth mentioning)
+  https://ml4code.github.io/publications/dash2018refinym/ (<- arguably, we take into account [some] logical constraints)  }
 
 % However none of them takes into
 % account explicitly the rules of the underlying type inference procedure
@@ -1690,11 +1690,11 @@ https://ml4code.github.io/publications/dash2018refinym/ (<- arguably, we take in
 
 
 \cascomment{I agree it would be fairly simple to extend the method to handle DeepTyper or NL2Type constraints; we could simply add more terms to combined objective function, one for each kind of LSTM that we want to add. I'd view the character-level LSTM that we use as a representative kind of natural constraint, but not necessarily the best, and certainly not the only one. We should mention that in the paper..
-Finally, it seems like there is quite some opportunity for a hybrid here; in fact, a fairly simple extension to e.g. DeepTyper (or NL2Type) could allow your "natural" component to factor in a much broader context and likely work much better correspondingly. Happy to chat about that sometime 
-richer type
-annotation holds the promise of a more precise, modular and extensible analysis, and
-as the need of building programs that conform the specifications emerges we
-should therefore search for novel and universally applicable solutions
+  Finally, it seems like there is quite some opportunity for a hybrid here; in fact, a fairly simple extension to e.g. DeepTyper (or NL2Type) could allow your "natural" component to factor in a much broader context and likely work much better correspondingly. Happy to chat about that sometime
+  richer type
+  annotation holds the promise of a more precise, modular and extensible analysis, and
+  as the need of building programs that conform the specifications emerges we
+  should therefore search for novel and universally applicable solutions
 }%
 
 \subsection{Machine Learning Over Source Code}
@@ -1712,23 +1712,23 @@ emerging area applies probabilistic models from machine learning to infer semant
 properties  of programs, such as types.
 ~\citet{chibotaru19} use control and data flow analyses to extract
 the desired statistical graphical model.~\citet{xu16} also use probabilistic graphical models to statistically infer
-types of identifiers in programs written in Python. Their tool trains the 
-classification model for each type in the domain and uses a different 
-approach to build the graphical model as it allows to leverage type hints 
+types of identifiers in programs written in Python. Their tool trains the
+classification model for each type in the domain and uses a different
+approach to build the graphical model as it allows to leverage type hints
 derived from data flow, attribute accesses, and naming conventions for types.
 
- 
+
 
 %The closest related works to this end are 
 %discussed in~\cref{sec:related}. We can view the problem of matching an identifier to a type as a form supervised text classification problem~\cite{aggarwal12}.
 
 \section{Conclusion and Future Work} \label{sec:conclusion}
-This paper addresses the lack of rich type inference process for 
-dynamically typed languages. To tackle this problem we define a 
+This paper addresses the lack of rich type inference process for
+dynamically typed languages. To tackle this problem we define a
 general probabilistic framework that combines
-information from traditional analyses with statistical reasoning 
-for source code text, and thus enable us to to predict natural occurring 
-types. To evaluate our framework we build \prodts{}, a tool to 
+information from traditional analyses with statistical reasoning
+for source code text, and thus enable us to to predict natural occurring
+types. To evaluate our framework we build \prodts{}, a tool to
 generate typed TypeScript declaration files for untyped JavaScript
 libraries. Our experiments show that \prodts{} predicts functions types
 signatures with a precision and recall score of almost 70\% for the top-most
@@ -1798,26 +1798,26 @@ In \cref{ssec:logcon}, we present the continuous interpretation based on probabi
 As already mentioned, in the actual implementation we use logit instead for numerical stability.
 Logit is defined as the inverse of the softmax function; that is, an element of a probability vector $p \in [0,1]$ corresponds to
 \begin{equation*}
-    \pi = \log \frac{p}{1 - p}.
+  \pi = \log \frac{p}{1 - p}.
 \end{equation*}
 It allows us to map probability values from $\left[ 0, 1 \right]$ to $\left[ -\infty, \infty \right]$.
 
 Given the matrix~$\mathcal{L}$, which corresponds to the logit of the matrix~$P$ in \cref{ssec:logcon}, we interpret an expression~$E$ as a number~$\qqpi{P}{E} \in \mathbb{R}$ as  follows:
 %\ivpcomment{Mention explicitly that this formulation maps scalar from [0,1] to [0,1], that is probability vectors do not require some extra form of scaling}
 \begin{align*}
-  \qqpi{\mathcal{L}}{x_v \mathrel{is} l_\tau}  & = \pi_{v,\tau} \\ \label{eq:logits}
-  \qqpi{\mathcal{L}}{\mathrel{not} E}       & = \log(1-\text{sigmoid}(\qqpi{\mathcal{L}}{E})                \\
-  \qqpi{\mathcal{L}}{E_1 \mathrel{and} E_2} & = \qqpi{\mathcal{L}}{E_1} \mathrel{+} \qqpi{\mathcal{L}}{E_2} \\
-  \qqpi{\mathcal{L}}{E_1 \mathrel{or} E_2}  & = \text{LogSumExp}(
+  \qqpi{\mathcal{L}}{x_v \mathrel{is} l_\tau} & = \pi_{v,\tau}                                                \\ \label{eq:logits}
+  \qqpi{\mathcal{L}}{\mathrel{not} E}         & = \log(1-\text{sigmoid}(\qqpi{\mathcal{L}}{E})                \\
+  \qqpi{\mathcal{L}}{E_1 \mathrel{and} E_2}   & = \qqpi{\mathcal{L}}{E_1} \mathrel{+} \qqpi{\mathcal{L}}{E_2} \\
+  \qqpi{\mathcal{L}}{E_1 \mathrel{or} E_2}    & = \text{LogSumExp}(
   \qqpi{\mathcal{L}}{E_1} + \qqpi{\mathcal{L}}{E_2} - \qqpi{\mathcal{L}}{E_1} \cdot \qqpi{\mathcal{L}}{E_2}).
 \end{align*}
 The sigmoid function is defined as
 \begin{equation*}
-    \text{sigmoid}(a) = \frac{\exp\{a\}}{1 + \exp\{a\}},
+  \text{sigmoid}(a) = \frac{\exp\{a\}}{1 + \exp\{a\}},
 \end{equation*}
 while the LogSumExp function is defined as
 \begin{equation*}
-    \text{LogSumExp}(\bm{x}) = \log\left( \sum_i \exp\{x_i\} \right).
+  \text{LogSumExp}(\bm{x}) = \log\left( \sum_i \exp\{x_i\} \right).
 \end{equation*}
 
 \ivpcomment{what is the dimension of the logsumexp input?}
