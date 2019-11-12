@@ -910,7 +910,7 @@ corresponding probability vector which is closest to one.
 
 \section{\prodts: Predict TypeScript Type Signatures for JavaScript Libraries}
 \label{sec:prodts}
-To evaluate our type inference approach in a real-word scenario we
+To evaluate our approach in a real-word scenario we
 implement an end-to-end application, called \prodts, which aims
 to alleviate the process of inferring TypeScript declaration files
 for an underlying JavaScript library.
@@ -922,15 +922,23 @@ To leverage the fact that JavaScript is the only true cross-platform
 language that runs in any browser, any host, and any OS the TypeScript's
 compiler typechecks TypeScript programs and eventually emits plain JavaScript.
 To compromise between static and dynamic typing, TypeScript supports a
-structural type system. In structural type systems record types (classes) whose fields or members have the same names and types are considered to be equal. This way TypeScript's static type system can work well with a lot of JavaScript code that is dynamically typed. The aforementioned implementation decisions
-reveal that one of the main intentions of TypeScript's designers is to
-provide a smooth transition from JavaScript. As a result TypeScript's type
-system is deliberately unsound~\citep{understandtypescript}. TypeScript uses the
-\texttt{any} type as an intermediate
-step in cases it needs to statically assign a type to variables whose type is determined at runtime or is otherwise unknown at compile time.
-In fact, TypeScript applications and libraries commonly take advantage of JavaScript's flourishing ecosystem and use untyped JavaScript
-libraries. To support static type checking of such applications, the types of such JavaScript libraries' APIs are expressed as separate TypeScript
-~\emph{declaration files} \textit{(.d.ts)}. The TypeScript community has already
+structural type system.
+In structural type systems record types (classes) whose fields or members have the same names and types are considered to be equal.
+This way TypeScript's static type system can work well with a lot of JavaScript code that is dynamically typed.
+One of the main intentions of TypeScript's designers is to
+provide a smooth transition from JavaScript.
+%
+As a result TypeScript's type system is deliberately unsound~\citep{understandtypescript}.
+TypeScript uses the \texttt{any} type as an intermediate
+step in cases it needs to statically assign a type to variables
+whose type is determined at runtime or is otherwise unknown at compile time.
+%
+In fact, TypeScript applications and libraries commonly take advantage of JavaScript's flourishing ecosystem
+and use untyped JavaScript libraries.
+To support static type checking of such applications,
+the types of such JavaScript libraries' APIs are expressed
+as separate TypeScript~\emph{declaration files} \textit{(.d.ts)}.
+The TypeScript community has already
 made a huge effort to support this process by manually writing and maintaining
 declaration files for over five thousand of the most popular JavaScript
 libraries. These files are available on the DefinitelyTyped
@@ -939,33 +947,36 @@ useful, it raises the challenge of keeping declaration files
 in sync with the library implementations.
 
 Ideally we would like to automatically infer the typed APIs of such
-libraries. TypeScript supports a peculiar flavor of type inference: TypeScript's soft type system \citep{softtyping}
-defaults to the \texttt{any} type. Consequently, in the case where a parameter does not
-have a type annotation, the type system assumes that it is of type
-\texttt{any} and does not try to infer it further. The type system is allowed to infer
-more precisely, lower on the type lattice, the return type of a function, for
-which the scope is clear. To make things more complex, it is impractical for
-TypeScript code to implement run-time casts---typical for gradual type
-systems---due to necessary type erasure to transform back to plain
-JavaScript \citep{understandtypescript}.
+libraries.
+% TypeScript supports a peculiar flavor of type inference:
+TypeScript's soft type system \citep{softtyping}
+defaults to the \texttt{any} type.
+When a parameter has no type annotation, the type system assumes that it is of type
+\texttt{any} and does not infer a more specific type.
+%
+On the other hand, TypeScript does seek to infer more specific types for the return type of a function.
+%
+%\adg{While the following is true, I'm unsure it's essential to mention here.}
+It is impractical for TypeScript code to implement run-time casts---typical for gradual type
+systems---due to necessary type erasure to transform back to plain JavaScript \citep{understandtypescript}.
 
-Therefore traditional static or dynamic analyses are not adequate to generate
-ready-to-use definition files. Towards this direction DefinitelyTyped
-community officially suggests a tool called dts-gen \citep{dtsgen}. The
-dts-gen tool uses runtime information to produce a .d.ts file that gives a
+% Therefore traditional static or dynamic analyses are not adequate to generate ready-to-use definition files.
+%
+Towards generating definition files for existing JavaScript libraries,
+the DefinitelyTyped
+community officially suggests a tool called dts-gen \citep{dtsgen}.
+The dts-gen tool uses runtime information to produce a \textit{.d.ts} file that gives a
 clear shape of the input API but does not provide type information for
-function arguments and return types. As
-suggested in the instructions, it is only meant to be used as a starting
+function arguments and return types.
+It is only meant to be used as a starting
 point for writing a high-quality declaration file. Dts-gen only collects
-dynamic information and as a result it is bound to produce a file full of
-\texttt{any}s that the developer has to fill by hand. \citet{tstools2017}
-created the TSINFER and TSEVOLVE tools with the same goal that is assist
-programmers to create and maintain TypeScript declaration files. The tools are
-designed to exploit information from a static analysis performed in a
-recorded snapshot of a concretely initialized library. The results, as
-before, are quite good---although less user-friendly--- at capturing the
-structure of the file but often do not predict readable types. \ivpcomment{this needs
-  more explanation}
+dynamic information and as a result it emits many \texttt{any} types that the developer must refine manually.
+\citet{tstools2017} created the TSINFER and TSEVOLVE tools with the same goal.
+% to assist programmers to create and maintain TypeScript declaration files.
+These tools exploit a static analysis performed in a
+recorded snapshot of a concretely initialized library.
+Like dts-gen, these tools are good at capturing the structure of the definition file,
+but often fail to capture readable forms for argument and result types.
 
 \subsection{Problem Statement}\label{ssec:problem}
 % \begin{center}
@@ -1017,15 +1028,17 @@ for an underlying JavaScript library.
 Our implementation takes as input three files:
 \begin{enumerate}
   \item A JavaScript library file.
-  \item A declaration file containing the exported functions with every type annotated to \texttt{any}, which we call as \textit{Structure} stage.
-        This file comes from a third party tool and thus
-        why we use as an input in the formal problem statement, in the actual
-        implementation this stage is completely integrated to the process. \ivpcomment{rephrase?}
-  \item TypeScript's default library declaration
-        file\footnote{\url{https://github.com/Microsoft/TypeScript/blob/master/lib/lib.d.ts}},
-        that is, the built-in types defined by the standard library.
+  \item A declaration file containing the exported functions with every type annotated as \texttt{any}.
+        We call this step the \textit{Structure} stage.
+        (We obtain this file from dts-gen.)\adg{Am I correct?}
+        %This file comes from a third party tool and thus
+        %why we use as an input in the formal problem statement, in the actual
+        %implementation this stage is completely integrated to the process. \ivpcomment{rephrase?}
+  \item TypeScript's default library declaration file,
+        that is, the built-in types defined by the standard library.\footnote{\url{https://github.com/Microsoft/TypeScript/blob/master/lib/lib.d.ts}}
 \end{enumerate}
 
+\adg{Is the Structure versus Type stage helpful?  Do we use it later?  Will continue to read.}
 \paragraph{Output:} A corresponding TypeScript declaration file for the
 JavaScript library, that we from now on we call \textit{predicted.d.ts} and
 includes type predictions for
@@ -1033,13 +1046,15 @@ includes type predictions for
   \item the return type of the function, denoted as \emph{fnRet}, and
   \item type annotations for the function's arguments, denoted as \emph{param}.
 \end{itemize}
-The output of our tool is essentially the output of the \textit{Structure} stage with some, or ideally all, of the \texttt{any} types substituted with built-in types---that is non user-defined types--- and sum/product types of those.
+The output of our tool is essentially the declaration file from the \textit{Structure} stage
+with some, or ideally all, of the \texttt{any} types substituted with built-in types---that is non user-defined types---and
+sum/product types of those.\adg{is that named interface or class types?  first mention of sum/product types}
 
 We will refer to the process of filling up the typing holes from the previous stage with the correct typing information as \textit{Type} stage. \ivpcomment{An example input, showing all three files,
   is shown in \cref{fig:declarations-b64a}. change this} In other words, our main focus on this work is to apply our probabilistic
 type inference of the types in the \textit{Structure} stage to meliorate the \textit{Type}
-process. For detailed metrics and evaluation see
-\cref{sec:eval}.
+process.
+% For detailed metrics and evaluation see \cref{sec:eval}.  // trimmed
 
 \begin{table*}[t]
   \centering
@@ -1062,22 +1077,27 @@ process. For detailed metrics and evaluation see
 
 \subsection{Logical Constraints for TypeScript}\label{ssec:logprodts}
 To generate the logical constraints of \cref{ssec:logcon},
-we exploit the information that the TypeScript
-compiler provides \cite{typescript} in conjunction with a refining static
-analysis. We include all the return types that the
-compiler is able to infer given a JavaScript function. The compiler does
-not try to infer the parameter types, as mentioned before, but rather emits
-some flow information it gets from the static analysis of the code.
-To overcome this obstacle and prompt the compiler to reveal us more,
-we transform each function's definition by
-explicitly assigning each formal parameter to a new type parameter.
-Unconstrained type parameters default to the bottom
-of the type lattice. We consider a type constraint, according
-to \cref{def:log-gram}, to be a disjunction between
-one or more types. For example a valid constraint on type \textit{l} would be equivalent to
+we exploit the information from the TypeScript compiler \cite{typescript}.
+%
+Instead of modifying the TypeScript compiler to emit logical constraints,
+apparently a substantial engineering effort,
+we devised the following technique to obtain constraints using the unmodified compiler.
+%
+We transform each function's definition by
+explicitly assigning each formal parameter to a fresh generic type variable.
+%
+The type constraints on the types of the formal parameters yield error messages from the compiler.
+%
+We parse the error messages to construct our logical constraints.
+%
+\adg{this example is rather out of context}
+For example a valid constraint on type \textit{l} would be equivalent to
 $l = String \mathrel{or} l = \text{Array<any>}$\footnote{There is a subtle difference between JavaScript primitive types, written in lowercase, and their corresponding TypeScript primitive types, which start with a capital letter, and being implelemted as interfaces TypeScript's default declaration file. For this project we consider them to be the same type.} but not \textit{l has member .length}.
-We initially use unconstrained type parameters and parse the resulting errors to
-introduce constraints.
+%
+We also include return types inferred by the compiler as logical constraints.
+%
+%This technique produces fewer logical constraints than if we were to modify the compiler itself,
+%but it suffices for our purpose here to evaluate the promise of our method.
 
 We can identify 5 common type errors (\cref{tab:constraints}) that the \texttt{tsc}
 compiler emits, and turn those into type constraints. The main problem with using
@@ -1094,7 +1114,7 @@ These interfaces contain the typed signatures of each property and method
 that a built-in type implements. We use these interfaces to construct a set of
 possible built-in types we could assign to the type parameter and therefore a proper
 type constraint. For a concrete example of this procedure,
-see~\cref{fig:jscode-base64,fig:log-base64a}.
+see~\cref{fig:jscode-base64,fig:log-base64a}.\adg{unresolved reference}
 
 Our purpose is to establish the principle that a combination of natural and logical constraints can outperform either on its own, and outperforms the state-of-the-art.
 %
@@ -1604,17 +1624,18 @@ As a result, we used the output of \textit{dts-gen} as input in our type predict
 Rich type inference mitigates the cost
 of explicitly annotating types. This feature is an
 inherent trait of strongly, statically-typed, functional languages (like Haskell or ML).
-In this direction, some procedural languages attempt to
-include type inference as a feature.
-For instance, in C\texttt{++}
-programmers can use the auto keyword to avoid writing the type in the
-definition of a variable with an explicit initialization, while in
-C{\#} (starting with version 3) the var keyword can be used as a
-convenient syntactic sugar for shorter local variable declarations.
-Nevertheless, C{\#} is still a statically typed language. These
-enhancements are implemented via compiler tricks and thus are considered as a
-small step towards a world of static typing where possible, and dynamic
-typing when needed.
+
+% In this direction, some procedural languages attempt to
+% include type inference as a feature.
+% For instance, in C\texttt{++}
+% programmers can use the auto keyword to avoid writing the type in the
+% definition of a variable with an explicit initialization, while in
+% C{\#} (starting with version 3) the var keyword can be used as a
+% convenient syntactic sugar for shorter local variable declarations.
+% Nevertheless, C{\#} is still a statically typed language. These
+% enhancements are implemented via compiler tricks and thus are considered as a
+% small step towards a world of static typing where possible, and dynamic
+% typing when needed.
 
 \adg{gradual typing as compromise between static and dynamic.
   examples for JS, Python, and Ruby.
