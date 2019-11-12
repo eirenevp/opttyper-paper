@@ -100,6 +100,7 @@
 
 \newcommand{\margincomment}[2]{\marginpar{\scriptsize\color{Maroon}#1 says: #2}}
 \newcommand{\adg}[1]{\margincomment{ADG}{#1}}
+\newcommand{\cas}[1]{\margincomment{Charles}{#1}}
 \newcommand{\ivp}[1]{\margincomment{Irene}{#1}}
 
 % \ivpedit {} writes with color within the original text, if we uncomment
@@ -405,6 +406,7 @@ similarities between typed and untyped source code and to extract a statistical 
 the text. However, none of them explicitly models the underlying
 type inference rules, and thus their predictions ignore useful logical information.
 %This is a missed opportunity that we aim to address in this work.
+
 We sieze the opportunity to plug this gap.
 
 \subsection{Our Contribution}
@@ -430,7 +432,7 @@ Our method is based on two key ideas.
 First, we relax the logical formula into a continuous function by relaxing type environments
 to probability matrices and defining
 a continuous semantic interpretation of logical expressions; the relaxed logical constraints
-are now commensurate \ivp{R1 didn't like the work commensurate, any suggestions?} with the predicted probability distribution.
+are now compatible with the predicted probability distribution.
 This allows us to define a continuous function over the continuous version of the type environment
 that sums the logical and natural constraints.
 Second, once we have a continuous function, we can optimize it:
@@ -499,14 +501,15 @@ predicting types in TypeScript.
 % combine in an optimization problem.
 % The next few subsections formalize this approach.
 
-\subsection{Our Framework by Example}
+\subsection{Our Framework by Example}\adg{revisit this text once the figure stabilises}
 Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
 Our input is a minimal TypeScript function without any type annotations on its parameters.
 TypeScript's compiler by default considers the parameters as the top type \texttt{any}.
 Our goal is to exploit different sources of information to suggest to the programmer
 a type lower in the type hierarchy.
-To do so we propose a type parameter for each of the formal parameters and the return type of the function
-and inject them in the definition of the function, see Fig. 1(a).
+To do so, we propose a type parameter for each of the formal parameters
+and the return type of the function
+and inject them into the definition of the function, see Fig. 1(a).
 This step limits the scope of the parameters to this function, but
 now we can extract more elaborate information about the usage of the
 parameters in this function.
@@ -514,15 +517,25 @@ For instance, we can now capture the
 fact that the parameters are used as terms in a binary operation.
 This could give us a complex set of logical constraints about the possible combinations of the two operands.
 Still, for the purpose of this example we limit ourselves to a minimal set of constraints shown in Fig. 1(c),
-where both the two operands should have the same type. In this stage a classical type inference approach would not be able to give us back a user-friendly type and would probably roll back to its top-level type. To alleviate that we are willing to take into account other sources of
-information, which try to capture the human intuition about the source code itself. As an instantiation of this scenario we use a machine learning model to capture naming conventions over types, see Fig. 1(d).
-Intuitively, what the table in Fig. 1(d) is showing is that a programmer
+where both the two operands should have the same type.
+In this stage a classical type inference approach would be unable to give us back a user-friendly type
+and would probably roll back to its top-level type.
+To alleviate that we are willing to take into account other sources of information,
+which try to capture the human intuition about the source code itself.
+As an instantiation of this scenario we use a machine learning model to capture naming conventions over types,
+see Fig. 1(d).
+Intuitively, the table in Fig. 1(d) shows that a programmer
 is much more likely to name a variable \texttt{start} or \texttt{end}
-if she intents to use it as a \texttt{number} than as a \texttt{string}.
-This kind of information is given to us not with a binary probability,
-but as a fraction of probability that describes the confidence we have for this information. To combine the two sources of information we present the logical constraints as a matrix of probabilities vectors shown in Fig. 1(b). Doing that enable us to relax the boolean operators to a numerical
-operators as shown in Fig. 1(e). When we numerically optimize the resulting expression we obtain that both variables are strings with high probability.
-At the end we setup and solve an optimization problem that combines both sources of information into one and tries to satisfy the constraints from both sources as much as possible to improve the results.
+if she intends to use it as a \texttt{number} than as a \texttt{string}.
+This natural constraint is expressed as a probability that reflects our degree of certainty.
+To combine our two sources of information we present the logical constraints
+as a matrix of probability vectors shown in Fig. 1(b).
+Doing that enable us to relax the boolean operators to a numerical
+operators as shown in Fig. 1(e).
+When we numerically optimize the resulting expression
+we obtain that both variables are strings with high probability.
+At the end we establish and solve an optimization problem that combines both sources of information
+and tries to satisfy the constraints from both sources as much as possible to improve the results.
 This is shown in Fig. 1(f), where the predicted type is now \texttt{number}.
 Finally, we obtain the correctly annotated function signature shown in Fig. 1(g).
 
@@ -534,7 +547,9 @@ that requires type annotations on identifiers.
 Given a program $U$ plus a type environment $\Gamma$ let $\Gamma \vdash U$ mean that the program $U$ is well-typed according to the (deterministic) type system, given types for identifiers provided by $\Gamma$.
 %
 \ivp{Andy, Charles: I am not sure should the variable
-  identifiers have a different symbol (v) as opposed to x that we are using to the continuous relaxation part? I believe it should be x so I am changing it, please check!} \cascomment{Not 100\% sure I understand the question,
+  identifiers have a different symbol (v) as opposed to x that we are using to the continuous relaxation part?
+  I believe it should be x so I am changing it, please check!}
+  \cas{Not 100\% sure I understand the question,
   but it looked to me like $x_v$ was referring to identifiers
   both in Section 2.1 and in Section 2.2, which seems OK}
 The environment takes the form $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$ where each $x$ is an identifier and each $t$ is a literal type.
@@ -542,10 +557,11 @@ The environment takes the form $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$ w
 \adg{This is the statement of our general framework.
   We should tighten the connection to Figure 1.
   eg $V=3$ and $T=3$}
+
 Given an untyped program $U$,
 let \emph{probabilistic type inference} consist of these steps:
 \begin{enumerate}
-  \item We choose a finite universe consisting of $T$ distinct concrete types.
+  \item We choose a finite universe consisting of $T$ distinct concrete types $\{ l_\tau \mid \tau \in 1 \dots T \}$.
   \item We compute a set $\{ x_v \mid v \in 1 \ldots V\}$ of a number $V$ of distinct identifiers in $U$ that need to be assigned types.
   \item \label{step:constraints} We extract a set of constraints from $U$.
   \item \label{step:optimize} By optimizing these constraints, we construct a matrix $M$ with $V$ rows and $T$ columns, such that each row is a probability vector (over the $T$ concrete types).
@@ -562,16 +578,16 @@ Still, given a known $\hat{\Gamma}$ such that $\hat{\Gamma} \vdash U$ we can mea
 A key idea is that there are two sorts of constraints generated in step~(\ref{step:constraints}): logical constraints and natural
 constraints.
 
-A logical constraint is a formula $E$ that describes
-necessary conditions for $U$ to be well-typed. In principle,
-$E$ can be any formula such that if $\Gamma \vdash U,$
-then $\Gamma$ satisfies $E.$
+A \emph{logical constraint} is a formula $E$ that describes
+necessary conditions for $U$ to be well-typed.
+In principle, $E$ can be any formula such that if $\Gamma \vdash U,$
+then $\Gamma$ satisfies $E$.
 Thus, the logical constraints
 do not need to uniquely determine $\Gamma$.
 % CS: I'm not sure if we want to use the phrase "type hints",
 % because I feel like I have heard this phrase as a technical term elsewhere?
-For this reason, the natural constraints
-encode less-certain information about $\Gamma$,
+For this reason, a \emph{natural constraint}
+encodes less-certain information about $\Gamma$,
 for example, based on comments or names.
 Just as we can conceptualize the logical
 constraints as a function to $\{0, 1\},$
@@ -584,31 +600,27 @@ that maps $\Gamma$ to a boolean value $\{0, 1\},$
 we relax this function to map to $[0,1]$, using
 a continuous interpretation of the semantics of $E.$
 Similarly, we relax $\Gamma$ to a $V \times T$ matrix of probabilities.
-Having done this, we
-formalize the type inference problem as a problem in
-numerical optimization, in which the goal to find a relaxed type
-assignment
-that satisfies as much as possible both sort of constraints.
+Having done this,
+we formalize type inference as a problem in
+numerical optimization, with the goal to find a relaxed type assignment
+that satisfies as much as possible both sorts of constraints.
 The result of this optimization procedure is the
 $M$ matrix of probabilities described in step~(\ref{step:optimize}).
-We explain the above formalization
-in more detail in the remainder of this section.
+% We explain the above formalization in more detail in the remainder of this section.
 
 \subsection{Logical Constraints in Continuous Space}\label{ssec:logcon}
 
-The first source of information concerns classical and deterministic sources of
-information about types, which we abstract as logical relationships between type
-parameters.
+% The first source of information concerns classical and deterministic sources of
+% information about types, which we abstract as logical formulas on type parameters.
 % In programming languages terms, a type inference process
 % introduces   and could be abstracted as
 % generating logical constraints between them. 
 %CS: commenting out the use of definition, because this isn't formal.
 %\begin{defn}[\emph{Logical Constraints}]
-A \emph{logical constraint} is the kind of
-constraint that arises from classical
-type inference rules and consist of logical formulas about
-the type assignment.\cascomment{Does this repeat / belong with
-  what is earlier?}
+% A \emph{logical constraint} is the kind of
+% constraint that arises from classical
+% type inference rules and consist of logical formulas about
+% the type assignment.\cas{Does this repeat / belong with   what is earlier?}
 %   Using the logical constraints---generated by the compiler and our augmented  
 %analysis---we construct logical formulas.
 %\end{defn}
@@ -617,66 +629,71 @@ the type assignment.\cascomment{Does this repeat / belong with
 % code such as correctness or safety. For such tasks most commonly formal
 % methods are being recruited to generate a set of constraints that has to be
 % respected by the program.
-The logical constraints
-restrict the space
-of valid type annotations. However, especially for untyped programs, the resulting space might be large,
+% The logical constraints restrict the space of valid type annotations.
+% However, especially for untyped programs, the resulting space might be large,
 % CS: this is a meta-type error: a space is not a type
 % the resulting space might turns out to be a general type, such
 % as the top type, or a complicated sum type, which does not 
 % add useful information to the system.
 % and so is not on its own useful for type inference.
+
+\adg{Cut for now, but restore somewhere:
 Therefore, instead of solving the problem
 with classical approaches, like a SAT solver, we interpret the boolean
-type expressions as numerical expressions in a continuous space. This
-interpretation enables us to mix together the logical constraints with
+type expressions as numerical expressions in a continuous space.
+%
+This interpretation enables us to mix together the logical constraints with
 information coming from statistical analysis in a constructive way and hence to
-narrow down the predicted type.
-Logical constraints can be extracted from $U$ using
+narrow down the predicted type.}
+
+Logical constraints are extracted from our untyped input program $U$ using
 standard program analysis techniques.
-\cascomment{ALL: Is "augmented static program analysis" an accurate term?}
-We employ an augmented static program analysis (\textit{Aug-Static}) that
+% \cas{ALL: Is "augmented static program analysis" an accurate term?}\adg{Could be. I trimmed the word "static".}
+We employ an augmented static analysis (\textit{Aug-Static}) that
 takes into account a set of rules that the type system enforces and
 generates a corresponding boolean expression for them.
 We will refer to this mechanism as the \emph{Constraints Generator}.
-\adg{do we actually need all of these?}
-In this work, we consider the following simple grammar of logical constraints:
+
+In this work, we consider the following logical constraints.
 \begin{defn}[\emph{Grammar of Logical Constraints}]\label{def:log-gram}
-  A logical constraint is an expression of the form
+  A logical constraint is an expression of the following form.
+  Let $\mathcal{E}$ be the set of all logical constraints.
   \begin{align*}
     E & ::= x_v \mathrel{is} l_\tau \\ \numberthis\label{eq:gram}
       & \mid{} \mathrel{not} E      \\
       & \mid E \mathrel{and} E      \\
       & \mid E \mathrel{or} E
   \end{align*}
-  We use $\mathcal{E}$ to denote the set of all syntactically valid
-  logical constraints.
 \end{defn}
 % CS: Commenting out notation that is already defined in the setup now.
 \paragraph{Continuous Relaxation}
 We explain how to specify a \emph{continuous relaxation} of the discrete logical semantics.
 A formula $E$ can be viewed as a boolean function $f_E: \{0, 1\}^{V \times T} \rightarrow \{0, 1\}$
-that maps binary matrices to $\{0, 1\}.$ To see this, we can convert an environment
+that maps binary matrices to $\{0, 1\}$.
+To see this, we can convert an environment
 $\Gamma$ into a $V \times T$ binary matrix $M$ by setting $m_{v\tau} = 1$ if
-$(x_v, l_\tau) \in \Gamma,$ and 0 otherwise. Let $M(\Gamma)$ be the binary
-matrix corresponding to $\Gamma.$ Also, define $\Pi^{V \times T}$ to be the set
+$(x_v, l_\tau) \in \Gamma,$ and 0 otherwise.
+Let $M(\Gamma)$ be the binary
+matrix corresponding to $\Gamma$.
+Also, define $\Pi^{V \times T}$ to be the set
 of all probability matrices of size $V \times T$,
-that is matrices of the form
-$P = \begin{bmatrix} \bm{p}_1 & \ldots & \bm{p}_{V} \end{bmatrix}^\mathsf{T}$,
+that is, matrices of the form $P = \begin{bmatrix} \bm{p}_1 & \ldots & \bm{p}_{V} \end{bmatrix}^\mathsf{T}$,
 where each row $\bm{p}_v = \begin{bmatrix} p_{v,1} & \ldots & p_{v,{T}} \end{bmatrix}^\mathsf{T}$
-is a vector that defines probability distribution over concrete types.
+is a vector that defines a probability distribution over concrete types.
 Finally, a \emph{relaxed semantics} is a continuous function
 that always agrees with the logical semantics, that is,
 a relaxed semantics is a function
 $\tilde{f}_{E} : \Pi^{V \times T}  \rightarrow [0, 1]$
-such that all formulas $E$ and environments $\Gamma$,
+such that for all formulas $E$ and environments $\Gamma$,
 $\tilde{f}_{E}(M(\Gamma)) = f_E(M(\Gamma)).$
 
-To define a relaxed semantics, we introduce a continuous semantics of $E$ based on generalizations of two-valued logical conjuctions to many-valued~\cite{hajek1998}.
-In specific, we use the product $t$-norm, because the binary operation associated with it is smooth and fits with our optimization-based approach.
+To define a relaxed semantics, we introduce a continuous semantics of $E$ based on generalizations of two-valued logical conjuctions
+to many-valued~\cite{hajek1998}.
+Specifically, we use the product $t$-norm, because the binary operation associated with it is smooth and fits with our optimization-based approach.
 Product $t$-norm has already been used for obtaining continuous semantics in machine learning, for example by~\citet{rocktaschel15}.
 
 The continuous semantics $\qqpi{P}{E}$ is a function $\Pi^{V \times T} \times \mathcal{E} \rightarrow [0, 1],$
-defined as
+defined as:
 %an expression~$E$ as a probability~$\qqpi{P}{E} \in [0,1]$ as  follows.
 %we are in log-space
 %\ivpcomment{Mention explicitly that this formulation maps scalar from [0,1] to [0,1], that is probability vectors do not require some extra form of scaling}
@@ -691,18 +708,19 @@ defined as
 In the actual implementation we use logits instead of probabilities
 for numerical stability, see \cref{app:appendix-logit}.
 
-\cascomment{This bit is important. It's a pretty simple fact, though, does it merit a theorem?}
-\cascomment{It would be better to have the 'only if' direction as well,
+\cas{This bit is important. It's a pretty simple fact, though, does it merit a theorem?}
+\cas{It would be better to have the 'only if' direction as well,
   and I think that there is a sense in which this is indeed true,
   but there are some more tricky corner cases, e.g., if E does not depend
   on all of the variables in $\Gamma$.}
 To motivate this continuous semantics, recall that in our setting, we know $E$ but
 do not know $P$. We argue that the continuous semantics,
 when considered as a function of $P$, can serve as a sensible
-objective for an optimization problem to infer $P.$ This is because it relaxes
+objective for an optimization problem to infer $P.$
+The reason is that it relaxes
 the deterministic logical semantics of $E$, and it is maximized
-by probability matrices $P$ which correspond to satisfying type environments. This is stated
-more formally in the following theorem.
+by probability matrices $P$ which correspond to satisfying type environments.
+The folowing theorem formalizes the idea:
 \begin{theorem}
   For any $E$, if $P = M(\Gamma)$ for some $\Gamma$ that satisfies $E$, then $P \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
 \end{theorem}
@@ -726,7 +744,7 @@ and lexically nearby tokens provide information
 about a variable's type \cite{hellendoorn18}.
 This information is indirect, and extremely difficult to formalize,
 but we can still hope to exploit it by applying machine learning
-to large scale corpora of source code.
+to large corpora of source code.
 
 Recently, the software engineering
 community has adopted the term \emph{naturalness of source code} to refer to
@@ -753,22 +771,23 @@ over possible types.
 \end{defn}
 
 \adg{changing "naturalness constraints" to "natural constraints" as per the definition}
-In principle, natural constraints could be defined based on any property of $U,$
+In principle, natural constraints can be defined based on any property of $U,$
 including names and comments.
 In this paper, we consider a simple but practically effective example of
 natural constraint, namely, a deep network that predicts the type
 of a variable from the characters in its name.
-For the the type variable $x_v,$ denote the name of the associated identifier as $w_v = (c_{v1} \ldots c_{vN}),$
+\adg{I am unifying each variable $x_v$ with the character identifier $w_v$.}
+We consider each variable identifier $x_v$ to be a character sequence $(c_{v1} \ldots c_{vN}),$
 where each $c_{vi}$ is a character.
 (This instantiation of the natural constraint is defined
-only for those each type variable $x_v$ corresponds to an identifier in the source code,
+only on types for identifiers that occur in the source code,
 such as a function identifier or a parameter identifier.)
-This is a classification problem, where the input is $w_v,$
+This is a classification problem, where the input is $x_v,$
 and the output classes are the set of $T$ concrete types.
 Ideally, the classifier would learn that identifier names that are lexically similar
 tend to have similar types, and specifically which subsequences of the character names,
 like \texttt{lst}, are highly predictive of the type, and which subsequences are less predictive.
-One simple way to do this is to use a recurrent neural network (RNN).
+One simple way to do so is to use a recurrent neural network (RNN).
 
 For our purposes, an RNN is simply a function $(\bm{h}_{i-1}, z_i) \mapsto \bm{h}_{i}$
 that maps a so-called state vector $\bm{h}_{i-1} \in \mathbb{R}^H$
@@ -780,11 +799,11 @@ but we elide these parameters to lighten the notation, because they are trained 
 We use a particular variant of an RNN called a
 long-short term memory network (LSTM)~\cite{hochreiter97},
 which has proven to be particularly effective both for natural language
-and for source code~\cite{sundermeyer2012,melis17,white2015,dam16}. We write the LSTM as
-$\text{LSTM}(\bm{h}_{i-1}, z_i)$.
+and for source code~\cite{sundermeyer2012,melis17,white2015,dam16}.
+We write the LSTM as $\text{LSTM}(\bm{h}_{i-1}, z_i)$.
 
 With this background, we can describe the specific natural constraint that we use.
-Given the name $w_v = (c_{v1} \ldots c_{vN}),$ we input each character $c_{vi}$ to the LSTM,
+Given the name $x_v = (c_{v1} \ldots c_{vN}),$ we input each character $c_{vi}$ to the LSTM,
 obtaining a final state vector $\bm{h}_N,$ which is then passed as input to a small
 neural network that outputs the natural constraint $\bm{\mu}_v$.
 That is, we define
@@ -799,9 +818,8 @@ In our instantiation of this natural constraint, we choose $F$ to be a feedforwa
 no additional hidden layers, as defined in \eqref{eq:feedforward}.
 We provide more details regarding the particular structure of our neural network in \cref{ssec:natprodts}.
 
-This network structure
-is by now a fairly standard architectural motif in deep learning. More sophisticated networks could certainly
-be employed, but are left to future work.
+This network structure is by now a fairly standard architectural motif in deep learning.
+More sophisticated networks could certainly be employed, but are left to future work.
 
 \subsection{Combining Logical and Natural Constraints to Form an Optimization
   Problem} \label{ssec:optimisation}
@@ -821,7 +839,7 @@ $P$ that is as close as possible to the natural constraints $M,$
 subject to the logical constraints being satisfied. A simple
 way to quantify
 distance via the \emph{euclidean norm} $|| \cdot ||_2$, i.e., the square root of the sum of the squares of its elements.
-\cascomment{This could alternately be formalized as a multi-objective problem. I do not know what is best. Maybe it is better to talk about maximizing [[ E ]], because our theorem talks about maximization.} This leads to the optimization problem
+\cas{This could alternately be formalized as a multi-objective problem. I do not know what is best. Maybe it is better to talk about maximizing [[ E ]], because our theorem talks about maximization.} This leads to the optimization problem
 \begin{equation}
   \begin{aligned}\label{eq:opt_naive}
     \underset{P \in \mathbb{R}^{V \times T}}{\mathrm{min}} &
@@ -1689,7 +1707,7 @@ above solutions are entailed to a specific language.
 % predict finer-grained type constraints.
 
 
-\cascomment{I agree it would be fairly simple to extend the method to handle DeepTyper or NL2Type constraints; we could simply add more terms to combined objective function, one for each kind of LSTM that we want to add. I'd view the character-level LSTM that we use as a representative kind of natural constraint, but not necessarily the best, and certainly not the only one. We should mention that in the paper..
+\cas{I agree it would be fairly simple to extend the method to handle DeepTyper or NL2Type constraints; we could simply add more terms to combined objective function, one for each kind of LSTM that we want to add. I'd view the character-level LSTM that we use as a representative kind of natural constraint, but not necessarily the best, and certainly not the only one. We should mention that in the paper..
   Finally, it seems like there is quite some opportunity for a hybrid here; in fact, a fairly simple extension to e.g. DeepTyper (or NL2Type) could allow your "natural" component to factor in a much broader context and likely work much better correspondingly. Happy to chat about that sometime
   richer type
   annotation holds the promise of a more precise, modular and extensible analysis, and
@@ -1790,13 +1808,12 @@ We leave the challenging task of introducing user defined types from scratch as 
 %% Appendix
 \appendix\clearpage
 
-\section{Appendix}
-
-\subsection{Continuous Relaxation in the Logit Space}\label{app:appendix-logit}
+\section{Appendix: Continuous Relaxation in the Logit Space}\label{app:appendix-logit}
 
 In \cref{ssec:logcon}, we present the continuous interpretation based on probabilities.
 As already mentioned, in the actual implementation we use logit instead for numerical stability.
-Logit is defined as the inverse of the softmax function; that is, an element of a probability vector $p \in [0,1]$ corresponds to
+The \emph{logit} of a probability is the logarithm of the odds ratio.
+It is defined as the inverse of the softmax function; that is, an element of a probability vector $p \in [0,1]$ corresponds to
 \begin{equation*}
   \pi = \log \frac{p}{1 - p}.
 \end{equation*}
