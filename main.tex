@@ -564,7 +564,8 @@ let \emph{probabilistic type inference} consist of these steps:
   \item We choose a finite universe consisting of $T$ distinct concrete types $\{ l_\tau \mid \tau \in 1 \dots T \}$.
   \item We compute a set $\{ x_v \mid v \in 1 \ldots V\}$ of a number $V$ of distinct identifiers in $U$ that need to be assigned types.
   \item \label{step:constraints} We extract a set of constraints from $U$.
-  \item \label{step:optimize} By optimizing these constraints, we construct a matrix $M$ with $V$ rows and $T$ columns, such that each row is a probability vector (over the $T$ concrete types).
+  \item \label{step:optimize} By optimizing these constraints, we construct a matrix $M$ with $V$ rows and $T$ columns,
+  such that each row is a probability vector (over the $T$ concrete types).
   \item For each identifier $x_v$, we set type $t_v$ to the concrete type $l_\tau$ where column $\tau$ has the maximum probability in the $v$th probability vector (the one for identifier $x_v$).
   \item The outcome is the environment $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$.
 \end{enumerate}
@@ -676,9 +677,9 @@ $(x_v, l_\tau) \in \Gamma,$ and 0 otherwise.
 Let $M(\Gamma)$ be the binary
 matrix corresponding to $\Gamma$.
 Also, define $\Pi^{V \times T}$ to be the set
-of all probability matrices of size $V \times T$,
+of all \emph{probability matrices} of size $V \times T$,
 that is, matrices of the form $P = \begin{bmatrix} \bm{p}_1 & \ldots & \bm{p}_{V} \end{bmatrix}^\mathsf{T}$,
-where each row $\bm{p}_v = \begin{bmatrix} p_{v,1} & \ldots & p_{v,{T}} \end{bmatrix}^\mathsf{T}$
+where each $\bm{p}_v = \begin{bmatrix} p_{v,1} & \ldots & p_{v,{T}} \end{bmatrix}^\mathsf{T}$
 is a vector that defines a probability distribution over concrete types.
 Finally, a \emph{relaxed semantics} is a continuous function
 that always agrees with the logical semantics, that is,
@@ -729,7 +730,8 @@ To sketch the proof, two facts can be seen immediately.
 First, for any formula $E$, the function $\tilde{f}(P) = \qqpi{P}{E}$ is a relaxation
 of the true logical semantics. That is, for any environment $\Gamma$, we have that
 $\tilde{f}(M(\Gamma)) = \qqpi{M(\Gamma)}{E} = 1$ if and only if $\Gamma$ satisfies $E.$ This can be shown
-by induction. Second, for any matrix $P \in \Pi^{V \times T}$,
+by induction on the structure of $E$.
+Second, for any matrix $P \in \Pi^{V \times T}$,
 we have the bound $\tilde{f}(P) \leq 1$. Putting these two facts together
 immediately yields the theorem.
 
@@ -765,9 +767,10 @@ over possible types.
 % other forms of language model, for instance.
 \begin{defn}[\emph{Natural Constraints}]\label{eq:natural}
   For each identifier $x_v$ in a program $U$,
-  a \emph{natural constraint} is a probability vector $\bm{\mu}_v = [\mu_{v1}, \ldots, \mu_{vT}]^\mathsf{T}$. Correspondingly, we aggregate the probability vectors of the learning model in a matrix defined as $\mathcal{M} = \begin{bmatrix} \bm{\mu}_1 & \ldots & \bm{\mu}_{V} \end{bmatrix}^\mathsf{T}$.
+  a \emph{natural constraint} is a probability vector $\bm{\mu}_v = [\mu_{v1}, \ldots, \mu_{vT}]^\mathsf{T}$.
+  We aggregate the probability vectors of the learning model in a matrix
+  defined as $\mathcal{M} = \begin{bmatrix} \bm{\mu}_1 & \ldots & \bm{\mu}_{V} \end{bmatrix}^\mathsf{T}$.
   % Given such a matrix, we denote $M[v]$ for the probability vector $\bm{\mu}_v$.
-  %
 \end{defn}
 
 \adg{changing "naturalness constraints" to "natural constraints" as per the definition}
@@ -835,11 +838,15 @@ optimization problem.
 \ivpcomment{Brief motivation of Lagrange multiplier/ridge regression}
 Intuitively, we design the optimization problem to be over
 probability matrices $P \in \Pi^{V \times T};$ we wish to find
-$P$ that is as close as possible to the natural constraints $M,$
-subject to the logical constraints being satisfied. A simple
-way to quantify
-distance via the \emph{euclidean norm} $|| \cdot ||_2$, i.e., the square root of the sum of the squares of its elements.
-\cas{This could alternately be formalized as a multi-objective problem. I do not know what is best. Maybe it is better to talk about maximizing [[ E ]], because our theorem talks about maximization.} This leads to the optimization problem
+$P$ that is as close as possible to the natural constraints $\mathcal{M}$
+subject to the logical constraints being satisfied.
+A simple way to quantify the distance is via the \emph{euclidean norm} $|| \cdot ||_2$ of a vector,
+that is, the square root of the sum of the squares of its elements.
+%
+\cas{This could alternately be formalized as a multi-objective problem. I do not know what is best.
+Maybe it is better to talk about maximizing [[ E ]], because our theorem talks about maximization.}
+%
+Hence, we obtain the constrained optimization problem:
 \begin{equation}
   \begin{aligned}\label{eq:opt_naive}
     \underset{P \in \mathbb{R}^{V \times T}}{\mathrm{min}} &
@@ -849,13 +856,13 @@ distance via the \emph{euclidean norm} $|| \cdot ||_2$, i.e., the square root of
                                                            & \qqpi{P}{E} = 1,
   \end{aligned}
 \end{equation}
-This is a constrained optimization problem. Although there is an extensive
-literature on constrained optimization, it is often the case
-that the most effective way to solve a constrained optimization
+Although there is an extensive literature on constrained optimization,
+often the most effective way to solve a constrained optimization
 problem is to transform it into an equivalent unconstrained one.
-This can be done in two steps. First we reparameterize the problem
-to remove the probability constraints. The softmax function \eqref{eq:softmax} maps real-valued vectors to probability vectors.
-Thus we define
+We do so in two steps.
+First we reparameterize the problem to remove the probability constraints.
+The softmax function $\sigma$ \eqref{eq:softmax} maps real-valued vectors to probability vectors.
+Thus we define:
 \begin{equation}
   \begin{aligned}\label{eq:opt_no_prob}
     \underset{Y \in \mathbb{R}^{V \times T}}{\mathrm{min}} &
@@ -863,11 +870,8 @@ Thus we define
     \text{subject to }                                     & \qqpi{[\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}}{E} = 1.
   \end{aligned}
 \end{equation}
-It is easy to see that if $Y$ minimizes \eqref{eq:opt_no_prob},
-then
+It is easy to see that if $Y$ minimizes \eqref{eq:opt_no_prob}, then
 $P = [\sigma(\bm{y}_1), \ldots, \allowbreak \sigma(\bm{y}_{V})]^\mathsf{T}$
-
-
 minimizes \eqref{eq:opt_naive}. To remove the final constraint,
 we introduce a Lagrange multiplier $\lambda > 0$ to weight
 the two terms, yielding our final optimization problem
