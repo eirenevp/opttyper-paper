@@ -1,6 +1,6 @@
-%% Creator: Inkscape inkscape 0.92.4, www.inkscape.org
+%% Creator: Inkscape inkscape 0.92.3, www.inkscape.org
 %% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
-%% Accompanies image file './figs/example/example.pdf' (pdf, eps, ps)
+%% Accompanies image file './figs/example.pdf' (pdf, eps, ps)
 %%
 %% To include the image in your LaTeX document, write
 %%   \input{<filename>.pdf_tex}
@@ -38,7 +38,7 @@
   \newcommand*\fsize{\dimexpr\f@size pt\relax}%
   \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
   \ifx\svgwidth\undefined%
-    \setlength{\unitlength}{595.27559055bp}%
+    \setlength{\unitlength}{595.10217742bp}%
     \ifx\svgscale\undefined%
       \relax%
     \else%
@@ -50,35 +50,36 @@
   \global\let\svgwidth\undefined%
   \global\let\svgscale\undefined%
   \makeatother%
-  \begin{picture}(1,1.41428571)%
+  \begin{picture}(1,1.41222361)%
     \lineheight{1}%
     \setlength\tabcolsep{0pt}%
-    \put(0,0){\includegraphics[width=\unitlength,page=1]{./figs/example/example.pdf}}%
-    \put(0.02432443,1.00199694){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code3.tex}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=2]{./figs/example/example.pdf}}%
-    \put(0.61676258,0.78665866){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/eqE.tex}}}}%
-    \put(0.01943878,0.89850337){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption3.tex}}}}%
-    \put(0.64108676,0.69846809){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code6.tex}}}}%
-    \put(0.57572556,0.60401931){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption6.tex}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=3]{./figs/example/example.pdf}}%
-    \put(0.31090102,1.13774316){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/arrow2.tex}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=4]{./figs/example/example.pdf}}%
-    \put(0.56324645,1.1377451){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/arrow3.tex}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=5]{./figs/example/example.pdf}}%
-    \put(0.13055378,1.32615407){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/arrow1.tex}}}}%
-    \put(0.31996318,1.33714541){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code2.tex}}}}%
-    \put(0.29416911,1.18795277){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption2.tex}}}}%
-    \put(0.57572686,0.89850504){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption4.tex}}}}%
-    \put(0.570506,1.00020661){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code4.tex}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=6]{./figs/example/example.pdf}}%
-    \put(0.01944114,0.60401931){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption5.tex}}}}%
-    \put(0.29668875,0.30953362){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption7.tex}}}}%
-    \put(0.29668875,0.01504793){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/caption8.tex}}}}%
-    \put(0.53341032,0.85098401){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/arrow5.tex}}}}%
-    \put(0.23961004,0.85098637){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/arrow4.tex}}}}%
-    \put(0.0873181,0.69846736){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code5.tex}}}}%
-    \put(0.36238025,0.40372402){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code7.tex}}}}%
-    \put(0.35090118,0.49175669){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/eqC.tex}}}}%
-    \put(0.36028246,0.13662153){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code8.tex}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{example.pdf}}%
+    \put(0.02433151,1.00228892){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}code3\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{example.pdf}}%
+    \put(0.58273449,0.6446554){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}eqE\end{tabular}}}}%
+    \put(0.01944444,0.89876519){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}caption3\end{tabular}}}}%
+    \put(0.64127357,0.69867162){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}code6\end{tabular}}}}%
+    \put(0.57589332,0.60419532){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}caption6\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{example.pdf}}%
+    \put(0.0157242,1.07686073){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}arrow2\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{example.pdf}}%
+    \put(0.58861632,1.08406432){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}arrow3\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{example.pdf}}%
+    \put(0.13059182,1.32654052){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}arrow1\end{tabular}}}}%
+    \put(0.32005642,1.33753505){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}code2\end{tabular}}}}%
+    \put(0.29425483,1.18829894){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}caption2\end{tabular}}}}%
+    \put(0.57589463,0.89876686){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}caption4\end{tabular}}}}%
+    \put(0.57067224,1.00049807){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}code4\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{example.pdf}}%
+    \put(0.0194468,0.60419532){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}caption5\end{tabular}}}}%
+    \put(0.29677521,0.30962382){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}caption7\end{tabular}}}}%
+    \put(0.29677521,0.01505231){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}caption8\end{tabular}}}}%
+    \put(0.58217687,0.7864172){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}arrow5\end{tabular}}}}%
+    \put(0.04523546,0.78641953){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}arrow4\end{tabular}}}}%
+    \put(0.08734355,0.6986709){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}code5\end{tabular}}}}%
+    \put(0.36248585,0.40384166){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}code7\end{tabular}}}}%
+    \put(0.35100343,0.49189999){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}eqC\end{tabular}}}}%
+    \put(0.36038745,0.13666134){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}code8\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{example.pdf}}%
   \end{picture}%
 \endgroup%
