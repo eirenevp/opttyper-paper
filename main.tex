@@ -476,10 +476,8 @@ Our contributions can be summarized as:
   \centering
   \def\svgwidth{0.75\linewidth}
   \input{./figs/example/example.pdf_tex}
-  \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
-\end{figure*}
 
-\section{General Framework for Probabilistic Type Inference} \label{sec:framework}
+%
 % \begin{figure*}[!t]
 %   \centering
 %   \def\svgwidth{\linewidth}
@@ -487,22 +485,11 @@ Our contributions can be summarized as:
 %   \caption{Overview of general framework that combines logical
 %     and natural constraints in a single optimization problem.} \label{fig:overview}
 % \end{figure*}
+%\subsection{Our Framework by Example}\adg{revisit this text once the figure stabilises}
 
-This section introduces our general framework,
-which we instantiate in the next section by building a tool for
-predicting types in TypeScript.
-% \adg{felt repetitive re introduction, so trimmed}
-% Our goal is to enhance the type inference
-% procedure for dynamic languages by incorporating into a single engine
-% both information learned from a corpus of typed code
-% as well as information derived directly from the code that is to be typed.
-%
-% We distinguish between two main kinds of constraints that we eventually
-% combine in an optimization problem.
-% The next few subsections formalize this approach.
-
-\subsection{Our Framework by Example}\adg{revisit this text once the figure stabilises}
-Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
+\vspace{1em}
+\begin{minipage}{\textwidth}
+  Explain that $T=3$ and $V=3$
 Our input is a minimal TypeScript function without any type annotations on its parameters.
 TypeScript's compiler by default considers the parameters as the top type \texttt{any}.
 Our goal is to exploit different sources of information to suggest to the programmer
@@ -538,6 +525,25 @@ At the end we establish and solve an optimization problem that combines both sou
 and tries to satisfy the constraints from both sources as much as possible to improve the results.
 This is shown in Fig. 1(f), where the predicted type is now \texttt{number}.
 Finally, we obtain the correctly annotated function signature shown in Fig. 1(g).
+\end{minipage}
+\caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
+\end{figure*}
+
+\section{General Framework for Probabilistic Type Inference} \label{sec:framework}
+This section introduces our general framework,
+which we instantiate in the next section by building a tool for
+predicting types in TypeScript.
+\cref{fig:fullexample} illustrates our general framework through an example.
+
+% \adg{felt repetitive re introduction, so trimmed}
+% Our goal is to enhance the type inference
+% procedure for dynamic languages by incorporating into a single engine
+% both information learned from a corpus of typed code
+% as well as information derived directly from the code that is to be typed.
+%
+% We distinguish between two main kinds of constraints that we eventually
+% combine in an optimization problem.
+% The next few subsections formalize this approach.
 
 \subsection{An Outline of Probabilistic Type Inference}
 
