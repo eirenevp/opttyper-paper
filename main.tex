@@ -491,41 +491,58 @@ Our contributions can be summarized as:
 
 \vspace{1em}
 \begin{minipage}{\textwidth}
-  Explain that $T=3$ and $V=3$
-Our input is a minimal TypeScript function without any type annotations on its parameters.
+Our input is a minimal JavaScript function with no type annotations on its result or parameters.
 TypeScript's compiler by default considers the parameters as the top type \texttt{any}.
-Our goal is to exploit different sources of information to suggest to the programmer
-a type lower in the type hierarchy.
-To do so, we propose a type parameter for each of the formal parameters
-and the return type of the function
-and inject them into the definition of the function, see Box (a).
+%
+Our goal is to exploit different sources of information to suggest more specific types to the programmer.
+%
+To do so, we propose fresh type variables for each of the two parameters
+and for the return type of the function.
+%
+We insert these type variables into the definition of the function, see Box (a).
+%
 This step limits the scope of the parameters to this function, but
 now we can extract more elaborate information about the usage of the
 parameters in this function.
+%
 For instance, we can now capture the
 fact that the parameters are used as terms in a binary operation.
+%
 This could give us a complex set of logical constraints about the possible combinations of the two operands.
+%
 Still, for the purpose of this example we limit ourselves to a minimal set of constraints shown in Box (c),
 where both the two operands should have the same type.
+%
 In this stage a classical type inference approach would be unable to give us back a user-friendly type
 and would probably roll back to its top-level type.
+%
 To alleviate that we are willing to take into account other sources of information,
 which try to capture the human intuition about the source code itself.
-As an instantiation of this scenario we use a machine learning model to capture naming conventions over types,
+%
+As an instantiation of this scenario we use a machine learning model
+to capture naming conventions over types,
 see Box (d).
+%
 Intuitively, the table in Box (d) shows that a programmer
 is much more likely to name a variable \texttt{start} or \texttt{end}
 if she intends to use it as a \texttt{number} than as a \texttt{string}.
+%
 This natural constraint is expressed as a probability that reflects our degree of certainty.
+%
 To combine our two sources of information we present the logical constraints
 as a matrix of probability vectors shown in Box (b).
+%
 Doing that enable us to relax the boolean operators to numerical
 operators as shown in Box (e).
+%
 When we numerically optimize the resulting expression
 we obtain that both variables are strings with high probability.
+%
 At the end we establish and solve an optimization problem that combines both sources of information
 and tries to satisfy the constraints from both sources as much as possible to improve the results.
+%
 This is shown in Box (f), where the predicted type is now \texttt{number}.
+%
 Finally, we obtain the correctly annotated function signature shown in Box (g).
 \end{minipage}
 \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
@@ -535,7 +552,7 @@ Finally, we obtain the correctly annotated function signature shown in Box (g).
 This section introduces our general framework,
 which we instantiate in the next section by building a tool for
 predicting types in TypeScript.
-\cref{fig:fullexample} illustrates our general framework through an example.
+\cref{fig:fullexample} illustrates our general framework through an example of predicting TypeScript types.
 
 % \adg{felt repetitive re introduction, so trimmed}
 % Our goal is to enhance the type inference
