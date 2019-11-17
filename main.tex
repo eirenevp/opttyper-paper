@@ -107,7 +107,7 @@
 % \ivpedit {} writes with color within the original text, if we uncomment
 % suppress and comment plain color edits we will have black color
 
-% \ivpcomment {} comments in brackets additional to the text if we use
+% \ivp {} comments in brackets additional to the text if we use
 % suppress comments are no longer visible
 
 % \ivpdelete{} indicates that something has been deleted in case you want
@@ -470,9 +470,12 @@ Our contributions can be summarized as:
         Further, \prodts outperforms previous state-of-the-art research systems,
         JSNice \cite{raychev15} and DeepTyper \cite{hellendoorn18}.
         \prodts achieves a \emph{50\% reduction in error} (measured relatively) over these previous systems.
-        \ivpcomment{*This* is how you present a Zeller number ;-)}
+        \ivp{*This* is how you present a Zeller number ;-)}
+        \adg{do we explain the calculation anywhere?  if not, we should}
 \end{itemize}
 
+\adg{Irene: please mention the $\mu_v$ in Box(d)
+because we later refer to $\mu_v$ in Box(f).}
 \begin{figure*}
   \centering
   \def\svgwidth{0.75\linewidth}
@@ -490,42 +493,69 @@ Our contributions can be summarized as:
 
 \vspace{1em}
 \begin{minipage}{\textwidth}
-  Explain that $T=3$ and $V=3$
-Our input is a minimal TypeScript function without any type annotations on its parameters.
-TypeScript's compiler, by default, considers the parameters as the top type \texttt{any}.
-Our goal is to exploit different sources of information to suggest to the programmer
-a type lower in the type hierarchy.
-To do so, we propose a type parameter for each of the formal parameters
-and the return type of the function
-and inject them into the definition of the function, see Box (a).
-This step limits the scope of the parameters to this function, but
-now we can extract more elaborate information about the usage of the
-parameters in this function.
-For instance, we can now capture the
-fact that the parameters are used as terms in a binary operation.
-This could give us a complex set of logical constraints about the possible combinations of the two operands.
-Still, for the purpose of this example, we limit ourselves to a minimal set of constraints shown in Box (c),
-where both the two operands should have the same type.
-In this stage, a classical type inference approach would be unable to give us back a user-friendly type
-and would probably roll back to its top-level type.
-To alleviate that we are willing to take into account other sources of information,
-which try to capture the human intuition about the source code itself.
-As an instantiation of this scenario we use a machine learning model to capture naming conventions over types,
-see Box (d).
-Intuitively, the table in Box (d) shows that a programmer
-is much more likely to name a variable \texttt{start} or \texttt{end}
+Our input is a minimal JavaScript function
+with no type annotations on its parameters or result.
+%
+TypeScript's compiler by default considers the parameters as the top type \texttt{any}.
+%
+Our goal is to exploit both logical and natural constraints to suggest
+more specific types.
+%
+To begin, in Box (a), we propose
+fresh type variables \texttt{START} and \texttt{END} for each of the two parameters
+and \texttt{ADDNUM} for the return type of the function.
+%
+We insert these type variables into the definition of the function.
+%
+Our \emph{logical constraints} on these type variables represent knowledge obtained
+by a symbolic analysis of the code in the body of the function.
+%
+In our example, the use of a binary operation implies that the two parameter types are equal.
+%
+We show a minimal set of logical constraints in Box (c),
+to the effect that the two operands have the same type.
+%
+In general, the logical constraints can be much more complex than our simple example.
+%
+If we only have logical constraints, we cannot tell
+whether \texttt{string} or \texttt{number} is a better solution,
+and so may fall back to the type \texttt{any}.
+%
+The crux of our approach is to take into account \emph{natural constraints},
+that is, statistical properties learnt from a source code corpus that seek to capture human intuition.
+%
+In particular, we use a machine learning model to capture naming conventions over types.
+%
+We represent the solution space for our logical or natural constraints or their combination
+as a $V \times T$ matrix $P$ of the form in Box (b):
+each row vector is a discrete probability distribution
+over our universe of $T=3$ concrete types
+(\texttt{number}, \texttt{string}, and \texttt{any}) for one of our $V=3$ identifiers.
+%
+Box (d) shows the natural constraints $\mathcal{M}$ induced by the identifier names
+for the parameters and return types of our function.
+%
+Intuitively, Box (d) shows that a programmer
+is more likely to name a variable \texttt{start} or \texttt{end}
 if she intends to use it as a \texttt{number} than as a \texttt{string}.
-This natural constraint is expressed as a probability that reflects our degree of certainty.
-To combine our two sources of information we present the logical constraints
-as a matrix of probability vectors shown in Box (b).
-Doing that enable us to relax the boolean operators to numerical
-operators as shown in Box (e).
-When we numerically optimize the resulting expression,
-we obtain that both variables are strings with high probability.
-At the end we establish and solve an optimization problem that combines both sources of information
-and tries to satisfy the constraints from both sources as much as possible to improve the results.
-This is shown in Box (f), where the predicted type is now \texttt{number}.
-Finally, we obtain the correctly annotated function signature shown in Box (g).
+%
+% The matrix uses probabilities to reflect our degree of certainty.
+%
+Returning to the logical constraints,
+we can relax the boolean constraint of Box (c) to a numerical function on probabilities
+as shown in Box (e).
+%
+When we numerically optimize the resulting expression we obtain the matrix in Box (e);
+it predicts that both variables are strings with high probability.
+%
+Finally, Box (f) shows an optimization objective that
+combines both sources of information:
+$E$ consists of the logical constraints
+and each probability vector $\mu_v$ (the row of $\mathcal{M}$ for $v$)
+is the natural constraint for variable $v$.
+%
+Box (f) also shows the solution matrix, and Box (g) shows the induced type annotations,
+now all equal to \texttt{number}.
 \end{minipage}
 \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
 \end{figure*}
@@ -534,7 +564,7 @@ Finally, we obtain the correctly annotated function signature shown in Box (g).
 This section introduces our general framework,
 which we instantiate in the next section by building a tool for
 predicting types in TypeScript.
-\cref{fig:fullexample} illustrates our general framework through an example.
+\cref{fig:fullexample} illustrates our general framework through an example of predicting TypeScript types.
 
 % \adg{felt repetitive re introduction, so trimmed}
 % Our goal is to enhance the type inference
@@ -698,7 +728,7 @@ The continuous semantics $\qqpi{P}{E}$ is a function $\Pi^{V \times T} \times \m
 defined as:
 %an expression~$E$ as a probability~$\qqpi{P}{E} \in [0,1]$ as  follows.
 %we are in log-space
-%\ivpcomment{Mention explicitly that this formulation maps scalar from [0,1] to [0,1], that is probability vectors do not require some extra form of scaling}
+%\ivp{Mention explicitly that this formulation maps scalar from [0,1] to [0,1], that is probability vectors do not require some extra form of scaling}
 \begin{align*}
   \qqpi{P}{x_v \mathrel{is} l_\tau} & = p_{v,\tau}                        \\  \numberthis \label{eq:logical}
   \qqpi{P}{\mathrel{not} E}         & = 1-\qqpi{P}{E}                     \\
@@ -827,7 +857,7 @@ More sophisticated networks could certainly be employed, but are left to future 
 
 \subsection{Combining Logical and Natural Constraints to Form an Optimization
   Problem} \label{ssec:optimisation}
-%\ivpcomment{Explain why we need this part: NNs cannot handle hard constraints so this
+%\ivp{Explain why we need this part: NNs cannot handle hard constraints so this
 %is our way to enforce them}
 
 The logical constraints pose challenges to the probabilistic world of
@@ -836,7 +866,7 @@ along with the logical rules that they should follow.
 To combine the logical and the natural constraints we define a continuous
 optimization problem.
 
-\ivpcomment{Brief motivation of Lagrange multiplier/ridge regression}
+\ivp{Brief motivation of Lagrange multiplier/ridge regression}
 Intuitively, we design the optimization problem to be over
 probability matrices $P \in \Pi^{V \times T};$ we wish to find
 $P$ that is as close as possible to the natural constraints $\mathcal{M}$
@@ -1039,7 +1069,7 @@ Our implementation takes as input three files:
         (We obtain this file from dts-gen.)\adg{Am I correct?}
         %This file comes from a third party tool and thus
         %why we use as an input in the formal problem statement, in the actual
-        %implementation this stage is completely integrated to the process. \ivpcomment{rephrase?}
+        %implementation this stage is completely integrated to the process. \ivp{rephrase?}
   \item TypeScript's default library declaration file,
         that is, the built-in types defined by the standard library.\footnote{\url{https://github.com/Microsoft/TypeScript/blob/master/lib/lib.d.ts}}
 \end{enumerate}
@@ -1056,7 +1086,7 @@ The output of our tool is essentially the declaration file from the \textit{Stru
 with some, or ideally all, of the \texttt{any} types substituted with built-in types---that is non user-defined types---and
 sum/product types of those.\adg{is that named interface or class types?  first mention of sum/product types}
 
-We will refer to the process of filling up the typing holes from the previous stage with the correct typing information as \textit{Type} stage. \ivpcomment{An example input, showing all three files,
+We will refer to the process of filling up the typing holes from the previous stage with the correct typing information as \textit{Type} stage. \ivp{An example input, showing all three files,
   is shown in \cref{fig:declarations-b64a}. change this} In other words, our main focus on this work is to apply our probabilistic
 type inference of the types in the \textit{Structure} stage to meliorate the \textit{Type}
 process.
@@ -1213,7 +1243,7 @@ We choose to handle only built-in types
 to ensure that we do not introduce types that are not available to the compiler.
 
 Regarding the implementation details of the LSTM network, for the $F$ in \eqref{eq:lstmb}, we use a
-feedforward \ivpcomment{is that right??} neural network
+feedforward \ivp{is that right??} neural network
 \begin{equation}
   F(\bm{h}) = \log\left( \sigma\left(\bm{h}A^T + b \right) \right),\label{eq:feedforward}
 \end{equation}
@@ -1238,7 +1268,7 @@ Regarding our optimization algorithm we use \textsc{Adam}, which is an extension
 The main difference between \textsc{Adam} and classical stochastic gradient descent is the use of adaptive instead of fixed learning rates.
 Although there exist other algorithms with adaptive learning rates like \textsc{AdaGrad}~\cite{duchi2011} and \textsc{RMSprop}~\cite{tieleman2014}, \textsc{Adam} tends to have better convergence~\cite{ruder2016}.
 
-\ivpcomment{From Charles: We should say where we obtained the data set from, i.e., these are all of the projects on DefinitelyTyped, and what that means (i.e.
+\ivp{From Charles: We should say where we obtained the data set from, i.e., these are all of the projects on DefinitelyTyped, and what that means (i.e.
   the project was popular enough that a Typescript definiton file was written for it.}
 % To do so we are using a \textit{Char-Level LSTM} which predicts for any identifier a probability vector over all the available types during the training.
 We have used all the available projects $5,800$
@@ -1324,7 +1354,7 @@ which is partitioned into the following subsets:
   \item both function and parameters identifiers $S_\text{total} = S_\text{fnRet} \cup S_\text{param}$
         %  \item variables $S_{var}$
         %   \item properties $S_{prop}$
-        %    \item interfaces $S_{inter}$ \ivpcomment{should we include that only for structure, what about its 'type'?}
+        %    \item interfaces $S_{inter}$ \ivp{should we include that only for structure, what about its 'type'?}
 \end{itemize}
 
 Let~$T$ be the set of all type paths,
@@ -1380,12 +1410,12 @@ For example, we could perform a finer analysis if $X = S_\text{fnRet}$ for funct
 
   \begin{equation}
     P(X) =
-    \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap}{Filter_X(Paths(gold.d.ts)) |}}{|Filter_X(Paths(predicted.d.ts)) |}
+    \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap {}}{Filter_X(Paths(gold.d.ts)) |}}{|Filter_X(Paths(predicted.d.ts)) |}
   \end{equation}
   
   \begin{equation}
     R(X) =
-    \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap} {Filter_X(Paths(gold.d.ts)) |}}
+    \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap {}} {Filter_X(Paths(gold.d.ts)) |}}
     {|Filter_X(Paths(gold.d.ts))|}.
   \end{equation}
 \end{defn}
@@ -1525,9 +1555,8 @@ Moreover, it does not entirely capture the flow and dependencies among typings.
 Due to the previous issue, we report results for two instantiations of JSNice: for the first one we calculated the results for the $6$ primitive types only, while for the second one we included the results of rest $N=78$ wrongly identified types.
 We notice that regarding the type recall of the parameters in \cref{tab:typeprec2} for the $N = 6$ case, JSNice scored better results than our tool.
 This might be the case due to the property that we discussed already regarding the use of a small size vocabularies.
+\ivp{add description of jsnice, 2 cases, one with 6 types only the one that jsnice is trained(results comparable with the result reported on jsnice for parameters but not for return type), 78 our set of types we do better in each case, main critique the failure to capture return types }
 
-\ivpcomment{add description of jsnice, 2 cases, one with 6 types only the one that jsnice is trained(results comparable with the result reported on jsnice for parameters but not for return type), 78 our set of types we do better in each case, main critique the failure to capture return types }
-%  we examined thirty JavaScript functions. For each function we manually determined the correct types to use as an oracle for evaluation and comparison, assigning any if no conclusive type could be assigned. As a result, we identified 860 annotations (on function return types and parameters) of which 108 were clearly not any types.\ivpcomment{needs edit}
 Overall, we believe that this performance drop for DeepTyper and JSNice happens for the following reasons:
 \begin{enumerate}[label=(\roman*)]
   \item The identifiers for functions are not as repeatable as the identifiers for parameters; DeepTyper and JSNice have less training data for function identifiers, while our Char-Level LSTM can captures variations of the same identifier irrespectively of its source.
@@ -1852,7 +1881,7 @@ It is defined as the inverse of the softmax function; that is, an element of a p
 It allows us to map probability values from $\left[ 0, 1 \right]$ to $\left[ -\infty, \infty \right]$.
 
 Given the matrix~$\mathcal{L}$, which corresponds to the logit of the matrix~$P$ in \cref{ssec:logcon}, we interpret an expression~$E$ as a number~$\qqpi{P}{E} \in \mathbb{R}$ as  follows:
-%\ivpcomment{Mention explicitly that this formulation maps scalar from [0,1] to [0,1], that is probability vectors do not require some extra form of scaling}
+%\ivp{Mention explicitly that this formulation maps scalar from [0,1] to [0,1], that is probability vectors do not require some extra form of scaling}
 \begin{align*}
   \qqpi{\mathcal{L}}{x_v \mathrel{is} l_\tau} & = \pi_{v,\tau}                                                \\ \label{eq:logits}
   \qqpi{\mathcal{L}}{\mathrel{not} E}         & = \log(1-\text{sigmoid}(\qqpi{\mathcal{L}}{E})                \\
@@ -1869,6 +1898,6 @@ while the LogSumExp function is defined as
   \text{LogSumExp}(\bm{x}) = \log\left( \sum_i \exp\{x_i\} \right).
 \end{equation*}
 
-\ivpcomment{what is the dimension of the logsumexp input?}
+\ivp{what is the dimension of the logsumexp input?}
 
 \end{document}
