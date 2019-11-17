@@ -101,7 +101,8 @@
 \newcommand{\margincomment}[2]{\marginpar{\scriptsize\color{Maroon}#1 says: #2}}
 \newcommand{\adg}[1]{\margincomment{ADG}{#1}}
 \newcommand{\cas}[1]{\margincomment{Charles}{#1}}
-\newcommand{\ivp}[1]{\margincomment{Irene}{#1}}
+\newcommand{\ebr}[1]{\margincomment{Earl}{#1}}
+\newcommand{\ivp}[1]{\margincomment{IVP}{#1}}
 
 % \ivpedit {} writes with color within the original text, if we uncomment
 % suppress and comment plain color edits we will have black color
@@ -425,7 +426,7 @@ inference by combining both kinds of constraints into a single analysis, unifyin
 To do this, we define a new probabilistic type inference procedure that combines
 programming language and machine learning techniques into a single framework.
 We start with a formula that defines the logical constraints on the types of a set of identifiers in the program,
-and a machine learning model, such as a deep network, that makes a probabilistic prediction
+and a machine learning model, such as a deep neural network, that makes a probabilistic prediction
 of the type of each identifier.
 
 Our method is based on two key ideas.
@@ -496,35 +497,35 @@ Our goal is to exploit different sources of information to suggest to the progra
 a type lower in the type hierarchy.
 To do so, we propose a type parameter for each of the formal parameters
 and the return type of the function
-and inject them into the definition of the function, see Fig. 1(a).
+and inject them into the definition of the function, see Box (a).
 This step limits the scope of the parameters to this function, but
 now we can extract more elaborate information about the usage of the
 parameters in this function.
 For instance, we can now capture the
 fact that the parameters are used as terms in a binary operation.
 This could give us a complex set of logical constraints about the possible combinations of the two operands.
-Still, for the purpose of this example we limit ourselves to a minimal set of constraints shown in Fig. 1(c),
+Still, for the purpose of this example we limit ourselves to a minimal set of constraints shown in Box (c),
 where both the two operands should have the same type.
 In this stage a classical type inference approach would be unable to give us back a user-friendly type
 and would probably roll back to its top-level type.
 To alleviate that we are willing to take into account other sources of information,
 which try to capture the human intuition about the source code itself.
 As an instantiation of this scenario we use a machine learning model to capture naming conventions over types,
-see Fig. 1(d).
-Intuitively, the table in Fig. 1(d) shows that a programmer
+see Box (d).
+Intuitively, the table in Box (d) shows that a programmer
 is much more likely to name a variable \texttt{start} or \texttt{end}
 if she intends to use it as a \texttt{number} than as a \texttt{string}.
 This natural constraint is expressed as a probability that reflects our degree of certainty.
 To combine our two sources of information we present the logical constraints
-as a matrix of probability vectors shown in Fig. 1(b).
+as a matrix of probability vectors shown in Box (b).
 Doing that enable us to relax the boolean operators to numerical
-operators as shown in Fig. 1(e).
+operators as shown in Box (e).
 When we numerically optimize the resulting expression
 we obtain that both variables are strings with high probability.
 At the end we establish and solve an optimization problem that combines both sources of information
 and tries to satisfy the constraints from both sources as much as possible to improve the results.
-This is shown in Fig. 1(f), where the predicted type is now \texttt{number}.
-Finally, we obtain the correctly annotated function signature shown in Fig. 1(g).
+This is shown in Box (f), where the predicted type is now \texttt{number}.
+Finally, we obtain the correctly annotated function signature shown in Box (g).
 \end{minipage}
 \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
 \end{figure*}
@@ -552,12 +553,6 @@ that requires type annotations on identifiers.
 %
 Given a program $U$ plus a type environment $\Gamma$ let $\Gamma \vdash U$ mean that the program $U$ is well-typed according to the (deterministic) type system, given types for identifiers provided by $\Gamma$.
 %
-\ivp{Andy, Charles: I am not sure should the variable
-  identifiers have a different symbol (v) as opposed to x that we are using to the continuous relaxation part?
-  I believe it should be x so I am changing it, please check!}
-  \cas{Not 100\% sure I understand the question,
-  but it looked to me like $x_v$ was referring to identifiers
-  both in Section 2.1 and in Section 2.2, which seems OK}
 The environment takes the form $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$ where each $x$ is an identifier and each $t$ is a literal type.
 %
 \adg{This is the statement of our general framework.
@@ -878,7 +873,12 @@ Thus we define:
 \end{equation}
 It is easy to see that if $Y$ minimizes \eqref{eq:opt_no_prob}, then
 $P = [\sigma(\bm{y}_1), \ldots, \allowbreak \sigma(\bm{y}_{V})]^\mathsf{T}$
-minimizes \eqref{eq:opt_naive}. To remove the final constraint,
+minimizes \eqref{eq:opt_naive}. 
+
+\ivp{polish this insertion from rebuttal}
+We choose to use Mean Squared Error (MSE), also called the Brier score in statistics \cite{brier50, good52} instead of Cross Entropy (CE) which is is another common choice for probabilities.
+MSE is a proper scoring rule \cite{gneiting07}, 
+which intuitively means that this loss function will indeed encourage the model to use the correct probabilities. We do not claim any particular advantage to the Brier score versus CE. To remove the final constraint,
 we introduce a Lagrange multiplier $\lambda > 0$ to weight
 the two terms, yielding our final optimization problem
 \begin{equation}\label{eq:objective}
@@ -1119,8 +1119,9 @@ and using them to generate a type constraint.
 These interfaces contain the typed signatures of each property and method
 that a built-in type implements. We use these interfaces to construct a set of
 possible built-in types we could assign to the type parameter and therefore a proper
-type constraint. For a concrete example of this procedure,
-see~\cref{fig:jscode-base64,fig:log-base64a}.\adg{unresolved reference}
+type constraint. 
+%For a concrete example of this procedure,
+%see~\cref{fig:jscode-base64,fig:log-base64a}.\adg{unresolved reference}
 
 Our purpose is to establish the principle that a combination of natural and logical constraints can outperform either on its own, and outperforms the state-of-the-art.
 %
@@ -1365,7 +1366,7 @@ Recall for \textit{Structure} measures the proportion of entities that exist in 
 For example, if we compute a $70\%$ \textit{Structure} recall that means that on average out of $10$ entities in \textit{gold.d.ts} we successfully identified $7$ of them while $3$ were not recognized.
 
 For measuring \textit{Type} we exclude all entities that we found in \textit{predicted.d.ts} but not found in \textit{gold.d.ts} since we do not have a means to evaluate their validity.
-Precision for \textit{Type} measures the proportion of correct types found in \textit{predicted.d.ts} with respect to the types defined in \textit{gold.d.ts}.
+Precision for \textit{Type} measures the proportion of correct types found in the corresponding \textit{predicted.d.ts} file with respect to the types defined in \textit{gold.d.ts}.
 For example, we interpret a $90\%$ \textit{Type} precision as finding on average $9$ correct types out of the $10$ predicted.
 Recall for \textit{Type} measures the percentage of correct types found in \textit{gold.d.ts} with respect to the total number of types defined in \textit{gold.d.ts}.
 For example, we interpret a $60\%$ \textit{Type} recall as correctly predicting on average $6$ types out of the $10$ found in \textit{gold.d.ts}.
@@ -1381,6 +1382,7 @@ For example, we could perform a finer analysis if $X = S_\text{fnRet}$ for funct
     P(X) =
     \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap}{Filter_X(Paths(gold.d.ts)) |}}{|Filter_X(Paths(predicted.d.ts)) |}
   \end{equation}
+  
   \begin{equation}
     R(X) =
     \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap} {Filter_X(Paths(gold.d.ts)) |}}
@@ -1468,6 +1470,9 @@ The two tools that we compare against are:
 
   \item JSNice: A tool based on graphical machine learning which analyzes relationships between program elements to infer types for JavaScript files.
 \end{itemize}
+
+We have tried specifically to address any unfair comparison. DeepTyper uses a vocabulary of 11000 types, we measure the results on our set of 78 types and give every other type we encounter \textit{OutOfVoc};
+that means it doesn't affect the final result. JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on Table 4, for N = 6, which is the original implementation, the results for the types of the parameters are almost identical to the ones of the original JSNice paper.
 We summarize the results of our comparisons in \cref{tab:typeprec2}.
 
 \begin{table*}[t]
@@ -1523,7 +1528,6 @@ This might be the case due to the property that we discussed already regarding t
 
 \ivpcomment{add description of jsnice, 2 cases, one with 6 types only the one that jsnice is trained(results comparable with the result reported on jsnice for parameters but not for return type), 78 our set of types we do better in each case, main critique the failure to capture return types }
 %  we examined thirty JavaScript functions. For each function we manually determined the correct types to use as an oracle for evaluation and comparison, assigning any if no conclusive type could be assigned. As a result, we identified 860 annotations (on function return types and parameters) of which 108 were clearly not any types.\ivpcomment{needs edit}
-
 Overall, we believe that this performance drop for DeepTyper and JSNice happens for the following reasons:
 \begin{enumerate}[label=(\roman*)]
   \item The identifiers for functions are not as repeatable as the identifiers for parameters; DeepTyper and JSNice have less training data for function identifiers, while our Char-Level LSTM can captures variations of the same identifier irrespectively of its source.
@@ -1531,7 +1535,6 @@ Overall, we believe that this performance drop for DeepTyper and JSNice happens 
         As a result, a learning approach which takes into account a limited amount of context can miss relationships that are not spatially close.
   \item JSNice only captures shallow dependencies between identifiers and thus there are occasionally not enough to capture the information flow, especially for the function's return types.
 \end{enumerate}
-
 NL2Type a tool by \cite{malik19} also uses
 a deep learning approach to the problem which considers JSDoc comments as
 an additional type hint, we could not compare directly to them as
