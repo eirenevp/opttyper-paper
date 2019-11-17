@@ -946,19 +946,19 @@ corresponding probability vector which is closest to one.
 
 \section{\prodts: Predict TypeScript Type Signatures for JavaScript Libraries}
 \label{sec:prodts}
-To evaluate our approach in a real-word scenario we
+To evaluate our approach in a real-world scenario we
 implement an end-to-end application, called \prodts, which aims
 to alleviate the process of inferring TypeScript declaration files
 for an underlying JavaScript library.
 
-\subsection{Introduction: TypeScript's Type System}\label{ssec:intro-typescript}
+\subsection{Background: TypeScript's Type System}\label{ssec:intro-typescript}
 Syntactically, TypeScript~\citep{typescript} is a typed superset of
 JavaScript that allows us to develop large-scale, stable applications.
 To leverage the fact that JavaScript is the only true cross-platform
 language that runs in any browser, any host, and any OS the TypeScript's
 compiler typechecks TypeScript programs and eventually emits plain JavaScript.
 To compromise between static and dynamic typing, TypeScript supports a
-structural type system.
+structural type system. 
 In structural type systems record types (classes) whose fields or members have the same names and types are considered to be equal.
 This way TypeScript's static type system can work well with a lot of JavaScript code that is dynamically typed.
 One of the main intentions of TypeScript's designers is to
@@ -978,7 +978,8 @@ The TypeScript community has already
 made a huge effort to support this process by manually writing and maintaining
 declaration files for over five thousand of the most popular JavaScript
 libraries. These files are available on the DefinitelyTyped
-\citep{definitelytyped} repository. Although this approach has proven
+\citep{definitelytyped} repository.
+Although this manual approach has proven
 useful, it raises the challenge of keeping declaration files
 in sync with the library implementations.
 
@@ -1007,7 +1008,7 @@ function arguments and return types.
 It is only meant to be used as a starting
 point for writing a high-quality declaration file. Dts-gen only collects
 dynamic information and as a result it emits many \texttt{any} types that the developer must refine manually.
-\citet{tstools2017} created the TSINFER and TSEVOLVE tools with the same goal.
+\citet{tstools2017} created the TSINFER and TSEVOLVE tools to address the same problem.
 % to assist programmers to create and maintain TypeScript declaration files.
 These tools exploit a static analysis performed in a
 recorded snapshot of a concretely initialized library.
@@ -1083,13 +1084,19 @@ includes type predictions for
   \item type annotations for the function's arguments, denoted as \emph{param}.
 \end{itemize}
 The output of our tool is essentially the declaration file from the \textit{Structure} stage
-with some, or ideally all, of the \texttt{any} types substituted with built-in types---that is non user-defined types---and
+but with some, or ideally all, of the \texttt{any} types substituted with built-in types---not including user-defined types---and
 sum/product types of those.\adg{is that named interface or class types?  first mention of sum/product types}
 
-We will refer to the process of filling up the typing holes from the previous stage with the correct typing information as \textit{Type} stage. \ivp{An example input, showing all three files,
-  is shown in \cref{fig:declarations-b64a}. change this} In other words, our main focus on this work is to apply our probabilistic
-type inference of the types in the \textit{Structure} stage to meliorate the \textit{Type}
-process.
+Let the \textit{Type} stage be the process of predicting types
+to fill the holes left in the declaration files
+following the \textit{Structure}.
+\ivp{An example input, showing all three files,
+  is shown in \cref{fig:declarations-b64a}. change this}
+In \cref{sec:eval}, we present metrics on the performance of tools, including \prodts, on the \textit{Type} stage,
+given skeleton definition files produced by the \textit{Structure} stage.
+% In other words, our main focus is to apply our probabilistic
+% type inference of the types in the \textit{Structure} stage to meliorate the \textit{Type}
+% process.
 % For detailed metrics and evaluation see \cref{sec:eval}.  // trimmed
 
 \begin{table*}[t]
@@ -1231,50 +1238,74 @@ declaration files for over four thousand of the most popular JavaScript
 libraries. These files are available on the~\citet{definitelytyped}
 repository. The declaration files on this repository provide an excellent
 opportunity for statistical learning algorithms.
-We choose to use a Char-Level LSTM
-trained on
+We use a Char-Level LSTM trained on
 \textit{(id, type)} pairs to obtain knowledge about naming conventions
-for identifiers.
-The main intuition behind the particular choice of the LSTM is that developers commonly use multiple abbreviations of the same word.
-Thus, this family of abbreviations share type and a Char-Level LSTM is well-suited to predict the type for every identifier in the family.
+for identifiers, treated as sequences of characters.
+The main intuition behind the particular choice of the LSTM is that
+developers commonly use multiple abbreviations of the same word.
+Thus, this family of abbreviations share a type
+and a Char-Level LSTM is well-suited to predict the type for any identifier in the family.
 
-Our universe of types consists of 78 built-in types or union of them appeared at least 10000 times in our training set.
-We choose to handle only built-in types
+Our universe of types consists of the 78 built-in types or union of them
+that appear at least 10000 times in our training set.
+We consider only built-in types
 to ensure that we do not introduce types that are not available to the compiler.
+(We leave a consideration of user-defined types to future work.)
 
-Regarding the implementation details of the LSTM network, for the $F$ in \eqref{eq:lstmb}, we use a
-feedforward \ivp{is that right??} neural network
+Regarding the implementation details of the LSTM network, for the $F$ in \eqref{eq:lstmb},
+we use a feedforward \ivp{is that right??} neural network
 \begin{equation}
   F(\bm{h}) = \log\left( \sigma\left(\bm{h}A^T + b \right) \right),\label{eq:feedforward}
 \end{equation}
-where the $\log$ function is applied componentwise, $A$ and $b$ are learnable weights and bias.
+where the $\log$ function is applied componentwise,
+and $A$ and $b$ are learnable weights and bias.
 The softmax function is defined as
 \begin{equation}\label{eq:softmax}
   \sigma(\bm{x}) = \left[\frac{\exp\{x_1\}}{\sum_i \exp\{x_i\}}, \frac{\exp\{x_2\}}{\sum_i \exp\{x_i\}}, \cdots \right]^\mathsf{T}.
 \end{equation}
-The softmax function corresponds to the last layer of our neural network and essentially maps the values of the previous layer to $[0, 1]$, while the sum of all values is $1$; as expected by a probability vector.
-The log function is applied for numerical stability since computing directly \eqref{eq:softmax} can be problematic.
+The softmax function corresponds to the last layer of our neural network
+and essentially maps the values of the previous layer to $[0, 1]$,
+while the sum of all values is $1$ as expected for a probability vector.
+We work in log space to help numerical stability since computing \eqref{eq:softmax} directly can be problematic.
 As a result, $F$ outputs values in $[-\infty, 0]$.
 
-The model is trained based on sequences of variable names of known type.
-This is done by minimizing a loss function.
-Our particular choice of loss function is the negative log likelihood function---conveniently combined with our log output---defined as
+We train the model by supplying sets of variable identifiers together with their known types,
+and minimizing a loss function.
+Our loss function is the negative log likelihood function---conveniently combined with our log output---defined as:
 \begin{equation}
   L(\bm{y}) = -\sum_i log(\bm{y}_i).
 \end{equation}
-Essentially, we select during training the element that corresponds to the correct label from the output $F$ and sum all the values of the correct labels for the entire test set.
+Essentially, we select during training the element that corresponds
+to the correct label from the output $F$
+and sum all the values of the correct labels for the entire training set.
+\ivp{Irene: I changed test to training; can you check?}
 
-Regarding our optimization algorithm we use \textsc{Adam}, which is an extension of stochastic gradient descent~\cite{kingma2014}.
-The main difference between \textsc{Adam} and classical stochastic gradient descent is the use of adaptive instead of fixed learning rates.
-Although there exist other algorithms with adaptive learning rates like \textsc{AdaGrad}~\cite{duchi2011} and \textsc{RMSprop}~\cite{tieleman2014}, \textsc{Adam} tends to have better convergence~\cite{ruder2016}.
+We use \textsc{Adam}, an extension of stochastic gradient descent~\cite{kingma2014},
+as our optimization algorithm.
+%
+The main difference between \textsc{Adam} and classical stochastic gradient descent
+is the use of adaptive instead of fixed learning rates.
+%
+Although there exist other algorithms with adaptive learning rates
+like \textsc{AdaGrad}~\cite{duchi2011} and \textsc{RMSprop}~\cite{tieleman2014},
+\textsc{Adam} tends to have better convergence~\cite{ruder2016}.
 
 \ivp{From Charles: We should say where we obtained the data set from, i.e., these are all of the projects on DefinitelyTyped, and what that means (i.e.
   the project was popular enough that a Typescript definiton file was written for it.}
 % To do so we are using a \textit{Char-Level LSTM} which predicts for any identifier a probability vector over all the available types during the training.
-We have used all the available projects $5,800$
-from the DefinitelyTyped repository on a particular date (17th February 2019).
-We have trained our model for $1,000$ epochs, for 78 different types, and obtained a validation accuracy of \emph{validation acc: $0.79$}.
-This information is also summarized in \cref{fig:Char-Level}. Our dataset was randomly split by project into $80\%$ training data, $10\%$ validation data and $10\%$ test data. To split the available data in these three different sets is a common practice in machine learning which ensures that the learning model doesn't simply memorize the training data but is able to generalize to unseen inputs.
+We used all $5,800$ projects available from the DefinitelyTyped repository on 17th February 2019.
+%
+We trained our model for $1,000$ epochs, for 78 different types,
+and obtained a validation accuracy of \emph{validation acc: $0.79$}.
+%
+\cref{fig:Char-Level} shows a summary.
+%
+Our dataset was randomly split by project into $80\%$ training data,
+$10\%$ validation data and $10\%$ test data.
+%
+To split the available data in these three different sets is a common practice in machine learning
+which ensures that the learning model doesn't simply memorize the training data
+but is able to generalize to unseen inputs.
 % \begin{figure*}[!t]
 %     \centering
 %     \def\svgwidth{\linewidth}
@@ -1301,44 +1332,51 @@ This information is also summarized in \cref{fig:Char-Level}. Our dataset was ra
 %   \end{figure*}
 \subsection{Combining Logical and Natural Constraints for TypeScript}\label{ssec:combprodts}
 
-We now describe the particular implementations details used to combine the two sources of information.
-Most of our design choices here are empirical based on what we have noticed maximizes the performance of the framework.
+We describe the particular implementation details used to combine the two sources of information.
+Most of our design choices here are made empirically
+based on what we have noticed maximizes the performance of the framework.
 
 We implement the optimization problem described in~\eqref{eq:objective} for initial $\lambda = 10$.
 The adaptive optimization algorithm updates its value in subsequent iterations.
-To evaluate the minimum of the generated functions we use a different adaptive optimization algorithm, that is \textsc{RMSprop}~\cite{tieleman2014}.
-We set the maximum number of iterations to $2,000$ where we have noticed that the loss stabilizes.
+To evaluate the minimum of the generated functions we use a different adaptive optimization algorithm,
+known as \textsc{RMSprop}~\cite{tieleman2014}.
+We set the maximum number of iterations to $2,000$ by when in practice the loss stabilizes.
 
 \subsection{Experimental Setup}
 
 Both the code for the deep learning and the optimization part is written in PyTorch~\cite{paszke2017}.
-All experiments are conducted on an NVIDIA Titan Xp with 12GB VRam, in combination with an 2-core Intel Core i5 CPU with 8GB of RAM.
-Our resulting model requires ca. 400MB of RAM to be loaded into memory and can be run on both a GPU and CPU.
-It can provide type annotations on average for $58$ files in approximately 60 sec for solving logical constraints and natural constraints and about 65 sec for the combined optimization.
-
-
+All experiments are conducted on an NVIDIA Titan Xp with 12GB VRam,
+in combination with a 2-core Intel Core i5 CPU with 8GB of RAM.
+Our resulting model requires about 400MB of RAM to be loaded into memory and can be run on both a GPU and CPU.
+It computes type annotations on average for 58 files in about 60 seconds
+for solving logical constraints and natural constraints, and in about 65 seconds for the combined optimization.
 
 \section{Evaluation of \prodts{}} \label{sec:eval}
 
 To measure the performance of our tool \prodts we make the following assumption:
-The existing declaration files on the DefinitelyTyped repository define the \textit{gold standard} for our predictions.
-This is an assumption in the sense that some files may contain errors \citep{williams17}.
-Based on it, we measure the performance of our tool as well as other related tools by comparing the output declaration file for a given input JavaScript library with the corresponding gold declaration file included in the DefinitelyTyped repository.
+the existing declaration files on the DefinitelyTyped repository define the \textit{gold standard}
+for our predictions.
+It is an assumption in the sense that some files may contain errors \citep{williams17}.
+Based on it, we measure the performance of our tool as well as other related tools
+by comparing the output declaration file for a given input JavaScript library
+with the corresponding gold declaration file included in the DefinitelyTyped repository.
 
-Next, we define the metrics that we use to perform this comparison.
-Traditionally, there have been two measures when comparing a result set (here the output declaration file) with human judgement (the ``gold'' declaration file): \textit{Precision} and \textit{Recall}~\citep{russel16}.
+Next, we define the metrics used to perform this comparison.
+Traditionally, there have been two measures when comparing a result set
+(here the output declaration file) with human judgement (the ``gold'' declaration file):
+\textit{Precision} and \textit{Recall}~\citep{russel16}.
 We use these two metrics to evaluate the output structure and types for each of the exported functions in a library.
-Here, we focus solely on functions while we discard the other exported entities, such as variables, methods, and properties; the metrics presented next can be extended to evaluate all exported entities straightforwardly.
+Here, we focus solely on functions while we discard the other exported entities,
+such as variables, methods, and properties;
+the metrics presented next can easily be extended to evaluate all exported entities.
 The following definitions formalize these metrics.
 
 \subsection{Precision and Recall for Declaration Files}
 
 \begin{defn}[\emph{Paths}]
-  Let a \emph{path} be either a \emph{structural path}, or a
-  \emph{type path}.
+  Let a \emph{path} be either a \emph{structural path}, or a \emph{type path}.
   %
-  A \emph{structural path} is a fully-qualified name
-  ~$\textit{n}$.
+  A \emph{structural path} is a fully-qualified name~$\textit{n}$.
   %
   A \emph{type path} is a pair~$\textit{(n,ty)}$ of a fully-qualified name~$\textit{n}$ and a type~$\textit{ty}$.
   %
@@ -1351,7 +1389,7 @@ which is partitioned into the following subsets:
   \item function identifiers $S_\text{fnRet}$
         %\item method identifiers $S_{meth}$
   \item function  parameters $S_\text{param}$
-  \item both function and parameters identifiers $S_\text{total} = S_\text{fnRet} \cup S_\text{param}$
+  \item either function or parameter identifiers $S_\text{total} = S_\text{fnRet} \cup S_\text{param}$
         %  \item variables $S_{var}$
         %   \item properties $S_{prop}$
         %    \item interfaces $S_{inter}$ \ivp{should we include that only for structure, what about its 'type'?}
@@ -1363,7 +1401,7 @@ which is partitioned into the following subsets:
   \item type returned by each function $T_\text{fnRet}$
         %   \item type returned by each method $T_{meth}$
   \item type of each function parameter $T_\text{param}$
-  \item type for both function's return and parameter $T_\text{total} = T_\text{fnRet} \cup T_\text{param}$
+  \item type for either function result or parameter $T_\text{total} = T_\text{fnRet} \cup T_\text{param}$
         %    \item type of each variable $T_{var}$
         %   \item type of each property $T_{prop}$
 \end{itemize}
@@ -1388,25 +1426,52 @@ We call the predicted TypeScript declaration file
   that is,~$Filter_X(Y) =  X \cap Y$.
 \end{defn}
 
-As we are interested in evaluating both \textit{Structure} and \textit{Type}---the core elements of our pipeline as analyzed in \cref{sec:prodts}---and not only the final output, we measure the precision and recall for both stages independently.
+As we are interested in evaluating both \textit{Structure}
+and \textit{Type}---the core elements of our pipeline as analyzed in \cref{sec:prodts}---and
+not only the final output, we measure the precision and recall for both stages independently.
 
-Precision for \textit{Structure} measures the proportion of entities found in \textit{predicted.d.ts} that are also included in \textit{gold.d.ts}.
-For example, if we get an $80\%$ \textit{Structure} precision that means that on average out of the $10$ entities that we found, $8$ exist in \textit{gold.d.ts} while $2$ do not.
-Recall for \textit{Structure} measures the proportion of entities that exist in \textit{gold.d.ts} that we found in \textit{predicted.d.ts}.
-For example, if we compute a $70\%$ \textit{Structure} recall that means that on average out of $10$ entities in \textit{gold.d.ts} we successfully identified $7$ of them while $3$ were not recognized.
+Precision for \textit{Structure} measures the proportion of entities found in \textit{predicted.d.ts}
+that are also included in \textit{gold.d.ts}.
+%
+For example, if we get an $80\%$ \textit{Structure} precision that means
+that on average out of the $10$ entities that we found, $8$ exist in \textit{gold.d.ts} while $2$ do not.
+%
+Recall for \textit{Structure} measures the proportion of entities that exist in \textit{gold.d.ts}
+that we found in \textit{predicted.d.ts}.
+%
+For example, if we compute a $70\%$ \textit{Structure} recall
+that means that on average out of $10$ entities in \textit{gold.d.ts}
+ we successfully identified $7$ of them while $3$ were not recognized.
 
-For measuring \textit{Type} we exclude all entities that we found in \textit{predicted.d.ts} but not found in \textit{gold.d.ts} since we do not have a means to evaluate their validity.
-Precision for \textit{Type} measures the proportion of correct types found in the corresponding \textit{predicted.d.ts} file with respect to the types defined in \textit{gold.d.ts}.
-For example, we interpret a $90\%$ \textit{Type} precision as finding on average $9$ correct types out of the $10$ predicted.
-Recall for \textit{Type} measures the percentage of correct types found in \textit{gold.d.ts} with respect to the total number of types defined in \textit{gold.d.ts}.
-For example, we interpret a $60\%$ \textit{Type} recall as correctly predicting on average $6$ types out of the $10$ found in \textit{gold.d.ts}.
-We compute the precision and recall for both stages using the formulae defined next.
-To do so, we define $X$ which symbolises the stage for which we perform measurements; here it belongs to a binary set $X \in \{S, T\}$ for \textit{Structure} and \textit{Type}, respectively.
+For measuring \textit{Type} we exclude all entities that we found in \textit{predicted.d.ts}
+but not found in \textit{gold.d.ts} since we do not have a means to evaluate their validity.
+%
+Precision for \textit{Type} measures the proportion of correct types
+found in the corresponding \textit{predicted.d.ts} file
+with respect to the types defined in \textit{gold.d.ts}.
+%
+For example, we interpret a $90\%$ \textit{Type} precision
+as finding on average $9$ correct types out of the $10$ predicted.
+%
+Recall for \textit{Type} measures the percentage of correct types
+found in \textit{gold.d.ts} with respect to the total number of types defined in \textit{gold.d.ts}.
+%
+For example, we interpret a $60\%$ \textit{Type} recall
+as correctly predicting on average $6$ types out of the $10$ found in \textit{gold.d.ts}.
+%
+We compute the precision and recall for both stages using the formulas defined next.
+%
+We define $X$ to symbolise the stage for which we perform measurements;
+here it belongs to a binary set $X \in \{S, T\}$ for \textit{Structure} and \textit{Type}, respectively.
+%
 In general, $X$ is not restricted to the binary set mentioned before.
+%
 For example, we could perform a finer analysis if $X = S_\text{fnRet}$ for function identifiers.
 
 \begin{defn}[Precision \& Recall for $X$] \label{def:precision_recall}
-  Given a declaration file \textit{predicted.d.ts}, an ideal declaration file \textit{gold.d.ts}, and a class of paths $X$, we define precision and recall for $X$ as:
+  Given a declaration file \textit{predicted.d.ts},
+  an ideal declaration file \textit{gold.d.ts}, and a class of paths $X$,
+  we define precision and recall for $X$ as:
 
   \begin{equation}
     P(X) =
@@ -1421,34 +1486,57 @@ For example, we could perform a finer analysis if $X = S_\text{fnRet}$ for funct
 \end{defn}
 
 The maximum precision and recall that we can obtain is equal to $1$.
-For \textit{Structure}, the larger the precision the more relevant entities are returned than irrelevant ones, while the larger the recall the more existing entities are discovered.
-Similarly, for \textit{Type}, the larger the precision the more precise are the identified types, while the larger the recall the more existing types are discovered.
+%
+For \textit{Structure}, the larger the precision the more relevant entities are returned than irrelevant ones,
+while the larger the recall the more existing entities are discovered.
+%
+Similarly, for \textit{Type}, the larger the precision the more precise are the identified types,
+while the larger the recall the more existing types are discovered.
 
-Our contributions presented in \cref{sec:framework,sec:prodts} concern the second stage of the workflow, that is the type prediction phase.
+Our contributions presented in \cref{sec:framework,sec:prodts} concern the second stage of the workflow,
+that is, the type prediction phase.
+%
 Here we describe an integrated, end-to-end approach so we focus on presenting a holistic evaluation of the problem.
-Thus, we will present results from the first stage too, although our method does not contribute to the improvement of it.
+%
+Thus, we will present results from the first stage too,
+although our method does not contribute to its improvement.
+%
 For the same reason, we start by presenting the results related to the \textit{Type} stage.
 
 \subsection{Evaluation of \textit{Type} Stage}
 
-For evaluating the predicted \textit{Types}, we perform a comparison of the augmented static analysis, and the Char-Level LSTM, the output of the optimiser.
-Two kinds of input might be required from any of these packages: the JavaScript library file or a declaration file containing the exported functions.
+For evaluating type predictions,
+we compare both the augmented static analysis and the Char-Level LSTM on their own,
+and then their combination.
+Two kinds of input may be required by these packages:
+the JavaScript library file or a declaration file containing the exported functions.
 We summarise below the characteristics of each package and the provided input.
 \begin{itemize}[label={\tiny$\bullet$}]
-  \item \textit{Aug-Static}: Using the JavaScript library and the declaration file as an input, we utilise the compiler in a pragmatic way allowing us to generate logical constraints as logical formulas and then solve them using fuzzy logic (\cref{ssec:logprodts}).
-  \item \textit{LSTM}: We query our pre-trained Char-Level \textit{LSTM} to give us predictions for every id found in the declaration file (\cref{ssec:natprodts}).
+  \item \textit{Aug-Static}: Using the JavaScript library and the declaration file as an input,
+  we utilise the compiler in a pragmatic way allowing us to generate logical constraints as logical formulas
+   and then solve them using fuzzy logic (\cref{ssec:logprodts}).
+  \item \textit{LSTM}: We query our pre-trained Char-Level \textit{LSTM} to give us predictions for every identifier
+        found in the declaration file (\cref{ssec:natprodts}).
         It requires as input the declaration file only.
-  \item \prodts: The output of the optimization problem for the corresponding combination of the Character Level and fuzzy tool (\cref{ssec:combprodts}).
-        Since this tool depends on Aug-Static and Char-Level, we provide both the JavaScript library and the declaration file as input.
+  \item \prodts: The output of the optimization problem for the corresponding combination of the Character Level
+       and fuzzy tool (\cref{ssec:combprodts}).
+        Since this tool depends on Aug-Static and Char-Level, we provide both the JavaScript library
+        and the declaration file as input.
 \end{itemize}
 Furthermore, we report separately in \cref{tab:typeprec1} the precision and recall for predicting the function return types (first and second column) and the types of the functions' parameters (third and fourth column).
 
-Since we consider $78$ types in total and the \textit{gold.d.ts} contains a larger number, we first compute the maximum achievable precision and recall even if all our type predictions were correct.
-The precision for the function return types is $0.61$ and the recall $0.59$, while the precision for the parameters' types is $0.63$ and the recall $0.58$.
+Since we consider $78$ types in total and the \textit{gold.d.ts} contains a larger number,
+we first compute the maximum achievable precision and recall if only $78$ types can be predicted,
+even if all the type predictions were correct.
+The precision for the function return types is $0.61$ and the recall $0.59$,
+while the precision for the parameters' types is $0.63$ and the recall $0.58$.
 The combined precision and recall are $0.62$ and $0.58$, respectively.
 The results presented in \cref{tab:typeprec1} are normalized based on these upper precision and recall limits.
 
-\adgcomment{Are there 1272 identifiers for all types, or just for the universe of 78 types?for all types  Best to give both totals.}
+\adg{Here we use $N$ for the size of the type universe,
+ but earlier we use $T$ for the size. We should change $N$ to $T$, unless that creates another clash}
+
+\adg{Are there 1272 identifiers for all types, or just for the universe of 78 types?for all types  Best to give both totals.}
 
 \begin{table*}[t]
   \centering
@@ -1473,20 +1561,33 @@ The results presented in \cref{tab:typeprec1} are normalized based on these uppe
     \bottomrule
   \end{tabular}
 \end{table*}
-Regarding the augmented static analysis, the results are significantly better for function return types rather than parameters' types.
-This happens because the TypeScript compiler generates much richer constraints for all---exported or not---return types of functions.
-For the parameters' types, the compiler disregards any information and infers all types as \texttt{any}; a situation that produces no useful logical constraints.
-To mitigate this issue, we define some simple heuristics that allow the augmented static analysis to generate some non-trivial constraints.
-A more principled approach could greatly improve the results regarding the parameters' type inference, albeit outside the scope of this work.
+Regarding the augmented static analysis, the results are significantly better for function return types
+than parameters' types.
+This happens because the TypeScript compiler generates much richer constraints for all---exported or not---return
+types of functions.
+For the parameters' types, the compiler disregards any information
+and infers all types as \texttt{any}; a situation that produces no useful logical constraints.
+To mitigate this issue, we define some simple heuristics that allow the augmented static analysis
+to generate some non-trivial constraints.\adg{refer to description earlier in the paper}
+A more principled approach could greatly improve the results regarding the parameters' type inference,
+albeit outside the scope of this work.\adg{combine this sentence with the discussion from the rebuttal}
 
-Furthermore, we observe for all tools that the precision and recall for both task are close.
-By comparing these two metric in \cref{def:precision_recall}, their similarity can be traced to similarity of their denominators.
-As it will be analyzed in \cref{ssec:structure_comparison}, the \textit{Structure} stage is able to identify the majority (over $80\%$) of the function signatures; this gives rise to the closeness of the denominators and subsequently of the precision and recall.
+Furthermore, we observe for all tools that the precision and recall for both tasks are close.
+By comparing these two metrics in \cref{def:precision_recall},
+their similarity can be traced to the similarity of their denominators.
+As we discuss in \cref{ssec:structure_comparison},
+the \textit{Structure} stage can identify the majority (over $80\%$) of the function signatures;
+this causes the closeness of the denominators and subsequently of the precision and recall.
 
-Finally, for \prodts we notice that the combination of the output of the augmented static analysis and the Char-Level LSTM improves our precision and recall for both tasks.
-A certain level of robustness can be also identified, because the low results of the augmented static analysis for parameters' types positively contributes to the optimizer results.
-This means that on top of the predictions of the neural network, some constraints of the augmented static analysis tip the balance towards more reasonable predictions.
-\textit{Overall, the combination of the logical (Aug-Static) and natural (LSTM) constraints in \prodts greatly improves our type inference capabilities}.
+Finally, for \prodts we notice that the combination of the output of the augmented static analysis
+and the Char-Level LSTM improves our precision and recall for both tasks.
+A certain level of robustness can be also identified,
+because the low results of the augmented static analysis for parameters' types positively contributes
+to the optimizer results.
+This means that on top of the predictions of the neural network,
+some constraints of the augmented static analysis tip the balance towards more reasonable predictions.\adg{rephrase this sentence}
+\textit{Overall, the combination of the logical (Aug-Static) and natural (LSTM) constraints in \prodts
+greatly improves our type inference capabilities}.
 
 \subsection{Comparison of \textit{Type} Stage with Existing Tools}
 
