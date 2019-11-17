@@ -304,7 +304,7 @@ linewidth=\linewidth
   %   % To do so, the key idea is to use a continuous representation of the logical constraints part that can be jointly optimized with the learned natural constraints.
   %   The main insight of our method is to relax the problem of type inference into a problem of numerical continuous optimization.
   %problem by using a continuous representation of the logical constraints part.
-  %
+  
   To evaluate the idea, we build a tool called \prodts to predict a TypeScript declaration file for a JavaScript library.
   %
   \prodts combines a continuous interpretation of logical constraints derived by a simple
@@ -312,12 +312,12 @@ linewidth=\linewidth
   model, which learns naming conventions for types from a large code base.
   %
   We evaluate \prodts on a data set of 5,800 open source JavaScript projects
-  which have type annotations in
+  that have type annotations in
   the well-known DefinitelyTyped repository. We find that combining logical
   and natural constraints yields a large improvement in performance
   over either kind of information individually, and produces $50\%$ fewer incorrect
   type predictions
-  than previous approaches from the research literature.
+  than previous approaches.
   %
   % By transcribing a type inference procedure into a numerical optimization problem we initiate a novice way to balance between hard and natural constraints for suggesting types and therefore contribute towards situations where developers efficiently achieve the best of both the dynamically and statically-typed world.
 \end{abstract}
@@ -394,7 +394,7 @@ or GitLab\footnote{\href{https://gitlab.com}{https://gitlab.com}},
 enables a new class of applications that leverage statistical
 patterns in large codebases.
 For type inference, machine learning
-allows us to develop less strict type inference systems,
+allows us to develop less strict type inference systems
 that learn to predict types from uncertain information,
 such as comments, names, and lexical context,
 even when traditional type inference procedures
@@ -451,7 +451,7 @@ TypeScript applications need to use untyped JavaScript libraries.
 To support static type
 checking of such applications the typed
 APIs of the libraries are expressed as separate TypeScript
-declaration files \emph{(.d.ts)}.  Although this manual approach has been proven
+declaration files (\lstinline{.d.ts}).  Although this manual approach has been proven
 effective, it raises the challenge of how to automatically maintain valid declaration files
 as library implementations evolve.
 
@@ -492,7 +492,7 @@ Our contributions can be summarized as:
 \begin{minipage}{\textwidth}
   Explain that $T=3$ and $V=3$
 Our input is a minimal TypeScript function without any type annotations on its parameters.
-TypeScript's compiler by default considers the parameters as the top type \texttt{any}.
+TypeScript's compiler, by default, considers the parameters as the top type \texttt{any}.
 Our goal is to exploit different sources of information to suggest to the programmer
 a type lower in the type hierarchy.
 To do so, we propose a type parameter for each of the formal parameters
@@ -504,9 +504,9 @@ parameters in this function.
 For instance, we can now capture the
 fact that the parameters are used as terms in a binary operation.
 This could give us a complex set of logical constraints about the possible combinations of the two operands.
-Still, for the purpose of this example we limit ourselves to a minimal set of constraints shown in Box (c),
+Still, for the purpose of this example, we limit ourselves to a minimal set of constraints shown in Box (c),
 where both the two operands should have the same type.
-In this stage a classical type inference approach would be unable to give us back a user-friendly type
+In this stage, a classical type inference approach would be unable to give us back a user-friendly type
 and would probably roll back to its top-level type.
 To alleviate that we are willing to take into account other sources of information,
 which try to capture the human intuition about the source code itself.
@@ -520,7 +520,7 @@ To combine our two sources of information we present the logical constraints
 as a matrix of probability vectors shown in Box (b).
 Doing that enable us to relax the boolean operators to numerical
 operators as shown in Box (e).
-When we numerically optimize the resulting expression
+When we numerically optimize the resulting expression,
 we obtain that both variables are strings with high probability.
 At the end we establish and solve an optimization problem that combines both sources of information
 and tries to satisfy the constraints from both sources as much as possible to improve the results.
