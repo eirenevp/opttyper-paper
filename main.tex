@@ -101,7 +101,7 @@
 \newcommand{\margincomment}[2]{\marginpar{\scriptsize\color{Maroon}#1 says: #2}}
 \newcommand{\adg}[1]{\margincomment{ADG}{#1}}
 \newcommand{\cas}[1]{\margincomment{Charles}{#1}}
-\newcommand{\ebr}[1]{\margincomment{Earl}{#1}}
+\newcommand{\etb}[1]{\margincomment{Earl}{#1}}
 \newcommand{\ivp}[1]{\margincomment{IVP}{#1}}
 
 % \ivpedit {} writes with color within the original text, if we uncomment
@@ -521,7 +521,7 @@ If we only have logical constraints, we cannot tell
 whether \texttt{string} or \texttt{number} is a better solution,
 and so may fall back to the type \texttt{any}.
 %
-The crux of our approach is to take into account \emph{natural constraints},
+The crux of our approach is to take into account \emph{natural constraints};
 that is, statistical properties learnt from a source code corpus that seek to capture human intuition.
 %
 In particular, we use a machine learning model to capture naming conventions over types.
@@ -545,7 +545,7 @@ Returning to the logical constraints,
 we can relax the boolean constraint of Box (c) to a numerical function on probabilities
 as shown in Box (e).
 %
-When we numerically optimize the resulting expression we obtain the matrix in Box (e);
+When we numerically optimize the resulting expression, we obtain the matrix in Box (e);
 it predicts that both variables are strings with high probability.
 %
 Finally, Box (f) shows an optimization objective that
@@ -554,7 +554,7 @@ $E$ consists of the logical constraints
 and each probability vector $\mu_v$ (the row of $\mathcal{M}$ for $v$)
 is the natural constraint for variable $v$.
 %
-Box (f) also shows the solution matrix, and Box (g) shows the induced type annotations,
+Box (f) also shows the solution matrix and Box (g) shows the induced type annotations,
 now all equal to \texttt{number}.
 \end{minipage}
 \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
@@ -678,6 +678,9 @@ This interpretation enables us to mix together the logical constraints with
 information coming from statistical analysis in a constructive way and hence to
 narrow down the predicted type.}
 
+\etb{I think it is a mistake to call translating type constraints into boolean expressions "augmented static 
+analsysi.  I think this needlessly creates an attack surface, opening us to the question "just how does this translation augment a static analysis?"  And what static analyses other than type checking and type inference do you use?}
+
 Logical constraints are extracted from our untyped input program $U$ using
 standard program analysis techniques.
 % \cas{ALL: Is "augmented static program analysis" an accurate term?}\adg{Could be. I trimmed the word "static".}
@@ -722,7 +725,7 @@ $\tilde{f}_{E}(M(\Gamma)) = f_E(M(\Gamma)).$
 To define a relaxed semantics, we introduce a continuous semantics of $E$ based on generalizations of two-valued logical conjuctions
 to many-valued~\cite{hajek1998}.
 Specifically, we use the product $t$-norm, because the binary operation associated with it is smooth and fits with our optimization-based approach.
-Product $t$-norm has already been used for obtaining continuous semantics in machine learning, for example by~\citet{rocktaschel15}.
+The product $t$-norm has already been used for obtaining continuous semantics in machine learning, for example by~\citet{rocktaschel15}.
 
 The continuous semantics $\qqpi{P}{E}$ is a function $\Pi^{V \times T} \times \mathcal{E} \rightarrow [0, 1],$
 defined as:
@@ -737,7 +740,7 @@ defined as:
   \qqpi{P}{E_1} + \qqpi{P}{E_2} - \qqpi{P}{E_1}\cdot\qqpi{P}{E_2}
 \end{align*}
 %The $\mathrel{is}$ relation describes that the probability that the type variable $x_v$ is the literal type $l_\tau$. 
-In the actual implementation we use logits instead of probabilities
+In the actual implementation, we use logits instead of probabilities
 for numerical stability, see \cref{app:appendix-logit}.
 
 \cas{This bit is important. It's a pretty simple fact, though, does it merit a theorem?}
@@ -752,7 +755,7 @@ objective for an optimization problem to infer $P.$
 The reason is that it relaxes
 the deterministic logical semantics of $E$, and it is maximized
 by probability matrices $P$ which correspond to satisfying type environments.
-The folowing theorem formalizes the idea:
+The following theorem formalizes the idea:
 \begin{theorem}
   For any $E$, if $P = M(\Gamma)$ for some $\Gamma$ that satisfies $E$, then $P \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
 \end{theorem}
@@ -824,7 +827,7 @@ like \texttt{lst}, are highly predictive of the type, and which subsequences are
 One simple way to do so is to use a recurrent neural network (RNN).
 
 For our purposes, an RNN is simply a function $(\bm{h}_{i-1}, z_i) \mapsto \bm{h}_{i}$
-that maps a so-called state vector $\bm{h}_{i-1} \in \mathbb{R}^H$
+that maps a state vector $\bm{h}_{i-1} \in \mathbb{R}^H$
 and an arbitrary input $z_i$ to an updated state vector $\bm{h}_{i}  \in \mathbb{R}^H$.
 (The dimension $H$ is one of the hyperparameters of the model, which can be tuned
 to obtain the best performance.)
@@ -852,7 +855,7 @@ In our instantiation of this natural constraint, we choose $F$ to be a feedforwa
 no additional hidden layers, as defined in \eqref{eq:feedforward}.
 We provide more details regarding the particular structure of our neural network in \cref{ssec:natprodts}.
 
-This network structure is by now a fairly standard architectural motif in deep learning.
+This network structure is, by now, a fairly standard architectural motif in deep learning.
 More sophisticated networks could certainly be employed, but are left to future work.
 
 \subsection{Combining Logical and Natural Constraints to Form an Optimization
@@ -863,7 +866,7 @@ More sophisticated networks could certainly be employed, but are left to future 
 The logical constraints pose challenges to the probabilistic world of
 machine learning. It is not straightforward to incorporate them in a probabilistic model
 along with the logical rules that they should follow.
-To combine the logical and the natural constraints we define a continuous
+To combine the logical and the natural constraints, we define a continuous
 optimization problem.
 
 \ivp{Brief motivation of Lagrange multiplier/ridge regression}
@@ -871,7 +874,7 @@ Intuitively, we design the optimization problem to be over
 probability matrices $P \in \Pi^{V \times T};$ we wish to find
 $P$ that is as close as possible to the natural constraints $\mathcal{M}$
 subject to the logical constraints being satisfied.
-A simple way to quantify the distance is via the \emph{euclidean norm} $|| \cdot ||_2$ of a vector,
+A simple way to quantify the distance is via the \emph{Euclidean norm} $|| \cdot ||_2$ of a vector,
 that is, the square root of the sum of the squares of its elements.
 %
 \cas{This could alternately be formalized as a multi-objective problem. I do not know what is best.
@@ -893,7 +896,7 @@ problem is to transform it into an equivalent unconstrained one.
 We do so in two steps.
 First we reparameterize the problem to remove the probability constraints.
 The softmax function $\sigma$ \eqref{eq:softmax} maps real-valued vectors to probability vectors.
-Thus we define:
+Thus, we define:
 \begin{equation}
   \begin{aligned}\label{eq:opt_no_prob}
     \underset{Y \in \mathbb{R}^{V \times T}}{\mathrm{min}} &
@@ -948,19 +951,19 @@ corresponding probability vector which is closest to one.
 \label{sec:prodts}
 To evaluate our approach in a real-world scenario we
 implement an end-to-end application, called \prodts, which aims
-to alleviate the process of inferring TypeScript declaration files
+to infer TypeScript declaration files
 for an underlying JavaScript library.
 
 \subsection{Background: TypeScript's Type System}\label{ssec:intro-typescript}
 Syntactically, TypeScript~\citep{typescript} is a typed superset of
-JavaScript that allows us to develop large-scale, stable applications.
+JavaScript designed for developing large-scale, stable applications.
 To leverage the fact that JavaScript is the only true cross-platform
-language that runs in any browser, any host, and any OS the TypeScript's
-compiler typechecks TypeScript programs and eventually emits plain JavaScript.
+language that runs in any browser, any host, and any OS, the TypeScript's
+compiler typechecks TypeScript programs and emits plain JavaScript.
 To compromise between static and dynamic typing, TypeScript supports a
 structural type system. 
-In structural type systems record types (classes) whose fields or members have the same names and types are considered to be equal.
-This way TypeScript's static type system can work well with a lot of JavaScript code that is dynamically typed.
+Structural type systems consider record types (classes), whose fields or members have the same names and types, to be equal.
+Structural typing permits TypeScript to handle many JavaScript idioms that depend on dynamic typing.
 One of the main intentions of TypeScript's designers is to
 provide a smooth transition from JavaScript.
 %
@@ -968,12 +971,12 @@ As a result TypeScript's type system is deliberately unsound~\citep{understandty
 TypeScript uses the \texttt{any} type as an intermediate
 step in cases it needs to statically assign a type to variables
 whose type is determined at runtime or is otherwise unknown at compile time.
-%
-In fact, TypeScript applications and libraries commonly take advantage of JavaScript's flourishing ecosystem
+
+TypeScript applications and libraries commonly take advantage of JavaScript's flourishing ecosystem
 and use untyped JavaScript libraries.
 To support static type checking of such applications,
 the types of such JavaScript libraries' APIs are expressed
-as separate TypeScript~\emph{declaration files} \textit{(.d.ts)}.
+as separate TypeScript~\emph{declaration files} (\lstinline{.d.ts}).
 The TypeScript community has already
 made a huge effort to support this process by manually writing and maintaining
 declaration files for over five thousand of the most popular JavaScript
@@ -983,31 +986,31 @@ Although this manual approach has proven
 useful, it raises the challenge of keeping declaration files
 in sync with the library implementations.
 
-Ideally we would like to automatically infer the typed APIs of such
+Ideally, we would like to automatically infer the typed APIs of such
 libraries.
 % TypeScript supports a peculiar flavor of type inference:
 TypeScript's soft type system \citep{softtyping}
 defaults to the \texttt{any} type.
-When a parameter has no type annotation, the type system assumes that it is of type
+When a parameter has no type annotation, the type system assumes that it has type
 \texttt{any} and does not infer a more specific type.
 %
 On the other hand, TypeScript does seek to infer more specific types for the return type of a function.
 %
 %\adg{While the following is true, I'm unsure it's essential to mention here.}
-It is impractical for TypeScript code to implement run-time casts---typical for gradual type
-systems---due to necessary type erasure to transform back to plain JavaScript \citep{understandtypescript}.
+It is impractical for TypeScript code to implement run-time casts --- typical for gradual type
+systems --- due to the type erasure that necessarily occurs when translating to plain JavaScript~\citep{understandtypescript}.
 
 % Therefore traditional static or dynamic analyses are not adequate to generate ready-to-use definition files.
 %
-Towards generating definition files for existing JavaScript libraries,
+For generating definition files for existing JavaScript libraries,
 the DefinitelyTyped
 community officially suggests a tool called dts-gen \citep{dtsgen}.
-The dts-gen tool uses runtime information to produce a \textit{.d.ts} file that gives a
-clear shape of the input API but does not provide type information for
-function arguments and return types.
+This tool uses runtime information to produce a \lstinline{.d.ts} file that 
+clearly defines the shape of the input API but does not provide type information for
+function arguments and returns.
 It is only meant to be used as a starting
 point for writing a high-quality declaration file. Dts-gen only collects
-dynamic information and as a result it emits many \texttt{any} types that the developer must refine manually.
+dynamic information. As a result it emits many \texttt{any} types that the developer must refine manually.
 \citet{tstools2017} created the TSINFER and TSEVOLVE tools to address the same problem.
 % to assist programmers to create and maintain TypeScript declaration files.
 These tools exploit a static analysis performed in a
@@ -1076,7 +1079,7 @@ Our implementation takes as input three files:
 \end{enumerate}
 
 \adg{Is the Structure versus Type stage helpful?  Do we use it later?  Will continue to read.}
-\paragraph{Output:} A corresponding TypeScript declaration file for the
+\paragraph{Output:} A TypeScript declaration file for the
 JavaScript library, that we from now on we call \textit{predicted.d.ts} and
 includes type predictions for
 \begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
@@ -1330,7 +1333,7 @@ but is able to generalize to unseen inputs.
 %   }
 %   \label{fig:Char-Level}
 %   \end{figure*}
-\subsection{Combining Logical and Natural Constraints for TypeScript}\label{ssec:combprodts}
+\subsection{Combining Logical and Natural Constraints}\label{ssec:combprodts}
 
 We describe the particular implementation details used to combine the two sources of information.
 Most of our design choices here are made empirically
