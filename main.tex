@@ -400,7 +400,9 @@ such as comments, names, and lexical context,
 even when traditional type inference procedures
 fail to infer a useful type.
 For instance,
-JSNice~\cite{raychev15} uses probabilistic graphical models to statistically infer types of identifiers in programs written in JavaScript, while DeepTyper~\cite{hellendoorn18} targets TypeScript~\cite{typescript} via deep learning techniques.
+JSNice~\cite{raychev15} uses probabilistic graphical models to statistically infer types of identifiers
+in programs written in JavaScript,
+while DeepTyper~\cite{hellendoorn18} targets TypeScript~\cite{typescript} via deep learning techniques.
 %see \cref{sec:related} for a more elaborate comparison to related work.
 These approaches all use machine learning to capture the structural
 similarities between typed and untyped source code and to extract a statistical model for
@@ -463,16 +465,15 @@ Our contributions can be summarized as:
   \item As an instantiation of this framework, we implement \prodts, a tool to generate probabilistic type
         signatures on TypeScript from JavaScript libraries.
         \prodts seeks to predict types for methods that are declared in a TypeScript declaration file.
-  \item We evaluate \prodts on a corpus of 5,800 JavaScript libraries for which
+  \item We evaluate \prodts on a corpus of 5800 JavaScript libraries for which
         the DefinitelyTyped repository provides type declaration files.
         We find that combining natural and logical constraints
-        yields improved performance over either alone.
-        Further, \prodts outperforms previous state-of-the-art research systems,
+        has better performance than either alone.
+        Further, \prodts outperforms state-of-the-art systems,
         JSNice \cite{raychev15} and DeepTyper \cite{hellendoorn18}.
         \prodts achieves a \emph{50\% reduction in error} (measured relatively) over these previous systems.
-        \ivp{*This* is how you present a Zeller number ;-)}
-        \adg{do we explain the calculation anywhere?  if not, we should}
 \end{itemize}
+%\ivp{*This* is how you present a Zeller number ;-)}
 
 \adg{Irene: please mention the $\mu_v$ in Box(d)
 because we later refer to $\mu_v$ in Box(f).}
@@ -607,7 +608,7 @@ Since several steps may involve approximation, the prediction $\Gamma$ may only 
 %
 Still, given a known $\hat{\Gamma}$ such that $\hat{\Gamma} \vdash U$ we can measure how well $\Gamma$ has predicted the identifiers and types of $\hat{\Gamma}$.
 %
-A key idea is that there are two sorts of constraints generated in step~(\ref{step:constraints}): logical constraints and natural
+A key idea is that there are two sorts of constraints in step~(\ref{step:constraints}): logical constraints and natural
 constraints.
 
 A \emph{logical constraint} is a formula $E$ that describes
@@ -1010,9 +1011,8 @@ point for writing a high-quality declaration file. Dts-gen only collects
 dynamic information and as a result it emits many \texttt{any} types that the developer must refine manually.
 \citet{tstools2017} created the TSINFER and TSEVOLVE tools to address the same problem.
 % to assist programmers to create and maintain TypeScript declaration files.
-These tools exploit a static analysis performed in a
-recorded snapshot of a concretely initialized library.
-Like dts-gen, these tools are good at capturing the structure of the definition file,
+These tools work by analyzing a recorded snapshot of a concretely initialized library.
+Like dts-gen, they are good at capturing the structure of the definition file,
 but often fail to capture readable forms for argument and result types.
 
 \subsection{Problem Statement}\label{ssec:problem}
@@ -1116,7 +1116,7 @@ given skeleton definition files produced by the \textit{Structure} stage.
     of type 'any', 'number' or an enum type.                               \\
     \bottomrule
   \end{tabularx}
-\end{table*}
+\end{table*} 
 
 \subsection{Logical Constraints for TypeScript}\label{ssec:logprodts}
 To generate the logical constraints of \cref{ssec:logcon},
@@ -1293,15 +1293,16 @@ like \textsc{AdaGrad}~\cite{duchi2011} and \textsc{RMSprop}~\cite{tieleman2014},
 \ivp{From Charles: We should say where we obtained the data set from, i.e., these are all of the projects on DefinitelyTyped, and what that means (i.e.
   the project was popular enough that a Typescript definiton file was written for it.}
 % To do so we are using a \textit{Char-Level LSTM} which predicts for any identifier a probability vector over all the available types during the training.
-We used all $5,800$ projects available from the DefinitelyTyped repository on 17th February 2019.
+\adg{Irene, no need to put numerals into math mode}
+We used all 5,800 projects available from the DefinitelyTyped repository on 17th February 2019.
 %
-We trained our model for $1,000$ epochs, for 78 different types,
-and obtained a validation accuracy of \emph{validation acc: $0.79$}.
+We trained our model for 1,000 epochs, for 78 different types,
+and obtained a validation accuracy of 0.79.
 %
-\cref{fig:Char-Level} shows a summary.
+% \cref{fig:Char-Level} shows a summary.
 %
-Our dataset was randomly split by project into $80\%$ training data,
-$10\%$ validation data and $10\%$ test data.
+Our dataset was randomly split by project into 80\% training data,
+10\% validation data and 10\% test data.
 %
 To split the available data in these three different sets is a common practice in machine learning
 which ensures that the learning model doesn't simply memorize the training data
@@ -1340,7 +1341,7 @@ We implement the optimization problem described in~\eqref{eq:objective} for init
 The adaptive optimization algorithm updates its value in subsequent iterations.
 To evaluate the minimum of the generated functions we use a different adaptive optimization algorithm,
 known as \textsc{RMSprop}~\cite{tieleman2014}.
-We set the maximum number of iterations to $2,000$ by when in practice the loss stabilizes.
+We set the maximum number of iterations to 2,000, which suffices in practice for the loss to stabilize.
 
 \subsection{Experimental Setup}
 
@@ -1361,9 +1362,10 @@ Based on it, we measure the performance of our tool as well as other related too
 by comparing the output declaration file for a given input JavaScript library
 with the corresponding gold declaration file included in the DefinitelyTyped repository.
 
+\adg{Irene, I removed quotes from "gold".  In general, avoid using quotations as a form of emphasis.}
 Next, we define the metrics used to perform this comparison.
 Traditionally, there have been two measures when comparing a result set
-(here the output declaration file) with human judgement (the ``gold'' declaration file):
+(here the output declaration file) with human judgement (the gold declaration file):
 \textit{Precision} and \textit{Recall}~\citep{russel16}.
 We use these two metrics to evaluate the output structure and types for each of the exported functions in a library.
 Here, we focus solely on functions while we discard the other exported entities,
@@ -1406,9 +1408,8 @@ which is partitioned into the following subsets:
         %   \item type of each property $T_{prop}$
 \end{itemize}
 
-We call the predicted TypeScript declaration file
-\emph{predicted.d.ts} while for the gold standard file we use the term
-\emph{gold.d.ts}.
+We call the predicted declaration file \emph{predicted.d.ts}
+while for the gold standard file we use the term \emph{gold.d.ts}.
 
 \begin{defn}[Functions \textit{Paths} \& \textit{Filter$_X$}]
   To capture the contents of a file we define the
@@ -1591,20 +1592,32 @@ greatly improves our type inference capabilities}.
 
 \subsection{Comparison of \textit{Type} Stage with Existing Tools}
 
-To evaluate \prodts we compare against two state-of-the-art tools that utilize machine learning techniques, both aiming to give type suggestions to the programmer.
-None of these tools was made explicitly for predicting TypeScript declaration files, so we made the necessary adjustments to meet the requirements of our setting.
-For all of our evaluations we have used the same Structure file, that it the one that dts-gen gives us.
+To evaluate \prodts we compare against two state-of-the-art tools that utilize machine learning techniques,
+both aiming to give type suggestions to the programmer.
+Neither tool was designed explicitly for predicting TypeScript declaration files,
+so we made the necessary adjustments to meet the requirements of our setting.
+For all of our evaluations we have used the same Structure file, that is, the one produced by dts-gen.
 The two tools that we compare against are:
 \begin{itemize}[label={\tiny$\bullet$}]
-  \item DeepTyper: A tool based on deep learning which learns types for every identifier.
-        The training of the network is performed using already annotated TypeScript code.
-
-  \item JSNice: A tool based on graphical machine learning which analyzes relationships between program elements to infer types for JavaScript files.
+  \item DeepTyper~\cite{hellendoorn18}: A tool based on deep learning which learns types for every identifier.
+        The network is trained using previously annotated TypeScript code.
+  \item JSNice~\cite{raychev15}: A tool based on probabilistic graphical models which analyzes relationships
+        between program elements to infer types for JavaScript files.
 \end{itemize}
 
-We have tried specifically to address any unfair comparison. DeepTyper uses a vocabulary of 11000 types, we measure the results on our set of 78 types and give every other type we encounter \textit{OutOfVoc};
-that means it doesn't affect the final result. JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on Table 4, for N = 6, which is the original implementation, the results for the types of the parameters are almost identical to the ones of the original JSNice paper.
-We summarize the results of our comparisons in \cref{tab:typeprec2}.
+We have tried specifically to address any unfair comparison.
+Since DeepTyper has a vocabulary of 11000 types, we measure the results on our set of 78 types
+and give every other type we encounter \textit{OutOfVoc}, so that it does not contribute to the final result.
+JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on Table 4, for N=6,
+which is the original implementation,
+the results for the types of the parameters are almost identical to the ones of the original JSNice paper.
+\cref{tab:typeprec2} summarizes the results of our comparisons.
+
+The \emph{relative error reduction} is a standard way to express performance improvement in machine learning.
+In our case, it is how many fewer errors ProdTS makes as a proportion of the errors that JSNice makes.
+The JSNice N=78 precision of 0.37 implies an error rate 0.63,
+whereas the ProdTS N=78 precision of 0.68 implies an error rate 0.32.
+So the relative reduction in error is $(0.63-0.32) / 0.63 = 49.2\%$.
 
 \begin{table*}[t]
   \centering
@@ -1627,43 +1640,67 @@ We summarize the results of our comparisons in \cref{tab:typeprec2}.
 \end{table*}
 
 \paragraph{Comparison with DeepTyper}
+DeepTyper is a deep learning framework that outputs a type vector for every identifier
+based on information from the source-code context.
+It utilizes information in the vicinity of the identifier to predict the type.
+In contrast, our LSTM is trained on identifiers and types;
+we focus on obtaining information based on the identifier alone and not its context.
 
-DeepTyper is essentially a tool that outputs a type vector for every identifier based on information from the source-code context.
-That is, it utilizes the information in the vicinity of the identifier to predict its type.
-This is in stark contrast with our method of handling pairs of identifiers and types; we focus of obtaining information based on the identifier alone and not its context.
+\adg{Irene, roughly how often does DeepTyper return any?  Saying just "often" is not very informative.}
+For the results shown in \cref{tab:typeprec2},
+DeepTyper often returns \texttt{any} as the most relevant suggestion for the type of an identifier.
+In this case, to keep the comparison meaningful, we select the second best candidate.
 
-For the results shown in \cref{tab:typeprec2}, it is usually the case that DeepTyper returns \texttt{any} as the most relevant suggestion for the type of an identifier.
-In this case, to keep the comparison meaningful, we select the second best candidate; DeepTyper is a deep learning framework and it outputs a probability vector similar to our LSTM network.
+Even though our LSTM is trained only on identifiers and types---while
+DeepTyper utilizes more context---predictions for both tools are comparable for parameters' types.
+For function return types, our Char-Level LSTM clearly outperforms DeepTyper.
+This shows that taking into account information in the vicinity can be problematic;
+function definitions may be placed relatively far away from their calls
+and hence the context is not very informative.
 
-A particularly favourable fact of our results is that even though LSTM takes as input identifiers and types only---while DeepTyper utilizes more context---predictions for both tools are comparable for parameters' types.
-For function return types, the Char-Level LSTM clearly outperforms DeepTyper.
-This shows that taking into account information in the vicinity can be problematic; function definitions might be placed relatively far away from their calls and as a result the context might be difficult to utilize properly.
-
-Finally, it is worth pointing out that DeepTyper has a type vocabulary of size $N = 11,000$, because it includes user-defined types too; much larger than our vocabulary of size $N = 78$.
-This suggests that if DeepTyper was trained on a smaller size vocabulary the results---at least for the predicted types of parameters---might be improved.
-Alternatively, this suggests that taking into account user-defined types needs extra considerations; simply learning user-defined identifier and type pairs might not be adequate and in fact it might even worsen the tool's performance.
+Finally, it is worth pointing out that DeepTyper has a type vocabulary of size $N = 11000$,
+much larger than our vocabulary of size $N = 78$,
+because it includes user-defined types too.
+If DeepTyper was trained on a smaller size vocabulary the results---at least for the predicted
+types of parameters---might be improved.
+Alternatively, perhaps taking into account user-defined types needs extra considerations;
+simply learning user-defined identifier and type pairs might not be adequate
+and in fact it might even worsen the tool's performance.
+\adg{Re the sentence above, which tool is meant?}
 
 \paragraph{Comparison with JSNice}
 
-JSNice is a tool that learns statistical correlations between program elements by shallowly exploiting their relationship.
-It was introduced as an approach for (among others) type inference on JavaScript using statistics from dependency graphs learned on a large corpus.
-The evaluation had to be performed manually because it provides a website interface only.
+\adg{"shallowly exploitin" doesn't sound like a Good Thing.  can we rephrase?}
+JSNice is a tool that learns statistical correlations between program elements
+by shallowly exploiting their relationship.
+Its purpose is for type inference (and other tasks) on JavaScript
+using statistics from dependency graphs learned on a large corpus.
+The evaluation on our data had to be performed manually because JSNIce is only available via a website interface.
 
-JSNice has a type lattice that contains only primitive types $N = 6$ and exploits the relationships between types of shallow depth.
-Therefore, the tool does not consider at all the additional issues involved with predicting precise types, in which the system must infer what level of generality is most appropriate for the predicted types.
+JSNice has a type lattice that contains only $N=6$ primitive types and exploits the relationships between types of shallow depth.
+Therefore, the tool does not consider the additional issues involved with predicting precise types,
+in which the system must infer what level of generality is most appropriate for the predicted types.
 Moreover, it does not entirely capture the flow and dependencies among typings.
 
-Due to the previous issue, we report results for two instantiations of JSNice: for the first one we calculated the results for the $6$ primitive types only, while for the second one we included the results of rest $N=78$ wrongly identified types.
-We notice that regarding the type recall of the parameters in \cref{tab:typeprec2} for the $N = 6$ case, JSNice scored better results than our tool.
-This might be the case due to the property that we discussed already regarding the use of a small size vocabularies.
+Due to the previous issue, we report results for two instantiations of JSNice:
+for the first one we calculated the results for the $6$ primitive types only,
+while for the second one we included the results of rest $N=78$ wrongly identified types.
+Regarding the type recall of the parameters in \cref{tab:typeprec2} for the $N=6$ case,
+JSNice scored better results than our tool.
+This may be because of the property that we discussed already regarding the use of a small size vocabularies.
 \ivp{add description of jsnice, 2 cases, one with 6 types only the one that jsnice is trained(results comparable with the result reported on jsnice for parameters but not for return type), 78 our set of types we do better in each case, main critique the failure to capture return types }
 
-Overall, we believe that this performance drop for DeepTyper and JSNice happens for the following reasons:
+Overall, we conjecture that the performance drop for DeepTyper and JSNice happens for the following reasons:
 \begin{enumerate}[label=(\roman*)]
-  \item The identifiers for functions are not as repeatable as the identifiers for parameters; DeepTyper and JSNice have less training data for function identifiers, while our Char-Level LSTM can captures variations of the same identifier irrespectively of its source.
+  \item The identifiers for functions are not as repeatable as the identifiers for parameters;
+        DeepTyper and JSNice have less training data for function identifiers,
+        while our Char-Level LSTM can captures variations of the same identifier irrespectively of its source.
   \item The return type of a function is usually related to code at the bottom of the function's body.
-        As a result, a learning approach which takes into account a limited amount of context can miss relationships that are not spatially close.
-  \item JSNice only captures shallow dependencies between identifiers and thus there are occasionally not enough to capture the information flow, especially for the function's return types.
+        As a result, a learning approach which takes into account a limited amount of context
+        can miss relationships that are not spatially close.
+  \item JSNice only captures shallow dependencies between identifiers and thus,
+        especially for the function's return types, there are occasionally insufficient information
+        to capture the information flow.
 \end{enumerate}
 NL2Type a tool by \cite{malik19} also uses
 a deep learning approach to the problem which considers JSDoc comments as
@@ -1688,7 +1725,6 @@ information. For example, we could simply add more terms to the combined objecti
 % performance drops for the return types compared both with the Char-Level but also 
 % with DeepTyper's perfomance for parameters, we believe that this happens for three
 % reasons:
-
 
 % \adgcomment{
 % We need to measure against:
