@@ -1,5 +1,5 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
-\documentclass[sigplan,10pt,anonymous]{acmart} % restore "review" option before submission
+\documentclass[sigplan,10pt,review,anonymous]{acmart} % restore "review" option before submission
 \settopmatter{printfolios=true,printccs=false,printacmref=false}
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
@@ -362,10 +362,10 @@ linewidth=\linewidth
 \section{Introduction}
 Statically-typed programming languages aim to enforce correctness and safety  properties
 on programs by guaranteeing constraints on program behaviour.
-Large scale user-studies
-suggest that programmers
+A large scale user-study
+suggests that programmers
 benefit from type safety in tasks
-such as class identification and type error fixing  \citep{hanenberg14}.
+such as class identification and type error fixing~\citep{hanenberg14}.
 However, type safety comes at a cost: these languages require explicit type annotations,
 which imposes the burden of declaring and maintaining these annotations on the programmer.
 Strongly statically-typed, usually functional languages, like Haskell or ML,
@@ -373,7 +373,7 @@ offer type inference procedures that reduce
 the cost of explicitly writing types but come with
 a steep learning curve.
 On the other hand, dynamically typed languages are intuitive
-and popular \cite{meyerovich12}, at the expense of being more error-prone.
+and popular \cite{meyerovich12}.
 To compromise between static and dynamic typing,
 the programming language community has developed hybrid approaches for type systems
 such as gradual typing systems \cite{siek06} or rich type inference procedures, see \cref{sec:related}.
@@ -937,7 +937,7 @@ The parameter $\lambda$ trades off the importance
 of the two different kinds of constraints.
 In the limiting case where $\lambda \rightarrow \infty$, the second term in the objective function \eqref{eq:objective} is dominant and we obtain the solution that best satisfies the relaxed
 logical constraints.
-If these constraints are consistent then the obtained probability vectors correspond to one-hot vectors.
+If these constraints are consistent, then the obtained probability vectors correspond to one-hot vectors.
 Similarly, for $\lambda \rightarrow 0$ the first term dominates and we obtain the solution that best matches the natural constraints,
 which is naturally $M$ itself. By choosing $\lambda$ well,
 we can trace the Pareto frontier between the two types of constraints,
@@ -946,11 +946,11 @@ and identify a value that minimizes the original problem \eqref{eq:opt_naive}.
 To obtain a final hard assignment $\Gamma,$ we first solve \eqref{eq:objective} to obtain the optimal $Y$, compute the
 associated probability vector $P = [\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}$. Then, for each identifier $x_v,$
 we select the element of the
-corresponding probability vector which is closest to one.
+corresponding probability vector that is closest to one.
 
 \section{\prodts: Predict TypeScript Type Signatures for JavaScript Libraries}
 \label{sec:prodts}
-To evaluate our approach in a real-world scenario we
+To evaluate our approach in a real-world scenario, we
 implement an end-to-end application, called \prodts, which aims
 to infer TypeScript declaration files
 for an underlying JavaScript library.
@@ -958,14 +958,13 @@ for an underlying JavaScript library.
 \subsection{Background: TypeScript's Type System}\label{ssec:intro-typescript}
 Syntactically, TypeScript~\citep{typescript} is a typed superset of
 JavaScript designed for developing large-scale, stable applications.
-To leverage the fact that JavaScript is the only true cross-platform
-language that runs in any browser, any host, and any OS, the TypeScript's
-compiler typechecks TypeScript programs and emits plain JavaScript.
-To compromise between static and dynamic typing, TypeScript supports a
-structural type system. 
+TypeScript's compiler typechecks TypeScript programs then emits plain JavaScript
+to leverage the fact that JavaScript is the only cross-platform
+language that runs in any browser, any host, and any OS.
 Structural type systems consider record types (classes), whose fields or members have the same names and types, to be equal.
-Structural typing permits TypeScript to handle many JavaScript idioms that depend on dynamic typing.
-One of the main intentions of TypeScript's designers is to
+To compromise between static and dynamic typing, TypeScript supports a
+structural type system because it permits TypeScript to handle many JavaScript idioms that depend on dynamic typing.
+One of the main goals of TypeScript's designers is to
 provide a smooth transition from JavaScript.
 %
 As a result TypeScript's type system is deliberately unsound~\citep{understandtypescript}.
@@ -992,10 +991,10 @@ libraries.
 % TypeScript supports a peculiar flavor of type inference:
 TypeScript's soft type system \citep{softtyping}
 defaults to the \texttt{any} type.
-When a parameter has no type annotation, the type system assumes that it has type
+So, when a parameter has no type annotation, TypeScript assumes that it has type
 \texttt{any} and does not infer a more specific type.
 %
-On the other hand, TypeScript does seek to infer more specific types for the return type of a function.
+TypeScript does, however, seek to infer more specific types for the return type of a function.
 %
 %\adg{While the following is true, I'm unsure it's essential to mention here.}
 It is impractical for TypeScript code to implement run-time casts --- typical for gradual type
@@ -1005,13 +1004,14 @@ systems --- due to the type erasure that necessarily occurs when translating to 
 %
 For generating definition files for existing JavaScript libraries,
 the DefinitelyTyped
-community officially suggests a tool called dts-gen \citep{dtsgen}.
+community officially recommends dts-gen~\citep{dtsgen}.
 This tool uses runtime information to produce a \lstinline{.d.ts} file that 
 clearly defines the shape of the input API but does not provide type information for
 function arguments and returns.
-It is only meant to be used as a starting
-point for writing a high-quality declaration file. Dts-gen only collects
+Dts-gen only collects
 dynamic information. As a result it emits many \texttt{any} types that the developer must refine manually.
+It is only meant to be used as a starting
+point for writing a high-quality declaration file. 
 \citet{tstools2017} created the TSINFER and TSEVOLVE tools to address the same problem.
 % to assist programmers to create and maintain TypeScript declaration files.
 These tools work by analyzing a recorded snapshot of a concretely initialized library.
@@ -1125,14 +1125,12 @@ given skeleton definition files produced by the \textit{Structure} stage.
 To generate the logical constraints of \cref{ssec:logcon},
 we exploit the information from the TypeScript compiler \cite{typescript}.
 %
-Instead of modifying the TypeScript compiler to emit logical constraints,
-apparently a substantial engineering effort,
-we devised the following technique to obtain constraints using the unmodified compiler.
+Instead of modifying the TypeScript compiler to emit logical constraints, a substantial engineering effort especially given the speed of the TypeScript compiler's evolution,
+we devised the following technique to obtain constraints from the unmodified compiler.
 %
-We transform each function's definition by
-explicitly assigning each formal parameter to a fresh generic type variable.
-%
-The type constraints on the types of the formal parameters yield error messages from the compiler.
+We harvest type constraints from type errors \lstinline+tsc+ generates.  We trigger
+these errors by explicitly assigning a fresh generic type variable to
+each formal of each function, then invoking \lstinline+tsc+.
 %
 We parse the error messages to construct our logical constraints.
 %
@@ -1145,33 +1143,33 @@ We also include return types inferred by the compiler as logical constraints.
 %This technique produces fewer logical constraints than if we were to modify the compiler itself,
 %but it suffices for our purpose here to evaluate the promise of our method.
 
-We can identify 5 common type errors (\cref{tab:constraints}) that the \texttt{tsc}
-compiler emits, and turn those into type constraints. The main problem with using
-this approach in isolation is that we produce an average total
+We identify 5 common type errors (\cref{tab:constraints}) that the \texttt{tsc}
+compiler emits, and turn them into type constraints. The main problem with 
+this approach in isolation is that it produces an average total
 of only around 10 constraints per library. As this information is quite
 limited and incomplete, our work focuses on utilizing machine learning to augment
 the quality and amount of type constraints.
 
-The parsing of the first type error---constraint kind pair of \cref{tab:constraints}
+The first row of \cref{tab:constraints}
 refers to identifying properties/methods that a type parameter should implement
 and using them to generate a type constraint.
-\textit{lib.d.ts} includes interfaces for the built-in types of the language.
+The file \lstinline{lib.d.ts} includes interfaces for the built-in types of the language.
 These interfaces contain the typed signatures of each property and method
 that a built-in type implements. We use these interfaces to construct a set of
-possible built-in types we could assign to the type parameter and therefore a proper
+possible built-in types that we could assign to the type parameter and therefore a proper
 type constraint. 
 %For a concrete example of this procedure,
 %see~\cref{fig:jscode-base64,fig:log-base64a}.\adg{unresolved reference}
 
 Our purpose is to establish the principle that a combination of natural and logical constraints can outperform either on its own, and outperforms the state-of-the-art.
 %
-To measure our method versus other tools on our gold files we had to find a way to generate logical constraints from the TypeScript compiler.
+To measure our method versus other tools on our gold files, we had to find a way to generate logical constraints from the TypeScript compiler.
 %
-We judged it better to generate a limited set of constraints by processing the TypeScript error messages than to attempt to modify the TypeScript compiler, a highly optimized and complex piece of software.
+We judged it better to generate a limited set of constraints by processing the TypeScript error messages than to attempt to modify the TypeScript compiler, a highly optimized, complex, and quickly evolving piece of software.
 %
 This technique seems a useful device that could be employed in other situations, and serves our purpose.
 %
-Having established the general principle, in future work we'd aim to show how to modify a type-checker to omit constraints directly.
+Having established the general principle, we will aim to show how to modify a type-checker to omit constraints directly in future work.
 %
 Our logical constraints include propositional logic, and therefore seem able to express a wide range of interesting type constraints.
 
@@ -1234,7 +1232,7 @@ Our logical constraints include propositional logic, and therefore seem able to 
 % \end{table*}
 \subsection{Natural Constraints for TypeScript}\label{ssec:natprodts}
 We now focus our attention on extracting natural constraints for
-this particular problem.
+our problem.
 The TypeScript community has already
 made a huge effort to support this process by writing and maintaining the
 declaration files for over four thousand of the most popular JavaScript
