@@ -989,7 +989,7 @@ in sync with the library implementations.
 Ideally, we would like to automatically infer the typed APIs of such
 libraries.
 % TypeScript supports a peculiar flavor of type inference:
-TypeScript's soft type system \citep{softtyping}
+TypeScript's soft type system~\citep{softtyping}
 defaults to the \texttt{any} type.
 So, when a parameter has no type annotation, TypeScript assumes that it has type
 \texttt{any} and does not infer a more specific type.
@@ -1284,7 +1284,7 @@ Our loss function is the negative log likelihood function---conveniently combine
 \begin{equation}
   L(\bm{y}) = -\sum_i log(\bm{y}_i).
 \end{equation}
-Essentially, we select during training the element that corresponds
+Essentially, we select, during training, the element that corresponds
 to the correct label from the output $F$
 and sum all the values of the correct labels for the entire training set.
 \ivp{Irene: I changed test to training; can you check?}
@@ -1313,9 +1313,10 @@ and obtained a validation accuracy of 0.79.
 Our dataset was randomly split by project into 80\% training data,
 10\% validation data and 10\% test data.
 %
-To split the available data in these three different sets is a common practice in machine learning
-which ensures that the learning model doesn't simply memorize the training data
+Splitting the available data in these three different sets is a common practice in machine learning
+to ensure that the learning model does not simply memorize the training data
 but is able to generalize to unseen inputs.
+
 % \begin{figure*}[!t]
 %     \centering
 %     \def\svgwidth{\linewidth}
@@ -1348,7 +1349,7 @@ based on what we have noticed maximizes the performance of the framework.
 
 We implement the optimization problem described in~\eqref{eq:objective} for initial $\lambda = 10$.
 The adaptive optimization algorithm updates its value in subsequent iterations.
-To evaluate the minimum of the generated functions we use a different adaptive optimization algorithm,
+To evaluate the minimum of the generated functions, we use a different adaptive optimization algorithm,
 known as \textsc{RMSprop}~\cite{tieleman2014}.
 We set the maximum number of iterations to 2,000, which suffices in practice for the loss to stabilize.
 
@@ -1366,7 +1367,7 @@ for solving logical constraints and natural constraints, and in about 65 seconds
 To measure the performance of our tool \prodts we make the following assumption:
 the existing declaration files on the DefinitelyTyped repository define the \textit{gold standard}
 for our predictions.
-It is an assumption in the sense that some files may contain errors \citep{williams17}.
+It is an assumption in the sense that some files may contain errors~\citep{williams17}.
 Based on it, we measure the performance of our tool as well as other related tools
 by comparing the output declaration file for a given input JavaScript library
 with the corresponding gold declaration file included in the DefinitelyTyped repository.
@@ -1377,9 +1378,10 @@ Traditionally, there have been two measures when comparing a result set
 (here the output declaration file) with human judgement (the gold declaration file):
 \textit{Precision} and \textit{Recall}~\citep{russel16}.
 We use these two metrics to evaluate the output structure and types for each of the exported functions in a library.
-Here, we focus solely on functions while we discard the other exported entities,
-such as variables, methods, and properties;
-the metrics presented next can easily be extended to evaluate all exported entities.
+Here, we focus solely on functions and discard the other exported entities,
+such as variables, methods, and properties.
+The metrics presented next can easily be extended to evaluate to those exported
+entities we currently exclude.
 The following definitions formalize these metrics.
 
 \subsection{Precision and Recall for Declaration Files}
@@ -1420,8 +1422,8 @@ which is partitioned into the following subsets:
 We call the predicted declaration file \emph{predicted.d.ts}
 while for the gold standard file we use the term \emph{gold.d.ts}.
 
-\begin{defn}[Functions \textit{Paths} \& \textit{Filter$_X$}]
-  To capture the contents of a file we define the
+\begin{defn}[Functions \textit{Paths} and \textit{Filter$_X$}]
+  To capture the contents of a file, we define the
   function~$\textit{Paths(*.d.ts)}$, which takes as an input a
   TypeScript declaration file and returns a set of paths
   to represent the structure and types of the file.
@@ -1444,16 +1446,16 @@ Precision for \textit{Structure} measures the proportion of entities found in \t
 that are also included in \textit{gold.d.ts}.
 %
 For example, if we get an $80\%$ \textit{Structure} precision that means
-that on average out of the $10$ entities that we found, $8$ exist in \textit{gold.d.ts} while $2$ do not.
+that, on average, out of the $10$ entities that we found, $8$ exist in \textit{gold.d.ts}, while $2$ do not.
 %
 Recall for \textit{Structure} measures the proportion of entities that exist in \textit{gold.d.ts}
 that we found in \textit{predicted.d.ts}.
 %
 For example, if we compute a $70\%$ \textit{Structure} recall
-that means that on average out of $10$ entities in \textit{gold.d.ts}
- we successfully identified $7$ of them while $3$ were not recognized.
+that means that, on average, out of $10$ entities in \textit{gold.d.ts},
+ we successfully identified $7$ of them, while $3$ were not recognized.
 
-For measuring \textit{Type} we exclude all entities that we found in \textit{predicted.d.ts}
+For measuring \textit{Type}, we exclude all entities that we found in \textit{predicted.d.ts}
 but not found in \textit{gold.d.ts} since we do not have a means to evaluate their validity.
 %
 Precision for \textit{Type} measures the proportion of correct types
@@ -1471,14 +1473,13 @@ as correctly predicting on average $6$ types out of the $10$ found in \textit{go
 %
 We compute the precision and recall for both stages using the formulas defined next.
 %
-We define $X$ to symbolise the stage for which we perform measurements;
-here it belongs to a binary set $X \in \{S, T\}$ for \textit{Structure} and \textit{Type}, respectively.
+We define $X \in \{S, T\}$ (\textit{Structure} and \textit{Type})
+to denote the stage for which we perform measurements.
 %
-In general, $X$ is not restricted to the binary set mentioned before.
-%
-For example, we could perform a finer analysis if $X = S_\text{fnRet}$ for function identifiers.
+$X$'s range could be extended to include, for instance, 
+$S_\text{fnRet}$ (function identifiers) to perform a finer analysis.
 
-\begin{defn}[Precision \& Recall for $X$] \label{def:precision_recall}
+\begin{defn}[Precision and Recall for $X$] \label{def:precision_recall}
   Given a declaration file \textit{predicted.d.ts},
   an ideal declaration file \textit{gold.d.ts}, and a class of paths $X$,
   we define precision and recall for $X$ as:
@@ -1506,10 +1507,10 @@ while the larger the recall the more existing types are discovered.
 Our contributions presented in \cref{sec:framework,sec:prodts} concern the second stage of the workflow,
 that is, the type prediction phase.
 %
-Here we describe an integrated, end-to-end approach so we focus on presenting a holistic evaluation of the problem.
+Here, we describe an integrated, end-to-end approach so we focus on presenting a holistic evaluation of the problem.
 %
-Thus, we will present results from the first stage too,
-although our method does not contribute to its improvement.
+Thus, we also present results from the first stage,
+although our method does not contribute to its improvement. 
 %
 For the same reason, we start by presenting the results related to the \textit{Type} stage.
 
@@ -1657,7 +1658,7 @@ we focus on obtaining information based on the identifier alone and not its cont
 
 \adg{Irene, roughly how often does DeepTyper return any?  Saying just "often" is not very informative.}
 For the results shown in \cref{tab:typeprec2},
-DeepTyper often returns \texttt{any} as the most relevant suggestion for the type of an identifier.
+DeepTyper often returns \lstinline{any} as the most relevant suggestion for the type of an identifier.
 In this case, to keep the comparison meaningful, we select the second best candidate.
 
 Even though our LSTM is trained only on identifiers and types---while
@@ -1670,12 +1671,11 @@ and hence the context is not very informative.
 Finally, it is worth pointing out that DeepTyper has a type vocabulary of size $N = 11000$,
 much larger than our vocabulary of size $N = 78$,
 because it includes user-defined types too.
-If DeepTyper was trained on a smaller size vocabulary the results---at least for the predicted
-types of parameters---might be improved.
-Alternatively, perhaps taking into account user-defined types needs extra considerations;
-simply learning user-defined identifier and type pairs might not be adequate
-and in fact it might even worsen the tool's performance.
-\adg{Re the sentence above, which tool is meant?}
+If DeepTyper were trained on a smaller size vocabulary the results---at least for the predicted
+types of parameters---might improve.
+Further, perhaps taking into account user-defined types needs extra consideration;
+simply learning user-defined identifier and type pairs, as DeepTyper does, might not be adequate
+and may, in fact, even worsen its performance.
 
 \paragraph{Comparison with JSNice}
 
@@ -1703,11 +1703,11 @@ Overall, we conjecture that the performance drop for DeepTyper and JSNice happen
 \begin{enumerate}[label=(\roman*)]
   \item The identifiers for functions are not as repeatable as the identifiers for parameters;
         DeepTyper and JSNice have less training data for function identifiers,
-        while our Char-Level LSTM can captures variations of the same identifier irrespectively of its source.
+        while our Char-Level LSTM can captures variations of the same identifier regardless of its source.
   \item The return type of a function is usually related to code at the bottom of the function's body.
-        As a result, a learning approach which takes into account a limited amount of context
+        As a result, a learning approach that takes into account a limited amount of context
         can miss relationships that are not spatially close.
-  \item JSNice only captures shallow dependencies between identifiers and thus,
+  \item JSNice only captures shallow dependencies between identifiers and, thus,
         especially for function return types, there is occasionally insufficient information
         to capture the information flow.
 \end{enumerate}
@@ -1721,7 +1721,7 @@ there are few examples with both JSDoc and available declaration
 files in the DefinitelyTyped repository.
 %
 Finally, it would be fairly simple to extend our method to include natural constraints generated by DeepTyper, NL2Type or
-indeed any other deep learning approach that offers similar kind of information.
+indeed any other deep learning approach that offers similar information.
 For example, we could simply add more terms to the combined objective function,
 including an extra term for every additional source of natural constraints.
 %42 libs, 106 parameters, 78 funRet, 184 total 
@@ -1793,12 +1793,16 @@ including an extra term for every additional source of natural constraints.
 \end{table*}
 
 \adg{perhaps this discussion should come before the discussion of the Type stage?}
+\etb{This must come first!  It's too confusing to report the first stage
+second!}
 We return to the first stage that predicts the structure of our JavaScript library.
 Here, we compare two tools that can output a structure file: \textit{declFlag} and \textit{dts-gen}.
 We summarise each tool as follows:
 \begin{itemize}[label={\tiny$\bullet$}]
-  \item \textit{declFlag}: The TypeScript compiler, when called with the flag \texttt{--declaration}, generates statically some of the exported definitions.
-  \item \textit{dts-gen}: A tool that attempts to address this problem by examining JavaScript objects that appear during runtime, rather than analysing the code statically.
+  \item \textit{declFlag}: The TypeScript compiler, when called with the flag
+	  \texttt{--declaration}, statically generates some exported definitions.
+  \item \textit{dts-gen}: A tool that dynamically examines JavaScript objects at
+	  runtime to generate exported definitions.
         % \item \texttt{prodts-gen}: Our tool which implements a more sophisticated static analysis.
 \end{itemize}
 \cref{tab:structprec} shows the results of the comparison.
@@ -1806,10 +1810,17 @@ Clearly \textit{dts-gen} outperforms \textit{declFlag} across all tasks.
 As a result, we used the output of \textit{dts-gen} as input in our type prediction stage.
 
 \section{Related Work} \label{sec:related}
+
+\prodts is a new form of probabilistic type inference that optimises over
+both logical and natural constraints.  Related spans classical, deterministic
+type inference and earlier machine learning approaches.
+
 \subsection{Classical Type Inference}
 
 \adg{There are purely statically typed languages, with powerful inference, so that annotations are infrequent.
   Any work to date on ML for statically typed languages?  Not AFAIK}
+\etb{There is work on ML for statically typed languages for the autocompletion
+  task, but not for type inference.}
 
 Rich type inference mitigates the cost
 of explicitly annotating types. This feature is an
@@ -1832,12 +1843,12 @@ inherent trait of strongly, statically-typed, functional languages (like Haskell
   none of this work makes use of natural constraints.}
 
 Dynamic languages have also started to pay more attention to typings. Several
-JavaScript extensions, like Closure Compiler \citep{closure} and
+JavaScript extensions, like Closure Compiler~\citep{closure} and
 TypeScript (see \cref{ssec:intro-typescript}), add optional type annotations to program
 variables using a gradual type system.
 %
 In JavaScript, these annotations are
-provided by specially formatted comments known as JSDoc \citep{jsdoc}.
+provided by specially formatted comments known as JSDoc~\citep{jsdoc}.
 %
 However, these
 extensions often fail to scale to realistic programs that make use of dynamic
@@ -1845,9 +1856,9 @@ evaluation and complex libraries, for example jQuery, which cannot be analyzed
 precisely~\cite{jensen2009}.
 %
 There are similar extensions for other popular scripting languages,
-like \citep{mypy}, an optional static type checker for Python,
-or RuboCop \citep{rubycop}, which serves as a static analyzer for Ruby by enforcing many of the guidelines
-outlined in the community Ruby Style Guide \citep{rubystyle}.
+like~\citep{mypy}, an optional static type checker for Python,
+or RuboCop~\citep{rubycop}, which serves as a static analyzer for Ruby by enforcing many of the guidelines
+outlined in the community Ruby Style Guide~\citep{rubystyle}.
 %and performing various check types known as cops.
 
 \adg{various systems of refinement types (or more generally dependent types).
@@ -1862,15 +1873,15 @@ modern logic solvers (such as SAT and SMT engines) to extend the
 scope of invariants that can be statically verified.
 An implementation of this concept comes with Logically Qualified Data Types,
 abbreviated to Liquid Types.
-DSOLVE is an early application of liquid type inference in OCAML \citep{liquid}.
+DSOLVE is an early application of liquid type inference in OCAML~\citep{liquid}.
 A type-checking algorithm, which relies on an SMT solver
 to compute subtyping efficiently for a core, first order functional language
-enhanced with refinement types \citep{semanticSMT}, provides a different
+enhanced with refinement types~\citep{semanticSMT}, provides a different
 approach.
-LiquidHaskell \citep{refHaskell} is a static verifier of
+LiquidHaskell~\citep{refHaskell} is a static verifier of
 Haskell based on Liquid Types via SMT and predicate
 abstraction.
-DependentJS \citep{dependentJS} incorporates dependent types into JavaScript.
+DependentJS~\citep{dependentJS} incorporates dependent types into JavaScript.
 \adg{Irene, I have trimmed the discussion of dependent types, as it's not the focus of the paper}
 
 % The expressive type systems of functional languages
@@ -1941,22 +1952,22 @@ DependentJS \citep{dependentJS} incorporates dependent types into JavaScript.
 \subsection{Machine Learning Over Source Code}
 
 Although the interdisciplinary field between machine learning and programming
-languages is still young, some complete reviews of this area are
+languages is still young, complete reviews of this area are
 already available.
 %
-\citet{allamanis17} in their survey give an extensive
-synopsis of works that model source code in a probabilistic way by containing
-a learning component and using complex representations of the underlying
+\citet{allamanis17} extensively survey
+work that probabilistically model source code via 
+a learning component and complex representations of the underlying
 code.
 %
-A detailed description of the area is also given by~\citet{vechev16} in
-their related article, whilst~\citet{threepillars}
-in their position paper also examine this research area by categorizing
+\citet{vechev16} give
+a detailed description of the area, whilst~\citet{threepillars}'s
+position paper examines this research area by categorizing
 the challenges involved in three main, overlapping pillars.
-%
+
 A sub-field of this
 emerging area applies probabilistic models from machine learning to infer semantic
-properties  of programs, such as types.
+properties of programs, such as types.
 %
 \citet{chibotaru19} use control and data flow analyses to extract
 the desired statistical graphical model.
