@@ -1157,12 +1157,12 @@ limited and incomplete, our work focuses on utilizing machine learning to augmen
 the quality and amount of type constraints.
 
 The first row of \cref{tab:constraints}
-refers to identifying properties/methods that a type parameter should implement
+refers to identifying properties/methods that a type should implement
 and using them to generate a type constraint.
 The file \lstinline{lib.d.ts} includes interfaces for the built-in types of the language.
 These interfaces contain the typed signatures of each property and method
 that a built-in type implements. We use these interfaces to construct a set of
-possible built-in types that we could assign to the type parameter and therefore a proper
+possible built-in types that we could assign to our injected type and therefore a proper
 type constraint. 
 %For a concrete example of this procedure,
 %see~\cref{fig:jscode-base64,fig:log-base64a}.\adg{unresolved reference}
