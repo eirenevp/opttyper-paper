@@ -1524,10 +1524,10 @@ Two kinds of input may be required by these packages:
 the JavaScript library file or a declaration file containing the exported functions.
 We summarise below the characteristics of each package and the provided input.
 \begin{itemize}[label={\tiny$\bullet$}]
-  \item \textit{Aug-Static}: Using the JavaScript library and the declaration file as an input,
+  \item \textit{Logical}: Using the JavaScript library and the declaration file as an input,
   we utilise the compiler in a pragmatic way allowing us to generate logical constraints as logical formulas
    and then solve them using fuzzy logic (\cref{ssec:logprodts}).
-  \item \textit{LSTM}: We query our pre-trained Char-Level \textit{LSTM} to give us predictions for every identifier
+  \item \textit{Natural}: We query our pre-trained Char-Level \textit{LSTM} to give us predictions for every identifier
         found in the declaration file (\cref{ssec:natprodts}).
         It requires as input the declaration file only.
   \item \prodts: The output of the optimization problem for the corresponding combination of the Character Level
@@ -1565,8 +1565,8 @@ The results presented in \cref{tab:typeprec1} are normalized based on these uppe
     %     \textit{JSNice} \tiny{(6-types)}      & 0.15                   & 0.15                   & 0.78                 & 0.80  & 0.47                & 0.48\\
     %     \textit{JSNice} \tiny{(78-types)}  & 0.12                   & 0.12                   & 0.62                  & 0.64 & 0.37                  & 0.38 \\
     %  \multicolumn{7}{@{}c@{}}{\dashrule} \\
-    \textit{Aug-Static} \tiny{($N=78$)} & 0.42                  & 0.41                  & 0.15                  & 0.15                  & 0.29                  & 0.28                  \\
-    \textit{LSTM} \tiny{($N=78$)}       & 0.48                  & 0.48                  & 0.61                  & 0.56                  & 0.55                  & 0.52                  \\
+    \textit{Logical} \tiny{($N=78$)} & 0.42                  & 0.41                  & 0.15                  & 0.15                  & 0.29                  & 0.28                  \\
+    \textit{Natural} \tiny{($N=78$)}       & 0.48                  & 0.48                  & 0.61                  & 0.56                  & 0.55                  & 0.52                  \\
     \textbf{\prodts} \tiny{($N=78$)}    & \textbf{0.61}         & \textbf{0.59}         & \textbf{0.63}         & \textbf{0.58}
                                         & \textbf{0.62}         & \textbf{0.58}                                                                                                         \\
     % limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
