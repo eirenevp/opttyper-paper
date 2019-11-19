@@ -598,7 +598,7 @@ let \emph{probabilistic type inference} consist of these steps:
   \item \label{step:constraints} We extract a set of constraints from $U$.
   \item \label{step:optimize} By optimizing these constraints, we construct a matrix $M$ with $V$ rows and $T$ columns,
   such that each row is a probability vector (over the $T$ concrete types).
-  \item For each identifier $x_v$, we set type $t_v$ to the concrete type $l_\tau$ where column $\tau$ has the maximum probability in the $v$th probability vector (the one for identifier $x_v$).
+  \item For each identifier $x_v$, we set type $t_v$ to the concrete type $l_\tau$ which we compute from the $v$th probability vector (the one for identifier $x_v$).  In this work, we pick the column $\tau$ that has the maximum probability in $x_v$'s probability vector.
   \item The outcome is the environment $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$.
 \end{enumerate}
 
