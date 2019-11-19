@@ -1600,7 +1600,8 @@ some constraints of the augmented static analysis tip the balance towards more r
 \textit{Overall, the combination of the logical (Aug-Static) and natural (LSTM) constraints in \prodts
 greatly improves our type inference capabilities}.
 
-\subsection{Comparison of \textit{Type} Stage with Existing Tools}
+\subsection{\prodts at the \textit{Type} Stage}
+\label{sec:typestage}
 
 To evaluate \prodts we compare against two state-of-the-art tools that utilize machine learning techniques,
 both aiming to give type suggestions to the programmer.
@@ -1977,6 +1978,11 @@ types of identifiers in programs written in Python. Their tool trains the
 classification model for each type in the domain and uses a different
 approach to build the graphical model as it allows to leverage type hints
 derived from data flow, attribute accesses, and naming conventions for types.
+%
+Two earlier approaches for probabilistic typing are JSNice~\citep{todo} and 
+DeepTyper~\citep{todo}.
+Indeed, they serve as baselines in our evaluation, where we discuss them in
+detail (\autoref{sec:typestage}).
 
 %The closest related works to this end are 
 %discussed in~\cref{sec:related}. We can view the problem of matching an identifier to a type as a form supervised text classification problem~\cite{aggarwal12}.
