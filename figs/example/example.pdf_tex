@@ -76,8 +76,8 @@
     \put(0.38947542,0.40651878){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/eqC.tex}}}}%
     \put(0.36771795,0.11222172){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/code8.tex}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{./figs/example/example.pdf}}%
-    \put(0.40126161,0.95757226){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/text1.tex}}}}%
-    \put(0.37055248,0.16932325){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/text2.tex}}}}%
+    \put(0.4212616,0.94755100){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/text1.tex}}}}%
+    \put(0.39055248,0.17032320){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\input{./figs/example/text2.tex}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=3]{./figs/example/example.pdf}}%
   \end{picture}%
 \endgroup%

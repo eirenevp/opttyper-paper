@@ -172,8 +172,8 @@ keywords={const, typeof, new, true, false, catch, function,
   exports, interface, readonly},
 keywordstyle=\color{myrose},
 ndkeywords={boolean, string, number, any, Array, Array<any>},
-ndkeywordstyle=\color{Maroon}\bfseries,
-identifierstyle=\color{RoyalBlue},
+ndkeywordstyle=\color{Maroon},
+identifierstyle=\color{black},
 sensitive=false,
 %escapechar=!,
 comment=[l]{//},
@@ -190,7 +190,7 @@ morestring=[b]"
 \lstset{
 language=JavaScript,
 extendedchars=true,
-basicstyle=\scriptsize\ttfamily,
+basicstyle=\ttfamily,
 showstringspaces=false,
 showspaces=false,
 numbers=left,
@@ -503,7 +503,7 @@ parameters.
 Our goal is to exploit both logical and natural constraints to suggest
 more specific types.
 %
-To begin, in Box (a), we propose fresh type annotations  \lstinline{START} and \lstinline{END} (uppercasing the identifier) for each parameter and \lstinline{ADDNUM} for the return type.
+To begin, in Box (a), we propose fresh type annotations  \textcolor{mygreen}{\texttt{START}} and \textcolor{mygreen}{\texttt{END}} (uppercasing the identifier) for each parameter and \textcolor{mygreen}{\texttt{ADDNUM}} for the return type.
 %
 We insert these annotations into the definition of the function.
 %
@@ -693,7 +693,7 @@ We will refer to this mechanism as the \emph{Constraints Generator}.
 In this work, we consider the following logical constraints.
 \begin{defn}[\emph{Grammar of Logical Constraints}]\label{def:log-gram}
   A logical constraint is an expression of the following form.
-  Let $\mathcal{E}$ be the set of all logical constraints.
+  Let $\mathcal{E}$ be the set of all logical constraints, while $E$ be their grammar:
   \begin{align*}
     E & ::= x_v \mathrel{is} l_\tau \\ \numberthis\label{eq:gram}
       & \mid{} \mathrel{not} E      \\
@@ -1093,8 +1093,6 @@ sum/product types of those.\adg{is that named interface or class types?  first m
 Let the \textit{Type} stage be the process of predicting types
 to fill the holes left in the declaration files
 following the \textit{Structure}.
-\ivp{An example input, showing all three files,
-  is shown in \cref{fig:declarations-b64a}. change this}
 In \cref{sec:eval}, we present metrics on the performance of tools, including \prodts, on the \textit{Type} stage,
 given skeleton definition files produced by the \textit{Structure} stage.
 % In other words, our main focus is to apply our probabilistic
@@ -1136,13 +1134,13 @@ each formal of each function, then invoking \lstinline+tsc+.
 %
 We parse the error messages to construct our logical constraints.
 %
-\adg{this example is rather out of context}
+\adg{this example is rather out of context:
 For example a valid constraint on type \textit{l} would be equivalent to
 $l = String \mathrel{or} l = \text{Array<any>}$\footnote{There is a subtle
 difference between JavaScript primitive types, written in lowercase, and their
 corresponding TypeScript primitive types, which start with a capital letter and
 are implemented as interfaces TypeScript's default declaration file. For this
-project, we consider them to be the same type.} but not \textit{l has member .length}.
+project, we consider them to be the same type.} but not \textit{l has member .length}.}
 %
 We also include return types inferred by the compiler as logical constraints.
 %
@@ -1483,7 +1481,7 @@ $S_\text{fnRet}$ (function identifiers) to perform a finer analysis.
   Given a declaration file \textit{predicted.d.ts},
   an ideal declaration file \textit{gold.d.ts}, and a class of paths $X$,
   we define precision and recall for $X$ as:
-
+  %
   \begin{equation}
     P(X) =
     \dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap {}}{Filter_X(Paths(gold.d.ts)) |}}{|Filter_X(Paths(predicted.d.ts)) |}
@@ -1495,7 +1493,7 @@ $S_\text{fnRet}$ (function identifiers) to perform a finer analysis.
     {|Filter_X(Paths(gold.d.ts))|}.
   \end{equation}
 \end{defn}
-
+%
 The maximum precision and recall that we can obtain is equal to $1$.
 %
 For \textit{Structure}, the larger the precision the more relevant entities are returned than irrelevant ones,
@@ -1597,11 +1595,11 @@ because the low results of the augmented static analysis for parameters' types p
 to the optimizer results.
 This means that on top of the predictions of the neural network,
 some constraints of the augmented static analysis tip the balance towards more reasonable predictions.\adg{rephrase this sentence}
-\textit{Overall, the combination of the logical (Aug-Static) and natural (LSTM) constraints in \prodts
-greatly improves our type inference capabilities}.
+Overall, the combination of the logical (Aug-Static) and natural (LSTM) constraints in \prodts
+greatly improves our type inference capabilities.
 
 \subsection{\prodts at the \textit{Type} Stage}
-\label{sec:typestage}
+\label{ssec:typestage}
 
 To evaluate \prodts we compare against two state-of-the-art tools that utilize machine learning techniques,
 both aiming to give type suggestions to the programmer.
@@ -1979,10 +1977,10 @@ classification model for each type in the domain and uses a different
 approach to build the graphical model as it allows to leverage type hints
 derived from data flow, attribute accesses, and naming conventions for types.
 %
-Two earlier approaches for probabilistic typing are JSNice~\citep{todo} and 
-DeepTyper~\citep{todo}.
+Two earlier approaches for probabilistic typing are JSNice~\citep{raychev15} and 
+DeepTyper~\citep{hellendoorn18}.
 Indeed, they serve as baselines in our evaluation, where we discuss them in
-detail (\autoref{sec:typestage}).
+detail (\autoref{ssec:typestage}).
 
 %The closest related works to this end are 
 %discussed in~\cref{sec:related}. We can view the problem of matching an identifier to a type as a form supervised text classification problem~\cite{aggarwal12}.
@@ -2092,7 +2090,5 @@ while the LogSumExp function is defined as
 \begin{equation*}
   \text{LogSumExp}(\bm{x}) = \log\left( \sum_i \exp\{x_i\} \right).
 \end{equation*}
-
-\ivp{what is the dimension of the logsumexp input?}
 
 \end{document}
