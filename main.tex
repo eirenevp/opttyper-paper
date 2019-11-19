@@ -84,7 +84,7 @@
 \usepackage{bm}
 
 \newcommand{\qqpi}[2]{[\![#2]\!]_{#1}}
-\newcommand{\prodts}{\textsc{ProdTS}\xspace}
+\newcommand{\prodts}{\textsc{OptTyper}\xspace}
 \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
 
 
@@ -1288,7 +1288,7 @@ Essentially, we select, during training, the element that corresponds
 to the correct label from the output $F$
 and sum all the values of the correct labels for the entire training set.
 \ivp{Irene: I changed test to training; can you check?}
-
+\subsection{Realization of \prodts{}}\label{ssec:combprodts}
 We use \textsc{Adam}, an extension of stochastic gradient descent~\cite{kingma2014},
 as our optimization algorithm.
 %
@@ -1341,7 +1341,7 @@ but is able to generalize to unseen inputs.
 %   }
 %   \label{fig:Char-Level}
 %   \end{figure*}
-\subsection{Combining Logical and Natural Constraints}\label{ssec:combprodts}
+%\subsection{Combining Logical and Natural Constraints}
 
 We describe the particular implementation details used to combine the two sources of information.
 Most of our design choices here are made empirically
@@ -1353,14 +1353,7 @@ To evaluate the minimum of the generated functions, we use a different adaptive 
 known as \textsc{RMSprop}~\cite{tieleman2014}.
 We set the maximum number of iterations to 2,000, which suffices in practice for the loss to stabilize.
 
-\subsection{Experimental Setup}
 
-Both the code for the deep learning and the optimization part is written in PyTorch~\cite{paszke2017}.
-All experiments are conducted on an NVIDIA Titan Xp with 12GB VRam,
-in combination with a 2-core Intel Core i5 CPU with 8GB of RAM.
-Our resulting model requires about 400MB of RAM to be loaded into memory and can be run on both a GPU and CPU.
-It computes type annotations on average for 58 files in about 60 seconds
-for solving logical constraints and natural constraints, and in about 65 seconds for the combined optimization.
 
 \section{Evaluation of \prodts{}} \label{sec:eval}
 
@@ -1384,6 +1377,14 @@ The metrics presented next can easily be extended to evaluate to those exported
 entities we currently exclude.
 The following definitions formalize these metrics.
 
+\paragraph{Experimental Setup}
+
+Both the code for the deep learning and the optimization part is written in PyTorch~\cite{paszke2017}.
+All experiments are conducted on an NVIDIA Titan Xp with 12GB VRam,
+in combination with a 2-core Intel Core i5 CPU with 8GB of RAM.
+Our resulting model requires about 400MB of RAM to be loaded into memory and can be run on both a GPU and CPU.
+It computes type annotations on average for 58 files in about 60 seconds
+for solving logical constraints and natural constraints, and in about 65 seconds for the combined optimization.
 \subsection{Precision and Recall for Declaration Files}
 
 \begin{defn}[\emph{Paths}]
