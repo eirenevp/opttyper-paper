@@ -1,5 +1,5 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
-\documentclass[sigplan,10pt,review,anonymous]{acmart} % restore "review" option before submission
+\documentclass[sigplan,10pt,anonymous]{acmart} % restore "review" option before submission
 \settopmatter{printfolios=true,printccs=false,printacmref=false}
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
@@ -679,12 +679,8 @@ This interpretation enables us to mix together the logical constraints with
 information coming from statistical analysis in a constructive way and hence to
 narrow down the predicted type.}
 
-\etb{I think it is a mistake to call translating type constraints into boolean expressions "augmented static 
-analsysi.  I think this needlessly creates an attack surface, opening us to the question "just how does this translation augment a static analysis?"  And what static analyses other than type checking and type inference do you use?}
-
 Logical constraints are extracted from our untyped input program $U$ using
 standard program analysis techniques.
-% \cas{ALL: Is "augmented static program analysis" an accurate term?}\adg{Could be. I trimmed the word "static".}
 We employ an augmented static analysis (\textit{Aug-Static}) that
 takes into account a set of rules that the type system enforces and
 generates a corresponding boolean expression for them.
