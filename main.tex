@@ -497,18 +497,18 @@ because we later refer to $\mu_v$ in Box(f).}
 Our input is a minimal JavaScript function
 with no type annotations on its parameters or result.
 %
-TypeScript's compiler by default considers the parameters as the top type \texttt{any}.
+By default, TypeScript's compiler assigns its wildcard type \lstinline+any+ to
+parameters.
 %
 Our goal is to exploit both logical and natural constraints to suggest
 more specific types.
 %
-To begin, in Box (a), we propose
-fresh type variables \texttt{START} and \texttt{END} for each of the two parameters
-and \texttt{ADDNUM} for the return type of the function.
+To begin, in Box (a), we propose fresh type annotations  \texttt{START} and \texttt{END} (uppercasing the identifier) for each parameter
+and \texttt{ADDNUM} for the return type.
 %
-We insert these type variables into the definition of the function.
+We insert these annotations into the definition of the function.
 %
-Our \emph{logical constraints} on these type variables represent knowledge obtained
+Our \emph{logical constraints} on these types represent knowledge obtained
 by a symbolic analysis of the code in the body of the function.
 %
 In our example, the use of a binary operation implies that the two parameter types are equal.
