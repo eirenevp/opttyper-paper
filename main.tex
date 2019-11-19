@@ -503,8 +503,7 @@ parameters.
 Our goal is to exploit both logical and natural constraints to suggest
 more specific types.
 %
-To begin, in Box (a), we propose fresh type annotations  \texttt{START} and \texttt{END} (uppercasing the identifier) for each parameter
-and \texttt{ADDNUM} for the return type.
+To begin, in Box (a), we propose fresh type annotations  \lstinline{START} and \lstinline{END} (uppercasing the identifier) for each parameter and \lstinline{ADDNUM} for the return type.
 %
 We insert these annotations into the definition of the function.
 %
@@ -513,17 +512,18 @@ by a symbolic analysis of the code in the body of the function.
 %
 In our example, the use of a binary operation implies that the two parameter types are equal.
 %
-We show a minimal set of logical constraints in Box (c),
-to the effect that the two operands have the same type.
+Box (c) shows a minimal set of logical constraints that state
+that \lstinline+addNum+'s two operands have the same type.
 %
 In general, the logical constraints can be much more complex than our simple example.
 %
 If we only have logical constraints, we cannot tell
-whether \texttt{string} or \texttt{number} is a better solution,
-and so may fall back to the type \texttt{any}.
+whether \lstinline{string} or \lstinline{number} is a better solution,
+and so may fall back to the type \lstinline{any}.
 %
 The crux of our approach is to take into account \emph{natural constraints};
-that is, statistical properties learnt from a source code corpus that seek to capture human intuition.
+that is, statistical properties learnt from a source code corpus that seek to
+capture human intention.
 %
 In particular, we use a machine learning model to capture naming conventions over types.
 %
@@ -531,14 +531,14 @@ We represent the solution space for our logical or natural constraints or their 
 as a $V \times T$ matrix $P$ of the form in Box (b):
 each row vector is a discrete probability distribution
 over our universe of $T=3$ concrete types
-(\texttt{number}, \texttt{string}, and \texttt{any}) for one of our $V=3$ identifiers.
+(\lstinline{number}, \lstinline{string}, and \lstinline{any}) for one of our $V=3$ identifiers.
 %
 Box (d) shows the natural constraints $\mathcal{M}$ induced by the identifier names
 for the parameters and return types of our function.
 %
 Intuitively, Box (d) shows that a programmer
-is more likely to name a variable \texttt{start} or \texttt{end}
-if she intends to use it as a \texttt{number} than as a \texttt{string}.
+is more likely to name a variable \lstinline{start} or \lstinline{end}
+if she intends to use it as a \lstinline{number} than as a \lstinline{string}.
 %
 % The matrix uses probabilities to reflect our degree of certainty.
 %
@@ -556,7 +556,7 @@ and each probability vector $\mu_v$ (the row of $\mathcal{M}$ for $v$)
 is the natural constraint for variable $v$.
 %
 Box (f) also shows the solution matrix and Box (g) shows the induced type annotations,
-now all equal to \texttt{number}.
+now all equal to \lstinline{number}.
 \end{minipage}
 \caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
 \end{figure*}
@@ -1104,19 +1104,20 @@ given skeleton definition files produced by the \textit{Structure} stage.
 
 \begin{table*}[t]
   \centering
-  \caption{The five different types of type errors that we are taking into account to generate the \textit{logical constraints}.}\label{tab:constraints}
+  \caption{The five different type errors from which generate the \textit{logical constraints}.}
+  \label{tab:constraints}
   \begin{tabularx}{\textwidth}{lX}
-    \toprule                                                               \\
+    \toprule
     Constraint-Id & Description                                            \\
-    \midrule                                                               \\
-    Property      & Property $X$ does not exist on type $Y$.               \\
-    Binop         & Operator $x$ cannot be applied
+    \midrule
+    Property      & Property $X$ does not exist in type $Y$.               \\
+    Binop         & Operator $\oplus$ cannot be applied
     to types $X$ and $Y$.                                                  \\
-    Index         & Type X cannot be used to index type $Y$.               \\
-    ArithmLHS     & The left-hand side of an arithmetic operation must be
-    of type 'any', 'number' or an enum type.                               \\
-    ArithmRHS     & The right-hand side of an arithmetic operation must be
-    of type 'any', 'number' or an enum type.                               \\
+    Index         & Type $X$ cannot index type $Y$.                        \\
+    ArithLHS      & The left-hand side of an arithmetic operation must be
+    an \lstinline+enum+ type or have type \lstinline+any+ or \lstinline+number+. \\
+    ArithRHS      & The right-hand side of an arithmetic operation must be
+    an \lstinline+enum+ type or have type \lstinline+any+ or \lstinline+number+. \\
     \bottomrule
   \end{tabularx}
 \end{table*} 
