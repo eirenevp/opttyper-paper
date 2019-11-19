@@ -683,12 +683,10 @@ narrow down the predicted type.}
 analsysi.  I think this needlessly creates an attack surface, opening us to the question "just how does this translation augment a static analysis?"  And what static analyses other than type checking and type inference do you use?}
 
 Logical constraints are extracted from our untyped input program $U$ using
-standard program analysis techniques.
-% \cas{ALL: Is "augmented static program analysis" an accurate term?}\adg{Could be. I trimmed the word "static".}
-We employ an augmented static analysis (\textit{Aug-Static}) that
-takes into account a set of rules that the type system enforces and
-generates a corresponding boolean expression for them.
-We will refer to this mechanism as the \emph{Constraints Generator}.
+standard program analysis techniques.  Here, we rely a \emph{Constraints
+Generator} (ConGen) for this purpose.   \autoref{ssec:logprodts} describes its
+realisation.  CodeGen takes into account a set of rules that the type system
+enforces and generates a boolean type constraints for them.
 
 In this work, we consider the following logical constraints.
 \begin{defn}[\emph{Grammar of Logical Constraints}]\label{def:log-gram}
@@ -1120,7 +1118,8 @@ given skeleton definition files produced by the \textit{Structure} stage.
   \end{tabularx}
 \end{table*} 
 
-\subsection{Logical Constraints for TypeScript}\label{ssec:logprodts}
+\subsection{Logical Constraints for TypeScript}
+\label{ssec:logprodts}
 
 To generate the logical constraints of \cref{ssec:logcon}, we exploit the information from \lstinline+tsc+, the TypeScript compiler~\cite{typescript}.
 %
