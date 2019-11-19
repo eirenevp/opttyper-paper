@@ -1,5 +1,5 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
-\documentclass[sigplan,10pt,anonymous]{acmart} % restore "review" option before submission
+\documentclass[sigplan,10pt,review,anonymous]{acmart} % restore "review" option before submission
 \settopmatter{printfolios=true,printccs=false,printacmref=false}
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
@@ -1554,7 +1554,7 @@ The results presented in \cref{tab:typeprec1} are normalized based on these uppe
   \caption{Aggregate \textit{Type} precision and recall for 58 JavaScript libraries with 1272 identifiers in total (610 $funRet$, 662 $param$).
     We use the notation $P(T^N_\text{fnRet})$ for $P(T_\text{fnRet} \cap N)$, where $N$ is the number of types in our universe of types.}\label{tab:typeprec1}
   \begin{tabular}{ccccccc}
-    \toprule                                                                                                                                                                            \\
+    \toprule                                                                                                                                
     Tool                                & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$ \\
     \midrule                                                                                                                                                                            \\
 
@@ -1636,9 +1636,9 @@ So the relative reduction in error is $(0.63-0.32) / 0.63 = 49.2\%$.
     The superscript $N$ has the same meaning as in \cref{tab:typeprec1}, where $N = 6$ consists of the six types predicted by JSNice.
     Boldface indicates the best results of the full set of $N=78$ types.}\label{tab:typeprec2}
   \begin{tabular}{ccccccc}
-    \toprule                                                                                                                                                                         \\
+    \toprule                                                                                                                        
     Tool                             & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$ \\
-    \midrule                                                                                                                                                                         \\
+    \midrule                                                                                                                              
     DeepTyper\tiny{($N=78$)}         & 0.20                  & 0.20                  & 0.50                  & 0.52                  & 0.35                  & 0.36                  \\
 
     JSNice \tiny{($N=6$)}            & 0.15                  & 0.15                  & 0.78                  & 0.80                  & 0.47                  & 0.48                  \\
