@@ -599,12 +599,12 @@ The environment takes the form $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$ w
 Given an untyped program $U$,
 let \emph{probabilistic type inference} consist of these steps:
 \begin{enumerate}
-  \item We choose a finite universe consisting of $T$ distinct concrete types $\{ l_\tau \mid \tau \in 1 \dots T \}$.
+  \item We choose a finite universe consisting of $T$ distinct literal types $\{ l_\tau \mid \tau \in 1 \dots T \}$.
   \item We compute a set $\{ x_v \mid v \in 1 \ldots V\}$ of a number $V$ of distinct identifiers in $U$ that need to be assigned types.
   \item \label{step:constraints} We extract a set of constraints from $U$.
   \item \label{step:optimize} By optimizing these constraints, we construct a matrix $M$ with $V$ rows and $T$ columns,
-  such that each row is a probability vector (over the $T$ concrete types).
-  \item For each identifier $x_v$, we set type $t_v$ to the concrete type $l_\tau$ which we compute from the $v$th probability vector (the one for identifier $x_v$).  In this work, we pick the column $\tau$ that has the maximum probability in $x_v$'s probability vector.
+  such that each row is a probability vector (over the $T$ literal types).
+  \item For each identifier $x_v$, we set type $t_v$ to the literal type $l_\tau$ which we compute from the $v$th probability vector (the one for identifier $x_v$).  In this work, we pick the column $\tau$ that has the maximum probability in $x_v$'s probability vector.
   \item The outcome is the environment $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$.
 \end{enumerate}
 
@@ -1088,8 +1088,7 @@ includes type predictions for
   \item type annotations for the function's arguments, denoted as \emph{param}.
 \end{itemize}
 The output of our tool is essentially the declaration file from the \textit{Structure} stage
-but with some, or ideally all, of the \texttt{any} types substituted with built-in types---not including user-defined types---and
-sum/product types of those.\adg{is that named interface or class types?  first mention of sum/product types}
+but with some, or ideally all, of the \texttt{any} types substituted with built-in types ---not including user-defined---.
 
 Let the \textit{Type} stage be the process of predicting types
 to fill the holes left in the declaration files
