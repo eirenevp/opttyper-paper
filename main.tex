@@ -1123,10 +1123,11 @@ given skeleton definition files produced by the \textit{Structure} stage.
 \end{table*} 
 
 \subsection{Logical Constraints for TypeScript}\label{ssec:logprodts}
-To generate the logical constraints of \cref{ssec:logcon},
-we exploit the information from the TypeScript compiler \cite{typescript}.
+
+To generate the logical constraints of \cref{ssec:logcon}, we exploit the information from \lstinline+tsc+, the TypeScript compiler~\cite{typescript}.
 %
-Instead of modifying the TypeScript compiler to emit logical constraints, a substantial engineering effort especially given the speed of the TypeScript compiler's evolution,
+Instead of modifying \lstinline+tsc+ to emit logical constraints, a substantial
+engineering effort especially given the speed of \lstinline+tsc+'s evolution,
 we devised the following technique to obtain constraints from the unmodified compiler.
 %
 We harvest type constraints from type errors \lstinline+tsc+ generates.  We trigger
@@ -1137,7 +1138,11 @@ We parse the error messages to construct our logical constraints.
 %
 \adg{this example is rather out of context}
 For example a valid constraint on type \textit{l} would be equivalent to
-$l = String \mathrel{or} l = \text{Array<any>}$\footnote{There is a subtle difference between JavaScript primitive types, written in lowercase, and their corresponding TypeScript primitive types, which start with a capital letter, and being implelemted as interfaces TypeScript's default declaration file. For this project we consider them to be the same type.} but not \textit{l has member .length}.
+$l = String \mathrel{or} l = \text{Array<any>}$\footnote{There is a subtle
+difference between JavaScript primitive types, written in lowercase, and their
+corresponding TypeScript primitive types, which start with a capital letter and
+are implemented as interfaces TypeScript's default declaration file. For this
+project, we consider them to be the same type.} but not \textit{l has member .length}.
 %
 We also include return types inferred by the compiler as logical constraints.
 %
@@ -1164,15 +1169,16 @@ type constraint.
 
 Our purpose is to establish the principle that a combination of natural and logical constraints can outperform either on its own, and outperforms the state-of-the-art.
 %
-To measure our method versus other tools on our gold files, we had to find a way to generate logical constraints from the TypeScript compiler.
+To measure our method versus other tools on our gold files, we had to find a way to generate logical constraints from \lstinline+tsc+.
 %
-We judged it better to generate a limited set of constraints by processing the TypeScript error messages than to attempt to modify the TypeScript compiler, a highly optimized, complex, and quickly evolving piece of software.
+We judged it better to generate a limited set of constraints by processing the
+TypeScript error messages than to attempt to modify \lstinline+tsc+, a highly optimized, complex, and quickly evolving piece of software.
+%
+Our logical constraints include propositional logic, and therefore seem able to express a wide range of interesting type constraints.
 %
 This technique seems a useful device that could be employed in other situations, and serves our purpose.
 %
 Having established the general principle, we will aim to show how to modify a type-checker to omit constraints directly in future work.
-%
-Our logical constraints include propositional logic, and therefore seem able to express a wide range of interesting type constraints.
 
 % \begin{figure*}[t]
 %     \begin{minipage}[c]{\textwidth}
@@ -1241,18 +1247,19 @@ libraries. These files are available on the~\citet{definitelytyped}
 repository. The declaration files on this repository provide an excellent
 opportunity for statistical learning algorithms.
 We use a Char-Level LSTM trained on
-\textit{(id, type)} pairs to obtain knowledge about naming conventions
+\textit{(id, type)} pairs to learn naming conventions
 for identifiers, treated as sequences of characters.
-The main intuition behind the particular choice of the LSTM is that
-developers commonly use multiple abbreviations of the same word.
-Thus, this family of abbreviations share a type
-and a Char-Level LSTM is well-suited to predict the type for any identifier in the family.
+The main intuition behind this choice is that
+developers commonly use multiple abbreviations for the same word and 
+this family of abbreviations shares a type.
+A Char-Level LSTM is well-suited to predict the type for any identifier in 
+an abbreviation families.
 
 Our universe of types consists of the 78 built-in types or union of them
-that appear at least 10000 times in our training set.
+that appear at least 10,000 times in our training set.
 We consider only built-in types
 to ensure that we do not introduce types that are not available to the compiler.
-(We leave a consideration of user-defined types to future work.)
+We leave a consideration of user-defined types to future work.
 
 Regarding the implementation details of the LSTM network, for the $F$ in \eqref{eq:lstmb},
 we use a feedforward \ivp{is that right??} neural network
