@@ -965,7 +965,9 @@ implement an end-to-end application, called \projectname, which aims
 to infer TypeScript declaration files
 for an underlying JavaScript library.
 
-\subsection{Background: TypeScript's Type System}\label{ssec:intro-typescript}
+\subsection{Background: TypeScript's Type System}
+\label{ssec:intro-typescript}
+
 Syntactically, TypeScript~\citep{typescript} is a typed superset of
 JavaScript designed for developing large-scale, stable applications.
 TypeScript's compiler typechecks TypeScript programs then emits plain JavaScript
@@ -978,9 +980,6 @@ One of the main goals of TypeScript's designers is to
 provide a smooth transition from JavaScript.
 %
 As a result TypeScript's type system is deliberately unsound~\citep{understandtypescript}.
-TypeScript uses the \texttt{any} type as an intermediate
-step in cases it needs to statically assign a type to variables
-whose type is determined at runtime or is otherwise unknown at compile time.
 
 TypeScript applications and libraries commonly take advantage of JavaScript's flourishing ecosystem
 and use untyped JavaScript libraries.
