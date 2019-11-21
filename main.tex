@@ -865,10 +865,10 @@ More sophisticated networks could certainly be employed, but are left to future 
 %\ivp{Explain why we need this part: NNs cannot handle hard constraints so this
 %is our way to enforce them}
 
-The logical constraints pose challenges to the probabilistic world of
+Logical constraints pose challenges to the probabilistic world of
 machine learning. It is not straightforward to incorporate them in a probabilistic model
-along with the logical rules that they should follow.
-To combine the logical and the natural constraints, we define a continuous
+along with the logical rules that they must follow.
+To combine logical and natural constraints, we define a continuous
 optimization problem.
 
 \ivp{Brief motivation of Lagrange multiplier/ridge regression}
@@ -1988,18 +1988,9 @@ prediction. \ivp{this needs a comparison with prior results.}
 %
 We believe that the probabilistic type inference approach presented here
 is a basis for constructively combining different type analyses using numerical methods.
-
-Our system can be trained on the most common types occurring in any codebase.
 %
-We limit ourselves to simple common types and products of them,
-primarily because we did not want to introduce types unknown to the compiler imported from other libraries.
-%
-We leave the challenging task of introducing user defined types from scratch as future research.
-%
-It is straightforward though to extend our set of types to whatever type as long as we provide also its interface.
-%
-We consider as a more challenging problem the extension to user-defined types
-that emerge as logical constraints and to predict natural names for them.
+We have limited to advancing the state of the art in the probabilistic inference
+of primitive types; we leave open the challenge inferring user-defined types.
 
 %Doing so one can literally achieve the best of both the dynamically and statically-typed worlds.
 %% Acknowledgments
