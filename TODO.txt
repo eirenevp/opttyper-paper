@@ -10,11 +10,15 @@
 	 Charles's response:
 	 Yes absolutely but there are two issues we should talk about
 
-A) suppose that we are able to find the global constrained minimum of the objective function. Are the logical constraints then satisfied? This should be a theorem that we can prove
+A) suppose that we are able to find the global constrained minimum of the objective function.
+Are the logical constraints then satisfied? This should be a theorem that we can prove
 
-B) then explain that in practice we will not be able to find the exact constrained minimum so explain what we can do instead (that’s the text from your email)
+B) then explain that in practice we will not be able to find the exact constrained minimum
+so explain what we can do instead (that’s the text from your email)
 
-1. What's the use of probabilistic type inference?
+ADG: add sentence about theorems about future work
+
+ADG: 1. What's the use of probabilistic type inference?
 
 2. Add somewhere why the structure subproblem is not trivial and probably specify again that we don't address this problem, from the rebuttal:
 
