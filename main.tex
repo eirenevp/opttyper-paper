@@ -876,11 +876,7 @@ Intuitively, we design the optimization problem to be over
 probability matrices $P \in \Pi^{V \times T};$ we wish to find
 $P$ that is as close as possible to the natural constraints $\mathcal{M}$
 subject to the logical constraints being satisfied.
-%\ivpdelete{A simple way to quantify the distance is via the \emph{Euclidean norm} $|| \cdot ||_2$ of a vector, that is, the square root of the sum of the squares of its elements.}
-We use the Mean Squared Error (MSE) to quantify the performance of our fitting.
-Alternatively, we could use the Cross Entropy (CE) which is another common loss function.
-The MSE is a proper scoring rule \cite{gneiting07}, meaning that smaller values correspond to better matching of our optimization variables with the logical constraints.
-We do not claim any particular advantage of MSE versus CE.
+A simple way to quantify the distance is via the \emph{Euclidean norm} $|| \cdot ||_2$ of a vector, that is, the square root of the sum of the squares of its elements.
 %
 \cas{This could alternately be formalized as a multi-objective problem. I do not know what is best.
 	Maybe it is better to talk about maximizing [[ E ]], because our theorem talks about maximization.}
@@ -896,7 +892,13 @@ Hence, we obtain the constrained optimization problem
 	\end{aligned}
 \end{equation}
 
-\ivpedit{To solve constrained optimization problems, an effective technique is to transform it to an unconstrained one using penalization; this is done for example in interior point methods.
+We use Mean Squared Error (MSE) here to quantify the performance of our fitting.
+We could have used the Cross Entropy (CE), another common loss function.  The
+MSE is a proper scoring rule~\cite{gneiting07}, meaning that smaller values
+correspond to better matching of our optimization variables with the logical
+constraints.  We do not claim any particular advantage of MSE versus CE.
+
+\ivpedit{To solve a constrained optimization problem like \autoref{eq:opt_naive}, an effective technique is to transform it to an unconstrained one using penalization; this is done, for example, in interior point methods.
 Here, we use an approach tailored to the specifics of our problem.}
 \ivpdelete{Although there is an extensive literature on constrained optimization,
 often the most effective way to solve a constrained optimization
