@@ -1963,26 +1963,28 @@ detail (\autoref{ssec:typesubproblem}).
 %The closest related works to this end are 
 %discussed in~\cref{sec:related}. We can view the problem of matching an identifier to a type as a form supervised text classification problem~\cite{aggarwal12}.
 
-\section{Conclusion and Future Work}~\label{sec:conclusion}
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+
 This paper addresses the lack of rich type inference process for
 dynamically typed languages.
 %
 To tackle this problem we define a
 general probabilistic framework that combines
 information from traditional analyses with statistical reasoning
-for source code text, and thus enable us to to predict natural occurring
+for source code text, and thus enables us to to predict naturally occurring
 types.
 %
-To evaluate our framework we build \projectname{}, a tool to
+To evaluate our framework, we built \projectname{}, a tool to
 generate typed TypeScript declaration files for untyped JavaScript
 libraries.
 %
 Our experiments show that \projectname{} predicts function types
 signatures with a precision and recall score of almost 70\% for the top-most
-prediction.
+prediction. \ivp{this needs a comparison with prior results.}
 %
 We believe that the probabilistic type inference approach presented here
-is a basis for constructively combining different type analyses by using numerical methods.
+is a basis for constructively combining different type analyses using numerical methods.
 
 Our system can be trained on the most common types occurring in any codebase.
 %
