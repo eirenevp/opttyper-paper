@@ -865,10 +865,10 @@ More sophisticated networks could certainly be employed, but are left to future 
 %\ivp{Explain why we need this part: NNs cannot handle hard constraints so this
 %is our way to enforce them}
 
-The logical constraints pose challenges to the probabilistic world of
+Logical constraints pose challenges to the probabilistic world of
 machine learning. It is not straightforward to incorporate them in a probabilistic model
-along with the logical rules that they should follow.
-To combine the logical and the natural constraints, we define a continuous
+along with the logical rules that they must follow.
+To combine logical and natural constraints, we define a continuous
 optimization problem.
 
 \ivp{Brief motivation of Lagrange multiplier/ridge regression}
@@ -876,29 +876,41 @@ Intuitively, we design the optimization problem to be over
 probability matrices $P \in \Pi^{V \times T};$ we wish to find
 $P$ that is as close as possible to the natural constraints $\mathcal{M}$
 subject to the logical constraints being satisfied.
-A simple way to quantify the distance is via the \emph{Euclidean norm} $|| \cdot ||_2$ of a vector,
-that is, the square root of the sum of the squares of its elements.
+A simple way to quantify the distance is via the \emph{Euclidean norm} $|| \cdot ||_2$ of a vector, that is, the square root of the sum of the squares of its elements.
 %
 \cas{This could alternately be formalized as a multi-objective problem. I do not know what is best.
 	Maybe it is better to talk about maximizing [[ E ]], because our theorem talks about maximization.}
 %
-Hence, we obtain the constrained optimization problem:
+Hence, we obtain the constrained optimization problem
 \begin{equation}
 	\begin{aligned}\label{eq:opt_naive}
 		\underset{P \in \mathbb{R}^{V \times T}}{\mathrm{min}} &
 		\sum_v || \bm{p}_v - \bm{\mu}_v ||_2^2                                                                  \\
 		\text{subject to }                                     & p_{v\tau} \in [0, 1] \qquad \forall v, \tau    \\
 		                                                       & \sum_{\tau=1}^T p_{v\tau} = 1 \qquad \forall v \\
-		                                                       & \qqpi{P}{E} = 1,
+		                                                       & \qqpi{P}{E} = 1.
 	\end{aligned}
 \end{equation}
-Although there is an extensive literature on constrained optimization,
+
+We use Mean Squared Error (MSE) here to quantify the performance of our fitting.
+We could have used the Cross Entropy (CE), another common loss function.  The
+MSE is a proper scoring rule~\cite{gneiting07}, meaning that smaller values
+correspond to better matching of our optimization variables with the logical
+constraints.  We do not claim any particular advantage of MSE versus CE.
+
+\ivpedit{To solve a constrained optimization problem like \autoref{eq:opt_naive}, an effective technique is to transform it to an unconstrained one using penalization; this is done, for example, in interior point methods.
+Here, we use an approach tailored to the specifics of our problem.}
+\ivpdelete{Although there is an extensive literature on constrained optimization,
 often the most effective way to solve a constrained optimization
 problem is to transform it into an equivalent unconstrained one.
-We do so in two steps.
-First we reparameterize the problem to remove the probability constraints.
-The softmax function $\sigma$ \eqref{eq:softmax} maps real-valued vectors to probability vectors.
-Thus, we define:
+We do so in two steps.}
+First, we reparameterize the problem to remove the probability constraints.
+The softmax function
+\begin{equation}\label{eq:softmax}
+	\sigma(\bm{x}) = \left[\frac{\exp\{x_1\}}{\sum_i \exp\{x_i\}}, \frac{\exp\{x_2\}}{\sum_i \exp\{x_i\}}, \cdots \right]^\mathsf{T}.
+\end{equation}
+maps real-valued vectors to probability vectors.
+Our transformed problem takes the form
 \begin{equation}
 	\begin{aligned}\label{eq:opt_no_prob}
 		\underset{Y \in \mathbb{R}^{V \times T}}{\mathrm{min}} &
@@ -910,12 +922,10 @@ It is easy to see that if $Y$ minimizes \eqref{eq:opt_no_prob}, then
 $P = [\sigma(\bm{y}_1), \ldots, \allowbreak \sigma(\bm{y}_{V})]^\mathsf{T}$
 minimizes \eqref{eq:opt_naive}.
 
-\ivp{polish this insertion from rebuttal}
-We choose to use Mean Squared Error (MSE), also called the Brier score in statistics \cite{brier50, good52} instead of Cross Entropy (CE) which is is another common choice for probabilities.
+\ivpdelete{We choose to use Mean Squared Error (MSE), also called the Brier score in statistics \cite{brier50, good52} instead of Cross Entropy (CE) which is is another common choice for probabilities.
 MSE is a proper scoring rule \cite{gneiting07},
-which intuitively means that this loss function will indeed encourage the model to use the correct probabilities. We do not claim any particular advantage to the Brier score versus CE. To remove the final constraint,
-we introduce a Lagrange multiplier $\lambda > 0$ to weight
-the two terms, yielding our final optimization problem
+which intuitively means that this loss function will indeed encourage the model to use the correct probabilities. We do not claim any particular advantage to the Brier score versus CE.}
+We remove the last constraint by introducing a Lagrange multiplier $\lambda > 0$, yielding the final form of our optimization problem
 \begin{equation}\label{eq:objective}
 	\underset{Y \in \mathbb{R}^{V \times T}}{\mathrm{min}}
 	\sum_v || \sigma(\bm{y}_v)^\mathsf{T} - \bm{\mu}_v ||_2^2
@@ -932,8 +942,7 @@ the two terms, yielding our final optimization problem
 %   \left( \left(\sum_v || \bm{p}_v - \bm{\mu}_v ||_2^2\right)
 %   -\lambda \qqpi{[\bm{p}_1, \ldots, \bm{p}_\mathcal{V}]}{E} \right),
 % \end{align}
-This can now be solved numerically using standard optimization
-techniques, such as gradient descent.
+This can now be solved numerically using first-order unconstrainted optimization methods, such as gradient descent.
 The parameter $\lambda$ trades off the importance
 of the two different kinds of constraints.
 In the limiting case where $\lambda \rightarrow \infty$, the second term in the objective function \eqref{eq:objective} is dominant and we obtain the solution that best satisfies the relaxed
@@ -956,7 +965,9 @@ implement an end-to-end application, called \projectname, which aims
 to infer TypeScript declaration files
 for an underlying JavaScript library.
 
-\subsection{Background: TypeScript's Type System}\label{ssec:intro-typescript}
+\subsection{Background: TypeScript's Type System}
+\label{ssec:intro-typescript}
+
 Syntactically, TypeScript~\citep{typescript} is a typed superset of
 JavaScript designed for developing large-scale, stable applications.
 TypeScript's compiler typechecks TypeScript programs then emits plain JavaScript
@@ -969,9 +980,6 @@ One of the main goals of TypeScript's designers is to
 provide a smooth transition from JavaScript.
 %
 As a result TypeScript's type system is deliberately unsound~\citep{understandtypescript}.
-TypeScript uses the \texttt{any} type as an intermediate
-step in cases it needs to statically assign a type to variables
-whose type is determined at runtime or is otherwise unknown at compile time.
 
 TypeScript applications and libraries commonly take advantage of JavaScript's flourishing ecosystem
 and use untyped JavaScript libraries.
@@ -1261,13 +1269,9 @@ we use a feedforward neural network
 \end{equation}
 where the $\log$ function is applied componentwise,
 and $A$ and $b$ are learnable weights and bias.
-The softmax function is defined as
-\begin{equation}\label{eq:softmax}
-	\sigma(\bm{x}) = \left[\frac{\exp\{x_1\}}{\sum_i \exp\{x_i\}}, \frac{\exp\{x_2\}}{\sum_i \exp\{x_i\}}, \cdots \right]^\mathsf{T}.
-\end{equation}
-The softmax function corresponds to the last layer of our neural network
+The softmax function \eqref{eq:softmax} corresponds to the last layer of our neural network
 and essentially maps the values of the previous layer to $[0, 1]$,
-while the sum of all values is $1$ as expected for a probability vector.
+while the sum of all values is $1$ as expected for a probability vector as already explained.
 We work in log space to help numerical stability since computing \eqref{eq:softmax} directly can be problematic.
 As a result, $F$ outputs values in $[-\infty, 0]$.
 
@@ -1963,38 +1967,31 @@ detail (\autoref{ssec:typesubproblem}).
 %The closest related works to this end are 
 %discussed in~\cref{sec:related}. We can view the problem of matching an identifier to a type as a form supervised text classification problem~\cite{aggarwal12}.
 
-\section{Conclusion and Future Work}~\label{sec:conclusion}
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+
 This paper addresses the lack of rich type inference process for
 dynamically typed languages.
 %
 To tackle this problem we define a
 general probabilistic framework that combines
 information from traditional analyses with statistical reasoning
-for source code text, and thus enable us to to predict natural occurring
+for source code text, and thus enables us to to predict naturally occurring
 types.
 %
-To evaluate our framework we build \projectname{}, a tool to
+To evaluate our framework, we built \projectname{}, a tool to
 generate typed TypeScript declaration files for untyped JavaScript
 libraries.
 %
 Our experiments show that \projectname{} predicts function types
 signatures with a precision and recall score of almost 70\% for the top-most
-prediction.
+prediction. \ivp{this needs a comparison with prior results.}
 %
 We believe that the probabilistic type inference approach presented here
-is a basis for constructively combining different type analyses by using numerical methods.
-
-Our system can be trained on the most common types occurring in any codebase.
+is a basis for constructively combining different type analyses using numerical methods.
 %
-We limit ourselves to simple common types and products of them,
-primarily because we did not want to introduce types unknown to the compiler imported from other libraries.
-%
-We leave the challenging task of introducing user defined types from scratch as future research.
-%
-It is straightforward though to extend our set of types to whatever type as long as we provide also its interface.
-%
-We consider as a more challenging problem the extension to user-defined types
-that emerge as logical constraints and to predict natural names for them.
+We have limited to advancing the state of the art in the probabilistic inference
+of primitive types; we leave open the challenge inferring user-defined types.
 
 %Doing so one can literally achieve the best of both the dynamically and statically-typed worlds.
 %% Acknowledgments
