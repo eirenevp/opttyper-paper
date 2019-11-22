@@ -1405,13 +1405,13 @@ which is partitioned into the following subsets:
 	      %    \item interfaces $S_{inter}$ \ivp{should we include that only for structure, what about its 'type'?}
 \end{itemize}
 
-Let~$T$ be the set of all type paths,
+Let~$\mathcal{T}$ be the set of all type paths,
 which is partitioned into the following subsets:
 \begin{itemize}[label={\tiny$\bullet$}]
-	\item type returned by each function $T_\text{fnRet}$
+	\item type returned by each function $\mathcal{T}_\text{fnRet}$
 	      %   \item type returned by each method $T_{meth}$
-	\item type of each function parameter $T_\text{param}$
-	\item type for either function result or parameter $T_\text{total} = T_\text{fnRet} \cup T_\text{param}$
+	\item type of each function parameter $\mathcal{T}_\text{param}$
+	\item type for either function result or parameter $\mathcal{T}_\text{total} = \mathcal{T}_\text{fnRet} \cup \mathcal{T}_\text{param}$
 	      %    \item type of each variable $T_{var}$
 	      %   \item type of each property $T_{prop}$
 \end{itemize}
@@ -1577,18 +1577,15 @@ while the precision for the parameters' types is $0.63$ and the recall $0.58$.
 The combined precision and recall are $0.62$ and $0.58$, respectively.
 The results presented in \cref{tab:typeprec1} are normalized based on these upper precision and recall limits.
 
-\adg{Here we use $N$ for the size of the type universe,
-	but earlier we use $T$ for the size. We should change $N$ to $T$, unless that creates another clash}
-
 \adg{Are there 1272 identifiers for all types, or just for the universe of 78 types?for all types  Best to give both totals.}
 
 \begin{table*}[t]
 	\centering
 	\caption{Aggregate \textit{Type} precision and recall for 58 JavaScript libraries with 1272 identifiers in total (610 $funRet$, 662 $param$).
-		We use the notation $P(T^N_\text{fnRet})$ for $P(T_\text{fnRet} \cap N)$, where $N$ is the number of types in our universe of types.}\label{tab:typeprec1}
+		We use the notation $P(\mathcal{T}^T_\text{fnRet})$ for $P(\mathcal{T}_\text{fnRet} \cap T)$, where $T$ is the number of types in our universe of types.}\label{tab:typeprec1}
 	\begin{tabular}{ccccccc}
 		\toprule
-		Tool                                  & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$ \\
+		Tool                                  & $P(\mathcal{T}^T_\text{fnRet})$ & $R(\mathcal{T}^T_\text{fnRet})$ & $P(\mathcal{T}^T_\text{param})$ & $R(\mathcal{T}^T_\text{param})$ & $P(\mathcal{T}^T_\text{total})$ & $R(\mathcal{T}^T_\text{total})$ \\
 		\midrule
 		%   \textit{DeepTyper}\tiny{(78-types)}   & 0.20                   & 0.20                   & 0.50                  & 0.52  & 0.35                  & 0.36  \\
 
@@ -1596,9 +1593,9 @@ The results presented in \cref{tab:typeprec1} are normalized based on these uppe
 		%     \textit{JSNice} \tiny{(6-types)}      & 0.15                   & 0.15                   & 0.78                 & 0.80  & 0.47                & 0.48\\
 		%     \textit{JSNice} \tiny{(78-types)}  & 0.12                   & 0.12                   & 0.62                  & 0.64 & 0.37                  & 0.38 \\
 		%  \multicolumn{7}{@{}c@{}}{\dashrule} \\
-		\textit{Logical} \tiny{($N=78$)}      & 0.42                  & 0.41                  & 0.15                  & 0.15                  & 0.29                  & 0.28                  \\
-		\textit{Natural} \tiny{($N=78$)}      & 0.48                  & 0.48                  & 0.61                  & 0.56                  & 0.55                  & 0.52                  \\
-		\textbf{\projectname} \tiny{($N=78$)} & \textbf{0.61}         & \textbf{0.59}         & \textbf{0.63}         & \textbf{0.58}
+		\textit{Logical} \tiny{($T=78$)}      & 0.42                  & 0.41                  & 0.15                  & 0.15                  & 0.29                  & 0.28                  \\
+		\textit{Natural} \tiny{($T=78$)}      & 0.48                  & 0.48                  & 0.61                  & 0.56                  & 0.55                  & 0.52                  \\
+		\textbf{\projectname} \tiny{($T=78$)} & \textbf{0.61}         & \textbf{0.59}         & \textbf{0.63}         & \textbf{0.58}
 		                                      & \textbf{0.62}         & \textbf{0.58}                                                                                                         \\
 		% limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
 		\bottomrule
@@ -1651,32 +1648,32 @@ The two tools that we compare against are:
 We have tried specifically to address any unfair comparison.
 Since DeepTyper has a vocabulary of 11000 types, we measure the results on our set of 78 types
 and give every other type we encounter \textit{OutOfVoc}, so that it does not contribute to the final result.
-JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on Table 4, for N=6,
+JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on Table 4, for T=6,
 which is the original implementation,
 the results for the types of the parameters are almost identical to the ones of the original JSNice paper.
 \cref{tab:typeprec2} summarizes the results of our comparisons.
 
 The \emph{relative error reduction} is a standard way to express performance improvement in machine learning.
 In our case, it is how many fewer errors ProdTS makes as a proportion of the errors that JSNice makes.
-The JSNice N=78 precision of 0.37 implies an error rate 0.63,
-whereas the ProdTS N=78 precision of 0.68 implies an error rate 0.32.
+The JSNice T=78 precision of 0.37 implies an error rate 0.63,
+whereas the ProdTS T=78 precision of 0.68 implies an error rate 0.32.
 So the relative reduction in error is $(0.63-0.32) / 0.63 = 49.2\%$.
 
 \begin{table*}[t]
 	\centering
 	\caption{Aggregate \textit{Type} precision and recall across all evaluated modules for DeepTyper and JSNice; as input we use 41 JavaScript libraries with 860 identifiers in total (270 funRet, 590 param).
-		The superscript $N$ has the same meaning as in \cref{tab:typeprec1}, where $N = 6$ consists of the six types predicted by JSNice.
-		Boldface indicates the best results of the full set of $N=78$ types.}\label{tab:typeprec2}
+		The superscript $T$ has the same meaning as in \cref{tab:typeprec1}, where $N = 6$ consists of the six types predicted by JSNice.
+		Boldface indicates the best results of the full set of $T=78$ types.}\label{tab:typeprec2}
 	\begin{tabular}{ccccccc}
 		\toprule
-		Tool                                  & $P(T^N_\text{fnRet})$ & $R(T^N_\text{fnRet})$ & $P(T^N_\text{param})$ & $R(T^N_\text{param})$ & $P(T^N_\text{total})$ & $R(T^N_\text{total})$ \\
+		Tool                                  & $P(\mathcal{T}^T_\text{fnRet})$ & $R(\mathcal{T}^T_\text{fnRet})$ & $P(\mathcal{T}^T_\text{param})$ & $R(\mathcal{T}^T_\text{param})$ & $P(\mathcal{T}^T_\text{total})$ & $R(\mathcal{T}^T_\text{total})$ \\
 		\midrule
-		DeepTyper\tiny{($N=78$)}              & 0.20                  & 0.20                  & 0.50                  & 0.52                  & 0.35                  & 0.36                  \\
+		DeepTyper\tiny{($T=78$)}              & 0.20                  & 0.20                  & 0.50                  & 0.52                  & 0.35                  & 0.36                  \\
 
-		JSNice \tiny{($N=6$)}                 & 0.15                  & 0.15                  & 0.78                  & 0.80                  & 0.47                  & 0.48                  \\
-		JSNice \tiny{($N=78$)}                & 0.12                  & 0.12                  & 0.62                  & 0.64                  & 0.37                  & 0.38                  \\
+		JSNice \tiny{($T=6$)}                 & 0.15                  & 0.15                  & 0.78                  & 0.80                  & 0.47                  & 0.48                  \\
+		JSNice \tiny{($T=78$)}                & 0.12                  & 0.12                  & 0.62                  & 0.64                  & 0.37                  & 0.38                  \\
 		% limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
-		\textbf{\projectname} \tiny{($N=78$)} & \textbf{0.68}         & \textbf{0.68}         & \textbf{0.67}         & \textbf{0.67}
+		\textbf{\projectname} \tiny{($T=78$)} & \textbf{0.68}         & \textbf{0.68}         & \textbf{0.67}         & \textbf{0.67}
 		                                      & \textbf{0.68}         & \textbf{0.68}                                                                                                         \\
 		\bottomrule
 	\end{tabular}
@@ -1690,7 +1687,7 @@ In contrast, our LSTM is trained on identifiers and types;
 we focus on obtaining information based on the identifier alone and not its context.
 
 \adg{Irene, roughly how often does DeepTyper return any?  Saying just "often" is not very informative.}
-For the results shown in \cref{tab:typeprec2},
+For the results shown in~\cref{tab:typeprec2},
 DeepTyper often returns \lstinline{any} as the most relevant suggestion for the type of an identifier.
 In this case, to keep the comparison meaningful, we select the second best candidate.
 
@@ -1701,8 +1698,8 @@ This shows that taking into account information in the vicinity can be problemat
 function definitions may be placed relatively far away from their calls
 and hence the context is not very informative.
 
-Finally, it is worth pointing out that DeepTyper has a type vocabulary of size $N = 11000$,
-much larger than our vocabulary of size $N = 78$,
+Finally, it is worth pointing out that DeepTyper has a type vocabulary of size $T = 11000$,
+much larger than our vocabulary of size $T=78$,
 because it includes user-defined types too.
 If DeepTyper were trained on a smaller size vocabulary the results---at least for the predicted
 types of parameters---might improve.
@@ -1718,15 +1715,15 @@ Its purpose is for type inference (and other tasks) on JavaScript
 using statistics from dependency graphs learned on a large corpus.
 The evaluation on our data had to be performed manually because JSNIce is only available via a website interface.
 
-JSNice has a type lattice that contains only $N=6$ primitive types and exploits the relationships between types of shallow depth.
+JSNice has a type lattice that contains only T=6 primitive types and exploits the relationships between types of shallow depth.
 Therefore, the tool does not consider the additional issues involved with predicting precise types,
 in which the system must infer what level of generality is most appropriate for the predicted types.
 Moreover, it does not entirely capture the flow and dependencies among typings.
 
 Due to the previous issue, we report results for two instantiations of JSNice:
-for the first one we calculated the results for the $6$ primitive types only,
-while for the second one we included the results of rest $N=78$ wrongly identified types.
-Regarding the type recall of the parameters in \cref{tab:typeprec2} for the $N=6$ case,
+for the first one we calculated the results for the 6 primitive types only,
+while for the second one we included the results of rest $T=78$ wrongly identified types.
+Regarding the type recall of the parameters in \cref{tab:typeprec2} for the $T=6$ case,
 JSNice scored better results than our tool.
 This may be because of the property that we discussed already regarding the use of a small size vocabularies.
 % \ivp{add description of jsnice, 2 cases, one with 6 types only the one that jsnice is trained(results comparable with the result reported on jsnice for parameters but not for return type), 78 our set of types we do better in each case, main critique the failure to capture return types }
@@ -1814,7 +1811,7 @@ including an extra term for every additional source of natural constraints.
 % \adgcomment{Include also the SLoc counts}
 
 
-\section{Related Work} \label{sec:related}
+\section{Related Work}~\label{sec:related}
 
 \projectname is a new form of probabilistic type inference that optimises over
 both logical and natural constraints.  Related spans classical, deterministic
