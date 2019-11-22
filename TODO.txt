@@ -27,7 +27,6 @@ ADG: 1. What's the use of probabilistic type inference?
 2. Change "readable" types
 
 3. More careful discussion for optional / gradual typing
-
 4. Better discussion - future work
 
 

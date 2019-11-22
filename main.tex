@@ -902,17 +902,14 @@ Hence, we obtain the constrained optimization problem
 \end{equation}
 
 We use Mean Squared Error (MSE) here to quantify the performance of our fitting.
+%We choose to use Mean Squared Error (MSE), also called the Brier score in statistics \cite{brier50, good52} instead of Cross Entropy (CE) which is is another common choice for probabilities.
 We could have used the Cross Entropy (CE), another common loss function.  The
 MSE is a proper scoring rule~\cite{gneiting07}, meaning that smaller values
 correspond to better matching of our optimization variables with the logical
 constraints.  We do not claim any particular advantage of MSE versus CE.
 
-\ivpedit{To solve a constrained optimization problem like \autoref{eq:opt_naive}, an effective technique is to transform it to an unconstrained one using penalization; this is done, for example, in interior point methods.
-Here, we use an approach tailored to the specifics of our problem.}
-\ivpdelete{Although there is an extensive literature on constrained optimization,
-often the most effective way to solve a constrained optimization
-problem is to transform it into an equivalent unconstrained one.
-We do so in two steps.}
+To solve a constrained optimization problem like \autoref{eq:opt_naive}, an effective technique is to transform it to an unconstrained one using penalization; this is done, for example, in interior point methods.
+Here, we use an approach tailored to the specifics of our problem.
 First, we reparameterize the problem to remove the probability constraints.
 The softmax function
 \begin{equation}\label{eq:softmax}
@@ -930,10 +927,7 @@ Our transformed problem takes the form
 It is easy to see that if $Y$ minimizes \eqref{eq:opt_no_prob}, then
 $P = [\sigma(\bm{y}_1), \ldots, \allowbreak \sigma(\bm{y}_{V})]^\mathsf{T}$
 minimizes \eqref{eq:opt_naive}.
-
-\ivpdelete{We choose to use Mean Squared Error (MSE), also called the Brier score in statistics \cite{brier50, good52} instead of Cross Entropy (CE) which is is another common choice for probabilities.
-MSE is a proper scoring rule \cite{gneiting07},
-which intuitively means that this loss function will indeed encourage the model to use the correct probabilities. We do not claim any particular advantage to the Brier score versus CE.}
+% 
 We remove the last constraint by introducing a Lagrange multiplier $\lambda > 0$, yielding the final form of our optimization problem
 \begin{equation}\label{eq:objective}
 	\underset{Y \in \mathbb{R}^{V \times T}}{\mathrm{min}}
@@ -2000,8 +1994,7 @@ libraries.
 %
 Our experiments show that \projectname{} predicts function types
 signatures with a precision and recall score of almost 70\% for the top-most
-prediction. \ivp{this needs a comparison with prior results.}
-%
+prediction, that is 50\% relatively better than previous works.
 We believe that the probabilistic type inference approach presented here
 is a basis for constructively combining different type analyses using numerical methods.
 %
