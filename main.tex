@@ -1285,9 +1285,8 @@ developers commonly use multiple abbreviations for the same word and
 this family of abbreviations shares a type.
 A Char-Level LSTM is well-suited to predict the type for any identifier in
 an abbreviation families.
-
-Our universe of types consists of the 78 built-in types or unions over these
-78 built-in types that appear at least 10,000 times in our training set.
+%
+Our universe of types consists of the 78 types that appear at least 10,000 times in our training set. These are built-in TypeScript types and some commonly used unions of them. We note that our system cannot distinguish between a primitive and a complex type. 
 %
 Handling a larger set of types
 is straightforward, but we decide to work with a small set of types for the
