@@ -351,8 +351,8 @@ linewidth=\linewidth
 
 %% Keywords
 %% comma separated list
-\keywords{Type Inference, Dynamic Languages, TypeScript, Continuous
-	Relaxation, Numerical Optimization, Deep Learning}
+\keywords{Type Inference, Dynamic Languages, Continuous
+	Relaxation, Numerical Optimization, Deep Learning, TypeScript}
 %% \keywords are mandatory in final camera-ready submission
 
 
@@ -395,7 +395,7 @@ the increased volume of publicly available source code, through
 code repositories like GitHub\footnote{\href{https://github.com}{https://github.com}}
 or GitLab\footnote{\href{https://gitlab.com}{https://gitlab.com}},
 enables a new class of applications that leverage statistical
-patterns in large codebases.
+patterns in large codebases~\cite{allamanis17}.
 For type inference, machine learning
 allows us to develop less strict type inference systems
 that learn to predict types from uncertain information,
@@ -552,8 +552,9 @@ Our contributions can be summarized as:
 		% The matrix uses probabilities to reflect our degree of certainty.
 		%
 		Returning to the logical constraints,
-		we can relax the boolean constraint of Box (c) to a numerical function on probabilities
-		as shown in Box (e).
+		we can relax the boolean constraint to a numerical function on probabilities
+    as shown in Box (c). The resulting function is symmetrical so the final
+    solution depends on the initialization of the optimizer.
 		%
 		When we numerically optimize the resulting expression, we obtain the matrix in Box (e);
 		it predicts that both variables are strings with high probability.
@@ -579,7 +580,7 @@ about this on the paper. The numbers on the example are actual numbers given aft
 This section introduces our general framework,
 which we instantiate in the next section by building a tool for
 predicting types in TypeScript.
-\cref{fig:fullexample} illustrates our general framework through an example of predicting TypeScript types.
+\cref{fig:fullexample} illustrates our general framework through a running example of predicting TypeScript types. 
 
 % \adg{felt repetitive re introduction, so trimmed}
 % Our goal is to enhance the type inference
@@ -1299,9 +1300,13 @@ Our loss function is the negative log likelihood function---conveniently combine
 Essentially, we select, during training, the element that corresponds
 to the correct label from the output $F$
 and sum all the values of the correct labels for the entire training set.
+
 \subsection{Realization of \projectname{}}\label{ssec:combprodts}
-We use \textsc{Adam}~\cite{kingma2014}, an extension of stochastic gradient descent,
-as our optimization algorithm.
+In this subsection we describe the particular implementation details for our tool. Both the code for the deep learning and the combined optimization part is written in PyTorch~\cite{paszke2017}. Most of our design choices here are made empirically
+based on what we have noticed maximizes the performance of the framework.
+
+\paragraph{\textit{Natural} subproblem} We use \textsc{Adam}~\cite{kingma2014}, an extension of stochastic gradient descent,
+as our optimization algorithm for the \textit{Natural} constraints subproblem.
 %
 The main difference between \textsc{Adam} and classical stochastic gradient descent
 is the use of adaptive instead of fixed learning rates.
@@ -1322,7 +1327,7 @@ Our dataset was randomly split by project into 80\% training data,
 %
 Splitting the available data in these three different sets is a common practice in machine learning
 to ensure that the learning model does not simply memorize the training data
-but is able to generalize to unseen inputs.
+but is able to generalize to unseen inputs. For detailed implementation details of the neural network refer to \cref{app:neural}.
 
 % \begin{figure*}[!t]
 %     \centering
@@ -1350,16 +1355,12 @@ but is able to generalize to unseen inputs.
 %   \end{figure*}
 %\subsection{Combining Logical and Natural Constraints}
 
-We describe the particular implementation details used to combine the two sources of information.
-Most of our design choices here are made empirically
-based on what we have noticed maximizes the performance of the framework.
-
-We implement the optimization problem described in~\eqref{eq:objective} for $\lambda = 10$.
-Adam~\cite{ruder2016} is being used to change the step of the optimizer on each the iteration.
-To evaluate the minimum of the generated functions, we use a different adaptive optimization algorithm,
+\paragraph{\textit{Logical} subproblem} To evaluate the minimum of the generated functions for the \textit{Logical} subproblem, we use a different adaptive optimization algorithm,
 known as \textsc{RMSprop}~\cite{tieleman2014}.
 We set the maximum number of iterations to 2,000, which suffices in practice for the loss to stabilize.
 
+\paragraph{Combination} For the combination of the \textit{Natural} and \textit{Logical} subproblem we implement the optimization problem described in~\eqref{eq:objective} for $\lambda = 10$, while we leave the particular details for each subproblem the same. 
+% Adam~\cite{ruder2016} is being used to change the step of the optimizer on each iteration. 
 \section{Evaluation of \projectname{}}\label{sec:eval}
 
 To measure the performance of our tool \projectname we make the following assumption:
@@ -1382,7 +1383,6 @@ The following definitions formalize these metrics.
 
 \paragraph{Experimental Setup}
 
-Both the code for the deep learning and the optimization part is written in PyTorch~\cite{paszke2017}.
 All experiments are conducted on an NVIDIA Titan Xp with 12GB VRam,
 in combination with a 2-core Intel Core i5 CPU with 8GB of RAM.
 Our resulting model requires about 400MB of RAM to be loaded into memory and can be run on both a GPU and CPU.
@@ -2081,8 +2081,8 @@ while the LogSumExp function is defined as
 	\text{LogSumExp}(\bm{x}) = \log\left( \sum_i \exp\{x_i\} \right).
 \end{equation*}
 
-\section{Appendix: Neural Model } 
-On this appendix we present the implementation details of the deep neural being use in \cref{ssec:natprodts}.
+\section{Appendix: Neural Model }\label{app:neural} 
+In this appendix we present the implementation details of the deep neural  used in \cref{ssec:natprodts}.
 \begin{lstlisting}[numbers=none,caption={Our Chararacter Level \textit{LSTM} model.},captionpos=b]
   LSTMClassifier(
   (embedding): Embedding(90, 128)
