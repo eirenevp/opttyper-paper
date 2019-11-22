@@ -310,7 +310,7 @@ linewidth=\linewidth
 	%   The main insight of our method is to relax the problem of type inference into a problem of numerical continuous optimization.
 	%problem by using a continuous representation of the logical constraints part.
 
-	To evaluate the idea, we build a tool called \projectname to predict a TypeScript declaration file for a JavaScript library.
+	To evaluate the idea, we built a tool called \projectname to predict a TypeScript declaration file for a JavaScript library.
 	%
 	\projectname combines a continuous interpretation of logical constraints derived by a simple
 	program transformation and static analysis of the JavaScript code, with natural constraints obtained from a deep learning
@@ -363,7 +363,6 @@ linewidth=\linewidth
 \maketitle
 
 \section{Introduction}
-\adg{What's the use of probabilistic type inference?}
 Statically-typed programming languages aim to enforce correctness and safety  properties
 on programs by guaranteeing constraints on program behaviour.
 A large scale user-study
@@ -403,18 +402,26 @@ that learn to predict types from uncertain information,
 such as comments, names, and lexical context,
 even when traditional type inference procedures
 fail to infer a useful type.
-For instance,
-JSNice~\cite{raychev15} uses probabilistic graphical models to statistically infer types of identifiers
+
+The classic literature on conventional type systems takes great care to demonstrate
+that type inference only suggests sound types~\cite{DBLP:journals/jcss/Milner78,Pierce2002}.
+Probabilistic type inference takes a different perspective:
+a tool for type inference usefully reduces the human annotation burden
+so long as it frequently makes correct predictions, even if predictions are sometimes wrong.
+Hence, we evaluate probabilistic type inference with statistical metrics.
+The human in the loop can ignore incorrect or unsuitable type predictions,
+or detect them for example by classic type checkers.
+
+Two examples of probabilistic type inference systems are JSNice~\cite{raychev15},
+which uses probabilistic graphical models to statistically infer types of identifiers
 in programs written in JavaScript,
-while DeepTyper~\cite{hellendoorn18} targets TypeScript~\cite{typescript} via deep learning techniques.
+and DeepTyper~\cite{hellendoorn18}, which targets TypeScript~\cite{typescript} via deep learning techniques.
 %see \cref{sec:related} for a more elaborate comparison to related work.
-These approaches all use machine learning to capture the structural
+Previous approaches all use machine learning to capture the structural
 similarities between typed and untyped source code and to extract a statistical model for
 the text. However, none explicitly models the underlying
 type inference rules, and thus their predictions ignore useful logical information.
 %This is a missed opportunity that we aim to address in this work.
-
-We sieze the opportunity to plug this gap.
 
 \subsection{Our Contribution}
 Current type inference systems rely
@@ -448,8 +455,9 @@ program while at the same time respecting the logical constraints.
 To the best of our knowledge, no prior work has applied machine learning to infer types
 while simultaneously taking into account logical constraints extracted from a static type analysis.
 
-We investigate the above challenge in a real-world language by building \projectname,
-which is a tool that mitigates the effort of generating a
+We investigate the above challenge in a real-world language by building
+\projectname (from ``optimising for optional types''),
+a tool that alleviates the effort of generating a
 TypeScript declaration file for existing JavaScript libraries.
 TypeScript is a superset of JavaScript that adds static typing to the language.
 In fact, as JavaScript libraries and frameworks are very popular, many
@@ -1262,6 +1270,7 @@ this family of abbreviations shares a type.
 A Char-Level LSTM is well-suited to predict the type for any identifier in
 an abbreviation families.
 
+\adg{Future: For example, in addition to the current experiment with types that appear at least 10,000 times, that minimum required count could be varied.}
 Our universe of types consists of the 78 built-in types or union of them
 that appear at least 10,000 times in our training set.
 We consider only built-in types
@@ -1291,7 +1300,7 @@ Essentially, we select, during training, the element that corresponds
 to the correct label from the output $F$
 and sum all the values of the correct labels for the entire training set.
 \subsection{Realization of \projectname{}}\label{ssec:combprodts}
-We use \textsc{Adam}, an extension of stochastic gradient descent~\cite{kingma2014},
+We use \textsc{Adam}~\cite{kingma2014}, an extension of stochastic gradient descent,
 as our optimization algorithm.
 %
 The main difference between \textsc{Adam} and classical stochastic gradient descent
