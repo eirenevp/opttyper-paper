@@ -1751,7 +1751,7 @@ Its purpose is for type inference (and other tasks) on JavaScript
 using statistics from dependency graphs learned on a large corpus.
 The evaluation on our data had to be performed manually because JSNIce is only available via a website interface.
 
-JSNice has a type lattice that contains only $T=6$ primitive types and exploits the relationships between types of depth 3.
+JSNice has a type lattice that contains only $T=6$ primitive types and exploits the relation paths between types of depth 3.
 Therefore, the tool does not consider the additional issues involved with predicting precise types,
 in which the system must infer what level of generality is most appropriate for the predicted types.
 Moreover, it does not entirely capture the flow and dependencies among typings.
