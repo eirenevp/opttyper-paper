@@ -1072,22 +1072,28 @@ but often fail to capture readable forms for argument and result types.
 %     \label{fig:declarations-b64a}
 %   \end{figure*}
 We consider the problem of predicting a TypeScript declaration file
-for an underlying JavaScript library.
+for an underlying JavaScript library. We approach this problem by defining
+two consecutive subproblems:
+\begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
+  \item The \textit{Structure} subproblem 
+  has as a goal to generate a declaration file containing the exported functions with every type annotated as \texttt{any}.
+  \item The \textit{Type} subproblem aims to generates types
+  to fill the holes left in the declaration files
+  following the \textit{Structure} subproblem.
+\end{itemize}
+
 \paragraph{Input:}
 Our implementation takes as input three files:
 \begin{enumerate}
 	\item A JavaScript library file.
-	\item A declaration file containing the exported functions with every type annotated as \texttt{any}.
-	      We call this step the \textit{Structure} subproblem.
-	      (We obtain this file from dts-gen.)
+	\item The output of the \textit{Structure} subproblem.
+	      We obtain this file from dts-gen~\cite{dtsgen}.
 	      %This file comes from a third party tool and thus
 	      %why we use as an input in the formal problem statement, in the actual
-	      %implementation this stage is completely integrated to the process. \ivp{rephrase?}
 	\item TypeScript's default library declaration file,
 	      that is, the built-in types defined by the standard library.\footnote{\url{https://github.com/Microsoft/TypeScript/blob/master/lib/lib.d.ts}}
 \end{enumerate}
-
-\adg{Is the Structure versus Type stage helpful?  Do we use it later?  Will continue to read.}
+%
 \paragraph{Output:} A TypeScript declaration file for the
 JavaScript library, that we from now on we call \textit{predicted.d.ts} and
 includes type predictions for
@@ -1095,13 +1101,13 @@ includes type predictions for
 	\item the return type of the function, denoted as \emph{fnRet}, and
 	\item type annotations for the function's arguments, denoted as \emph{param}.
 \end{itemize}
+%
 The output of our tool is essentially the declaration file from the \textit{Structure} subproblem
 but with some, or ideally all, of the \texttt{any} types substituted with built-in types, but not including user-defined ones.
-
-
-Let the \textit{Type} subproblem be the process of predicting types
-to fill the holes left in the declaration files
-following the \textit{Structure}.
+%
+% Let the \textit{Type} subproblem be the process of predicting types
+% to fill the holes left in the declaration files
+% following the \textit{Structure}.
 In \cref{sec:eval}, we present metrics on the performance of tools, including \projectname, on the \textit{Type} subproblem,
 given skeleton definition files produced by the \textit{Structure} subproblem. 
 % The \textit{Structure} subproblem is not a simple syntactic process as a JavaScript module can export functions by arbitrary execution of code, to obtain full accuracy we would need to execute the code rather than simply parse it.
@@ -2066,19 +2072,16 @@ while the LogSumExp function is defined as
 	\text{LogSumExp}(\bm{x}) = \log\left( \sum_i \exp\{x_i\} \right).
 \end{equation*}
 
-% \section{Appendix: LSTM}
-% \begin{lstlisting}[numbers=none]
-%   LSTMClassifier(
-%   (embedding): Embedding(90, 128)
-%   (lstm): LSTM(128, 64)
-%   (hidden2out): Linear(in_features=64, out_features=78, bias=True)
-%   (softmax): LogSoftmax()
-%   (optimization fun): ADAM)
-% \end{lstlisting}
-
-%   \caption{Pipeline of learning naming conventions with 
-%   a Char-Level \textit{LSTM}, represented by a probability vector for each identifier,
-%   including function and parameter identifiers.
-%   }
+\section{Appendix: Neural Model } 
+On this appendix we present the implementation details of the deep neural being use in \cref{ssec:natprodts}.
+\begin{lstlisting}[numbers=none,caption={Our Chararacter Level \textit{LSTM} model.},captionpos=b]
+  LSTMClassifier(
+  (embedding): Embedding(90, 128)
+  (lstm): LSTM(128, 64)
+  (hidden2out): Linear(in_features=64, 
+                out_features=78, bias=True)
+  (softmax): LogSoftmax()
+  (optimization fun): ADAM)
+\end{lstlisting}
 
 \end{document}
