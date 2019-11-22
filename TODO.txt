@@ -27,7 +27,7 @@ B) then explain that in practice we will not be able to find the exact constrain
 4. Better discussion - future work
 
 
-
+5. in the conclusion we still don't say 70% is compared to ?
 
 
 
