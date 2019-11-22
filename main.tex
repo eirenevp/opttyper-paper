@@ -542,14 +542,16 @@ Our contributions can be summarized as:
 		%
 		In particular, we use a machine learning model to capture naming conventions over types.
 		%
-		We represent the solution space for our logical or natural constraints or their combination
+		We represent the solution space for our logical or natural constraints
+		or their combination
 		as a $V \times T$ matrix $P$ of the form in Box (b):
 		each row vector is a discrete probability distribution
 		over our universe of $T=3$ concrete types
-		(\lstinline{number}, \lstinline{string}, and \lstinline{any}) for one of our $V=3$ identifiers.
+		(\lstinline{number}, \lstinline{string}, and \lstinline{any})
+		for one of our $V=3$ identifiers.
 		%
 		Box (d) shows the natural constraints $\mathcal{M}$ induced by the identifier names
-		for the parameters and return types of our function.
+		for the parameters and the function name itself.
 		%
 		Intuitively, Box (d) shows that a programmer
 		is more likely to name a variable \lstinline{start} or \lstinline{end}
@@ -557,13 +559,17 @@ Our contributions can be summarized as:
 		%
 		% The matrix uses probabilities to reflect our degree of certainty.
 		%
-		Returning to the logical constraints,
-		we can relax the boolean constraint to a numerical function on probabilities
-    as shown in Box (c). The resulting function is symmetrical so the final
-    solution depends on the initialization of the optimizer.
-		%
-		When we numerically optimize the resulting expression, we obtain the matrix in Box (e);
+		% Returning to the logical constraints,
+		We can relax the boolean constraint
+		to a numerical function on probabilities as shown in Box (c).
+		When we numerically optimize the resulting expression,
+		we obtain the matrix in Box (e);
 		it predicts that both variables are strings with high probability.
+		%
+		Although the objective function is symmetric
+		between \lstinline{string} and \lstinline{number},
+		the solution in (e) is asymmetric because it depends on the initialization
+		of the optimizer.
 		%
 		Finally, Box (f) shows an optimization objective that
 		combines both sources of information:
@@ -572,15 +578,10 @@ Our contributions can be summarized as:
 		is the natural constraint for variable $v$.
 		%
 		Box (f) also shows the solution matrix and Box (g) shows the induced type annotations,
-		now all equal to \lstinline{number}.
+		now all predicted to be \lstinline{number}.
 	\end{minipage}
 	\caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
 \end{figure*}
-
-\adg{the relaxation of "or" gives a solution that depends on the initial solution,
-so either will return with high probability that both are numbers or will return
-with high probability that both are strings. I am not sure if I specifically discuss
-about this on the paper. The numbers on the example are actual numbers given after running our code.}
 
 \section{General Framework for Probabilistic Type Inference} \label{sec:framework}
 This section introduces our general framework,
@@ -588,7 +589,6 @@ which we instantiate in the next section by building a tool for
 predicting types in TypeScript.
 \cref{fig:fullexample} illustrates our general framework through a running example of predicting TypeScript types. 
 
-% \adg{felt repetitive re introduction, so trimmed}
 % Our goal is to enhance the type inference
 % procedure for dynamic languages by incorporating into a single engine
 % both information learned from a corpus of typed code
@@ -606,10 +606,6 @@ that requires type annotations on identifiers.
 Given a program $U$ plus a type environment $\Gamma$ let $\Gamma \vdash U$ mean that the program $U$ is well-typed according to the (deterministic) type system, given types for identifiers provided by $\Gamma$.
 %
 The environment takes the form $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$ where each $x$ is an identifier and each $t$ is a literal type.
-%
-\adg{This is the statement of our general framework.
-	We should tighten the connection to Figure 1.
-	eg $V=3$ and $T=3$}
 
 Given an untyped program $U$,
 let \emph{probabilistic type inference} consist of these steps:
@@ -688,14 +684,13 @@ $M$ matrix of probabilities described in step~(\ref{step:optimize}).
 % add useful information to the system.
 % and so is not on its own useful for type inference.
 
-\adg{Cut for now, but restore somewhere:
-	Therefore, instead of solving the problem
-	with classical approaches, like a SAT solver, we interpret the boolean
-	type expressions as numerical expressions in a continuous space.
-	%
-	This interpretation enables us to mix together the logical constraints with
-	information coming from statistical analysis in a constructive way and hence to
-	narrow down the predicted type.}
+	% Therefore, instead of solving the problem
+	% with classical approaches, like a SAT solver, we interpret the boolean
+	% type expressions as numerical expressions in a continuous space.
+	% %
+	% This interpretation enables us to mix together the logical constraints with
+	% information coming from statistical analysis in a constructive way and hence to
+	% narrow down the predicted type.}
 
 Logical constraints are extracted from our untyped input program $U$ using
 standard program analysis techniques.  Here, we rely a \emph{Constraints
@@ -1040,7 +1035,6 @@ So, when a parameter has no type annotation, TypeScript assumes that it has type
 %
 TypeScript does, however, seek to infer more specific types for the return type of a function.
 %
-%\adg{While the following is true, I'm unsure it's essential to mention here.}
 It is impractical for TypeScript code to implement run-time casts --- typical for optional type
 systems --- due to the type erasure that necessarily occurs when translating to plain JavaScript~\citep{understandtypescript}.
 
@@ -1205,8 +1199,6 @@ These interfaces contain the typed signatures of each property and method
 that a built-in type implements. We use these interfaces to construct a set of
 possible built-in types that we could assign to our injected type and therefore a proper
 type constraint.
-%For a concrete example of this procedure,
-%see~\cref{fig:jscode-base64,fig:log-base64a}.\adg{unresolved reference}
 
 Our purpose is to establish the principle that a combination of natural and logical constraints can outperform either on its own, and outperforms the state-of-the-art.
 %
@@ -1296,12 +1288,14 @@ this family of abbreviations shares a type.
 A Char-Level LSTM is well-suited to predict the type for any identifier in
 an abbreviation families.
 
-% \adg{Future: For example, in addition to the current experiment with types that appear at least 10,000 times, that minimum required count could be varied.}
-Our universe of types consists of the 78 built-in types or union of them
+Our universe of types consists of the 78 built-in types or unions of them
 that appear at least 10,000 times in our training set.
 The extension to a bigger set of types is straightforward, but we decide to work with a small set of types for the
 shake of rapid prototyping.
-
+%
+(It would be interesting to measure the effect
+on our results of varying the number of types known to \projectname, but we leave this for future work.)
+%
 We consider only built-in types
 to ensure that we do not introduce types that are not available to the compiler. 
 
@@ -1611,8 +1605,6 @@ while the precision for the parameters' types is $0.63$ and the recall $0.58$.
 The combined precision and recall are $0.62$ and $0.58$, respectively.
 The results presented in \cref{tab:typeprec1} are normalized based on these upper precision and recall limits.
 
-\adg{Are there 1272 identifiers for all types, or just for the universe of 78 types?for all types  Best to give both totals.}
-
 \begin{table*}[t]
 	\centering
 	\caption{Aggregate \textit{Type} precision and recall for 58 JavaScript libraries with 1272 identifiers in total (610 $funRet$, 662 $param$).
@@ -1642,24 +1634,22 @@ types of functions.
 For the parameters' types, the compiler disregards any information
 and infers all types as \texttt{any}; a situation that produces no useful logical constraints.
 To mitigate this issue, we define some simple heuristics that allow the \textit{Logical} tool
-to generate some non-trivial constraints.\adg{refer to description earlier in the paper}
-A more principled approach could greatly improve the results regarding the parameters' type inference,
-albeit outside the scope of this work.\adg{combine this sentence with the discussion from the rebuttal}
+to generate non-trivial constraints.
+A more systematic approach could improve the results regarding the parameters' type inference,
+but we leave this to future work.
 
 Furthermore, we observe for all tools that the precision and recall for both tasks are close.
 By comparing these two metrics in \cref{def:precision_recall},
 their similarity can be traced to the similarity of their denominators.
 As we discuss in \cref{ssec:structure_comparison},
 the \textit{Structure} subproblem can identify the majority (over $80\%$) of the function signatures;
-this causes the closeness of the denominators and subsequently of the precision and recall.
+hence, the denominators are close and subsequently so are the precision and recall.
 
-Finally, for \projectname we notice that the combination of the output of the \textit{Logical}
+Finally, for \projectname we find that the combination of the output of the \textit{Logical}
 and the \textit{Natural} tool improves our precision and recall for both tasks.
-A certain level of robustness can be also identified,
-because the low results of the \textit{Logical} tool for parameters' types positively contributes
-to the optimizer results.
-This means that on top of the predictions of the neural network,
-some of the logical constraints tip the balance towards more intuitive predictions.\adg{rephrase this sentence}
+% The comparatively poor results of the \textit{Logical} tool
+% for parameters' types positively contribute to the optimizer's results.
+% Building on the predictions of the neural network, some of the logical constraints contribute improved predictions.
 Overall, the combination of the logical and natural constraints in \projectname
 greatly improves our type inference capabilities.
 
@@ -1720,7 +1710,7 @@ It utilizes information in the vicinity of the identifier to predict the type.
 In contrast, our LSTM is trained on identifiers and types;
 we focus on obtaining information based on the identifier alone and not its context.
 
-\adg{Irene, roughly how often does DeepTyper return any?  Saying just "often" is not very informative.}
+% \adg{Irene, roughly how often does DeepTyper return any?  Saying just "often" is not very informative.}
 For the results shown in~\cref{tab:typeprec2},
 DeepTyper often returns \lstinline{any} as the most relevant suggestion for the type of an identifier.
 In this case, to keep the comparison meaningful, we select the second best candidate.
@@ -1873,10 +1863,6 @@ inherent trait of strongly, statically-typed, functional languages (like Haskell
 % enhancements are implemented via compiler tricks and thus are considered as a
 % small step towards a world of static typing where possible, and dynamic
 % typing when needed.
-
-\adg{gradual typing as compromise between static and dynamic.
-	examples for JS, Python, and Ruby.
-	none of this work makes use of natural constraints.}
 
 Dynamic languages have also started to pay more attention to typings. Several
 JavaScript extensions, like Closure Compiler~\citep{closure} and
