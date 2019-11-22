@@ -436,9 +436,9 @@ type inference rules, and thus their predictions ignore useful logical informati
 Current type inference systems rely
 on one of two sources of information:
 \begin{enumerate}[label=(\Roman*)]
-	\item \emph{Logical constraints} on type annotations that follow from the type system.
+	\item \emph{Logical Constraints} on type annotations that follow from the type system.
 	      These are the  constraints used by standard deterministic approaches for static type inference.
-	\item \emph{Natural constraints} are statistical constraints on type annotations
+	\item \emph{Natural Constraints} are statistical constraints on type annotations
 	      which can be inferred from relationships between types and surface-level properties such as names and lexical context.
 	      These constraints can be learned by applying machine learning to large code bases.
 	      They are the constraints that are currently employed by probabilistic typing systems.
@@ -1285,9 +1285,8 @@ developers commonly use multiple abbreviations for the same word and
 this family of abbreviations shares a type.
 A Char-Level LSTM is well-suited to predict the type for any identifier in
 an abbreviation families.
-
-Our universe of types consists of the 78 built-in types or unions over these
-78 built-in types that appear at least 10,000 times in our training set.
+%
+Our universe of types consists of the 78 types that appear at least 10,000 times in our training set. These are built-in TypeScript types and some commonly used unions of them. We note that our system cannot distinguish between a primitive and a complex type. 
 %
 Handling a larger set of types
 is straightforward, but we decide to work with a small set of types for the
