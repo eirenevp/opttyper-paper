@@ -749,7 +749,9 @@ defined as:
 \end{align*}
 %The $\mathrel{is}$ relation describes that the probability that the type variable $x_v$ is the literal type $l_\tau$. 
 In the actual implementation, we use logits instead of probabilities
-for numerical stability, see \cref{app:appendix-logit}.
+for numerical stability, see \cref{app:appendix-logit}. We note also, that our relaxation for the $\mathrel{or}$ operator, depends on the random initialization of the optimizer, and thus the final answer will be 
+either $\qqpi{P}{E_1}$ or $\qqpi{P}{E_2}$ with high probability but 
+not always the same.
 
 % \cas{This bit is important. It's a pretty simple fact, though, does it merit a theorem?}
 % \cas{It would be better to have the 'only if' direction as well,
