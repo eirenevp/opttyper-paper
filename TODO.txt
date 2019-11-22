@@ -30,7 +30,7 @@ ADG: 1. What's the use of probabilistic type inference?
 4. Better discussion - future work
 
 
-
+5. in the conclusion we still don't say 70% is compared to ?
 
 
 

@@ -913,14 +913,14 @@ Here, we use an approach tailored to the specifics of our problem.
 First, we reparameterize the problem to remove the probability constraints.
 The softmax function
 \begin{equation}\label{eq:softmax}
-	\sigma(\bm{x}) = \left[\frac{\exp\{x_1\}}{\sum_i \exp\{x_i\}}, \frac{\exp\{x_2\}}{\sum_i \exp\{x_i\}}, \cdots \right]^\mathsf{T}.
+	\sigma(\bm{x}) = \left[\frac{\exp\{x_1\}}{\sum_i \exp\{x_i\}}, \frac{\exp\{x_2\}}{\sum_i \exp\{x_i\}}, \cdots \right]^\mathsf{T}
 \end{equation}
 maps real-valued vectors to probability vectors.
 Our transformed problem takes the form
 \begin{equation}
 	\begin{aligned}\label{eq:opt_no_prob}
 		\underset{Y \in \mathbb{R}^{V \times T}}{\mathrm{min}} &
-		\sum_v || \sigma(\bm{y}_v)^\mathsf{T} - \bm{\mu}_v ||_2^2                                                                         \\
+		\sum_v || \sigma(\bm{y}_v) - \bm{\mu}_v ||_2^2                                                                         \\
 		\text{subject to }                                     & \qqpi{[\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}}{E} = 1.
 	\end{aligned}
 \end{equation}
