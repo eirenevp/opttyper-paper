@@ -20,21 +20,10 @@ ADG: add sentence about theorems about future work
 
 ADG: 1. What's the use of probabilistic type inference?
 
-2. Add somewhere why the structure subproblem is not trivial and probably specify again that we don't address this problem, from the rebuttal:
-
- The \textit{Structure} subproblem is not a simple syntactic process as a JavaScript module can export functions by arbitrary execution of code. To obtain full accuracy we would need to execute the code rather than simply parse it.
 
 2. Change "readable" types
 
-3. More careful discussion for optional / gradual typing
-4. Better discussion - future work
-
-
-5. in the conclusion we still don't say 70% is compared to ?
-
-
-
-
+3. More careful discussion for any --- top 
 
 
 
