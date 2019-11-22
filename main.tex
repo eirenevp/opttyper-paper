@@ -363,28 +363,31 @@ linewidth=\linewidth
 \maketitle
 
 \section{Introduction}
+
 Statically-typed programming languages aim to enforce correctness and safety  properties
 on programs by guaranteeing constraints on program behaviour.
 A large scale user-study
 suggests that programmers
-benefit from type safety in tasks
-such as class identification and type error fixing~\citep{hanenberg14,gao17}.
-However, type safety comes at a cost: these languages require explicit type annotations,
+benefit from type safety~\citep{hanenberg14}; use of type has also been
+show to prevent field bugs~\citep{gao17}.
+However, type safety comes at a cost: these languages often require explicit type annotations,
 which imposes the burden of declaring and maintaining these annotations on the programmer.
 Strongly statically-typed, usually functional languages, like Haskell or ML,
 offer type inference procedures that reduce
 the cost of explicitly writing types but come with
 a steep learning curve.
-On the other hand, dynamically typed languages are intuitive
-and popular~\cite{meyerovich12}.
-To compromise between static and dynamic typing,
-the programming language community has developed hybrid approaches for type systems
-such as gradual typing systems~\cite{siek06} or rich type inference procedures, see~\cref{sec:related}.
-Although these approaches provide both static and dynamic typing in the same program,
-they also require adding some optional type annotations to enable more precise inference.
-Hence, inferring types for dynamic
-languages without needing the programmer to provide at least a subset of
-the type annotations remains an open challenge.
+
+Dynamically typed languages, which either lack or do not require type
+annotations, are relatively more popular~\cite{meyerovich12}.  Initially
+designed for quick and dirty scripting or rapid prototyping, these languages
+have begun reaching the limits of what can be achieved without the help of type
+annotations, as witnessed by the heavy industrial investment in
+(TypeScript~\cite{typescript} and Flow~\cite{flow} are just two
+examples) and proliferation of static type systems for these languages.
+Retrofit for dynamic languages, these type systems include gradual~\cite{siek06}
+and optional type systems~\citep{bracha2004pluggable}.  Like classical type systems, these type systems
+require annotations to provide benefits.  Hence, reducing the annotation type tax
+for dynamic languages remains an open challenge.
 
 Probabilistic type inference
 has recently been proposed as an attempt to reduce the burden
