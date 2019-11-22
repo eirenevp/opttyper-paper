@@ -375,7 +375,7 @@ which imposes the burden of declaring and maintaining these annotations on the p
 Strongly statically-typed, usually functional languages, like Haskell or ML,
 offer type inference procedures that reduce
 the cost of explicitly writing types but come with
-a steep learning curve~\citep{wadler98}.
+a steep learning curve~\citep{wadler98,tirronen15}.
 
 Dynamically typed languages, which either lack or do not require type
 annotations, are relatively more popular~\cite{meyerovich12}.  Initially
@@ -2058,47 +2058,47 @@ of primitive types; we leave open the challenge inferring user-defined types.
 %   National Science Foundation.
 % \end{acks}
 
-% %% Appendix
-% \appendix
-% \section{Appendix: Continuous Relaxation in the Logit Space}\label{app:appendix-logit}
+%% Appendix
+\appendix
+\section{Appendix: Continuous Relaxation in the Logit Space}\label{app:appendix-logit}
 
-% In \cref{ssec:logcon}, we present the continuous interpretation based on probabilities.
-% As already mentioned, in the actual implementation we use logit instead for numerical stability.
-% The \emph{logit} of a probability is the logarithm of the odds ratio.
-% It is defined as the inverse of the softmax function; that is, an element of a probability vector $p \in [0,1]$ corresponds to
-% \begin{equation*}
-% 	\pi = \log \frac{p}{1 - p}.
-% \end{equation*}
-% It allows us to map probability values from $\left[ 0, 1 \right]$ to $\left[ -\infty, \infty \right]$.
+In \cref{ssec:logcon}, we present the continuous interpretation based on probabilities.
+As already mentioned, in the actual implementation we use logit instead for numerical stability.
+The \emph{logit} of a probability is the logarithm of the odds ratio.
+It is defined as the inverse of the softmax function; that is, an element of a probability vector $p \in [0,1]$ corresponds to
+\begin{equation*}
+	\pi = \log \frac{p}{1 - p}.
+\end{equation*}
+It allows us to map probability values from $\left[ 0, 1 \right]$ to $\left[ -\infty, \infty \right]$.
 
-% Given the matrix~$\mathcal{L}$, which corresponds to the logit of the matrix~$P$ in \cref{ssec:logcon}, we interpret an expression~$E$ as a number~$\qqpi{P}{E} \in \mathbb{R}$ as  follows:
-% %\ivp{Mention explicitly that this formulation maps scalar from [0,1] to [0,1], that is probability vectors do not require some extra form of scaling}
-% \begin{align*}
-% 	\qqpi{\mathcal{L}}{x_v \mathrel{is} l_\tau} & = \pi_{v,\tau}                                                \\ \label{eq:logits}
-% 	\qqpi{\mathcal{L}}{\mathrel{not} E}         & = \log(1-\text{sigmoid}(\qqpi{\mathcal{L}}{E})                \\
-% 	\qqpi{\mathcal{L}}{E_1 \mathrel{and} E_2}   & = \qqpi{\mathcal{L}}{E_1} \mathrel{+} \qqpi{\mathcal{L}}{E_2} \\
-% 	\qqpi{\mathcal{L}}{E_1 \mathrel{or} E_2}    & = \text{LogSumExp}(
-% 	\qqpi{\mathcal{L}}{E_1} + \qqpi{\mathcal{L}}{E_2} - \qqpi{\mathcal{L}}{E_1} \cdot \qqpi{\mathcal{L}}{E_2}).
-% \end{align*}
-% The sigmoid function is defined as
-% \begin{equation*}
-% 	\text{sigmoid}(a) = \frac{\exp\{a\}}{1 + \exp\{a\}},
-% \end{equation*}
-% while the LogSumExp function is defined as
-% \begin{equation*}
-% 	\text{LogSumExp}(\bm{x}) = \log\left( \sum_i \exp\{x_i\} \right).
-% \end{equation*}
+Given the matrix~$\mathcal{L}$, which corresponds to the logit of the matrix~$P$ in \cref{ssec:logcon}, we interpret an expression~$E$ as a number~$\qqpi{P}{E} \in \mathbb{R}$ as  follows:
+%\ivp{Mention explicitly that this formulation maps scalar from [0,1] to [0,1], that is probability vectors do not require some extra form of scaling}
+\begin{align*}
+	\qqpi{\mathcal{L}}{x_v \mathrel{is} l_\tau} & = \pi_{v,\tau}                                                \\ \label{eq:logits}
+	\qqpi{\mathcal{L}}{\mathrel{not} E}         & = \log(1-\text{sigmoid}(\qqpi{\mathcal{L}}{E})                \\
+	\qqpi{\mathcal{L}}{E_1 \mathrel{and} E_2}   & = \qqpi{\mathcal{L}}{E_1} \mathrel{+} \qqpi{\mathcal{L}}{E_2} \\
+	\qqpi{\mathcal{L}}{E_1 \mathrel{or} E_2}    & = \text{LogSumExp}(
+	\qqpi{\mathcal{L}}{E_1} + \qqpi{\mathcal{L}}{E_2} - \qqpi{\mathcal{L}}{E_1} \cdot \qqpi{\mathcal{L}}{E_2}).
+\end{align*}
+The sigmoid function is defined as
+\begin{equation*}
+	\text{sigmoid}(a) = \frac{\exp\{a\}}{1 + \exp\{a\}},
+\end{equation*}
+while the LogSumExp function is defined as
+\begin{equation*}
+	\text{LogSumExp}(\bm{x}) = \log\left( \sum_i \exp\{x_i\} \right).
+\end{equation*}
 
-% \section{Appendix: Neural Model }\label{app:neural} 
-% In this appendix we present the implementation details of the deep neural  used in \cref{ssec:natprodts}.
-% \begin{lstlisting}[numbers=none,caption={Our Chararacter Level \textit{LSTM} model.},captionpos=b]
-%   LSTMClassifier(
-%   (embedding): Embedding(90, 128)
-%   (lstm): LSTM(128, 64)
-%   (hidden2out): Linear(in_features=64, 
-%                 out_features=78, bias=True)
-%   (softmax): LogSoftmax()
-%   (optimization fun): ADAM)
-% \end{lstlisting}
+\section{Appendix: Neural Model }\label{app:neural} 
+In this appendix we present the implementation details of the deep neural  used in \cref{ssec:natprodts}.
+\begin{lstlisting}[numbers=none,caption={Our Chararacter Level \textit{LSTM} model.},captionpos=b]
+  LSTMClassifier(
+  (embedding): Embedding(90, 128)
+  (lstm): LSTM(128, 64)
+  (hidden2out): Linear(in_features=64, 
+                out_features=78, bias=True)
+  (softmax): LogSoftmax()
+  (optimization fun): ADAM)
+\end{lstlisting}
 
 \end{document}
