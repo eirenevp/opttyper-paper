@@ -494,8 +494,10 @@ Our contributions can be summarized as:
 	      JSNice~\cite{raychev15} and DeepTyper~\cite{hellendoorn18}.
 	      \projectname achieves a \emph{50\% reduction in error} (measured relatively) over these previous systems.
 \end{itemize}
-
-\begin{figure*}
+%
+\subsection{Our Framework via an Example}
+Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
+\begin{figure*}[t]
 	\centering
 	\def\svgwidth{0.75\linewidth}
 	\input{./figs/example/example.pdf_tex}
@@ -510,8 +512,11 @@ Our contributions can be summarized as:
 	% \end{figure*}
 	%\subsection{Our Framework by Example}
 
-	\vspace{1em}
-	\begin{minipage}{\textwidth}
+	% \vspace{.6em}
+	% \begin{minipage}{\textwidth}
+	% \end{minipage}%
+	\caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
+\end{figure*}%
 		Our input is a minimal JavaScript function
 		with no type annotations on its parameters or result.
 		%
@@ -582,15 +587,12 @@ Our contributions can be summarized as:
 		%
 		Box (f) also shows the solution matrix and Box (g) shows the induced type annotations,
 		now all predicted to be \lstinline{number}.
-	\end{minipage}
-	\caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
-\end{figure*}
-
+%
 \section{General Framework for Probabilistic Type Inference} \label{sec:framework}
 This section introduces our general framework,
 which we instantiate in the next section by building a tool for
 predicting types in TypeScript.
-\cref{fig:fullexample} illustrates our general framework through a running example of predicting TypeScript types. 
+% \cref{fig:fullexample} illustrates our general framework through a running example of predicting TypeScript types. 
 
 % Our goal is to enhance the type inference
 % procedure for dynamic languages by incorporating into a single engine
@@ -1039,17 +1041,17 @@ in sync with the library implementations.
 Ideally, we would like to automatically infer the typed APIs of such libraries.
 For generating definition files for existing JavaScript libraries,
 the DefinitelyTyped
-community officially recommends dts-gen~\citep{dtsgen}.
+community officially recommends \textit{dts-gen}~\citep{dtsgen}.
 This tool uses runtime information to produce a \lstinline{.d.ts} file that
 clearly defines the shape of the input API but does not provide type information for
-function arguments and returns. Because dts-gen only collects
+function arguments and returns. Because \textit{dts-gen} only collects
 dynamic information it eventually emits many \texttt{any} types that the developer must refine manually.
 It is only meant to be used as a starting
 point for writing a high-quality declaration file.
 \citet{tstools2017} created the TSINFER and TSEVOLVE tools to address the same problem.
 % to assist programmers to create and maintain TypeScript declaration files.
 These tools work by analyzing a recorded snapshot of a concretely initialized library.
-Like dts-gen, they are good at capturing the structure of the definition file,
+Like \textit{dts-gen}, they are good at capturing the structure of the definition file,
 but often construct random fresh type annotations, like \lstinline{interface_1342}, that lack meaning.
 
 \subsection{Problem Statement}\label{ssec:problem}
@@ -1112,7 +1114,7 @@ Our implementation takes as input three files:
 \begin{enumerate}
 	\item A JavaScript library file.
 	\item The output of the \textit{Structure} subproblem.
-	      We obtain this file from dts-gen~\cite{dtsgen}.
+	      We obtain this file from \textit{dts-gen}~\cite{dtsgen}.
 	      %This file comes from a third party tool and thus
 	      %why we use as an input in the formal problem statement, in the actual
 	\item TypeScript's default library declaration file,
@@ -1556,11 +1558,10 @@ although our method does not contribute to its improvement.
 % 		Tool              & $P(S_\text{fnRet})$ & $R(S_\text{fnRet})$ & $P(S_\text{param})$ & $R(S_\text{param})$ & $P(S_\text{total})$ & $R(S_\text{total})$ \\
 % 		\midrule                                                                                                                                              \\
 % 		\textit{declFlag} & 0.09                & 0.11                & 0.08                & 0.11                & 0.08                & 0.11                \\
-% 		\textit{dts-gen}  & 0.88                & 0.84                & 0.83                & 0.79                & 0.83                & 0.79                \\
+% 		\textit{\textit{dts-gen}}  & 0.88                & 0.84                & 0.83                & 0.79                & 0.83                & 0.79                \\
 % 		\bottomrule
 % 	\end{tabular}
 % \end{table*}
-
 For tackling the first subproblem, that is predict the structure of a declaration file for JavaScript library, we compare two tools that can output a structure file: \textit{declFlag} and \textit{dts-gen}.
 We summarise each tool as follows:
 \begin{itemize}[label={\tiny$\bullet$}]
@@ -1589,7 +1590,7 @@ We summarise below the characteristics of each package and the provided input.
 	\item \textit{Logical}: Using the JavaScript library and the declaration file as an input,
 	      we utilise the compiler in a pragmatic way allowing us to generate logical constraints as logical formulas
 	      and then solve them by using their continuous relaxation (\cref{ssec:logprodts}).
-	\item \textit{Natural}: We query our pre-trained Char-Level \textit{LSTM} to give us predictions for every identifier
+	\item \textit{Natural}: We query our pre-trained Char-Level LSTM to give us predictions for every identifier
 	      found in the declaration file (\cref{ssec:natprodts}).
 	      It requires as input the declaration file only.
 	\item \projectname: The output of the optimization problem for the corresponding combination of the logical
@@ -1662,7 +1663,7 @@ To evaluate \projectname we compare against two state-of-the-art tools that util
 both aiming to give type suggestions to the programmer.
 Neither tool was designed explicitly for predicting TypeScript declaration files,
 so we made the necessary adjustments to meet the requirements of our setting.
-For all of our evaluations we have used the same Structure file, that is, the one produced by dts-gen.
+For all of our evaluations we have used the same Structure file, that is, the one produced by \textit{dts-gen}.
 The two tools that we compare against are:
 \begin{itemize}[label={\tiny$\bullet$}]
 	\item DeepTyper~\cite{hellendoorn18}: A tool based on deep learning which learns types for every identifier.
@@ -1735,8 +1736,7 @@ be inadequate and may even worsen its performance.
 
 We conjecture that \projectname outperforms DeepTyper for two reasons.  First, 
 \projectname's Char-Level LSTM captures the type of variable, despite variations 
-in its spelling (\ivp{add a back reference to where we talk about abbreviation
-familiies.} \autoref{todo}).  Second, \projectname's logical constraints define
+in its spelling (\cref{ssec:natprodts}).  Second, \projectname's logical constraints define
 a wider, lexically independent, prediction context that notablly captures
 function returns.
 
@@ -1757,9 +1757,9 @@ results over the 6 primitive types it targets; while, for the second, we report
 its results on \projectname's set of $T=78$.  The first task advantages JSNice;
 the second advantages \projectname.  On predicting parameter type in the first
 task, JSNice outperforms \projectname, as \cref{tab:typeprec2} shows. 
-This may be because of the property that we
-discussed already regarding the use of a small size vocabularies. \ivp{I don't
-understand this sentence/observation.}
+% This may be because of the property that we
+% discussed already regarding the use of a small size vocabularies. \ivp{I don't
+% understand this sentence/observation.}
 
 Otherwise, \projectname outperforms JSNice.  We conjecture that that this is due
 to same two reasons we believe \projectname outperforms DeepTyper:
