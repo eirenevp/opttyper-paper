@@ -1426,16 +1426,16 @@ for solving logical constraints and natural constraints, and in about 65 seconds
 	%
 	A \emph{type path} is a pair~$\textit{(n,ty)}$ of a fully-qualified name~$\textit{n}$ and a type~$\textit{ty}$.
 	%
-	Let the variable~$X$ range over sets of paths.
+	Let the variable~$\mathcal{X}$ range over sets of paths.
 \end{defn}
 
-Let~$S$ be the set of all structural paths,
+Let~$\mathcal{S}$ be the set of all structural paths,
 which is partitioned into the following subsets:
 \begin{itemize}[label={\tiny$\bullet$}]
-	\item function identifiers $S_\text{fnRet}$
+	\item function identifiers $\mathcal{S}_\text{fnRet}$
 	      %\item method identifiers $S_{meth}$
-	\item function  parameters $S_\text{param}$
-	\item either function or parameter identifiers $S_\text{total} = S_\text{fnRet} \cup S_\text{param}$
+	\item function  parameters $\mathcal{S}_\text{param}$
+	\item either function or parameter identifiers $\mathcal{S}_\text{total} = \mathcal{S}_\text{fnRet} \cup \mathcal{S}_\text{param}$
 	      %  \item variables $S_{var}$
 	      %   \item properties $S_{prop}$
 	      %    \item interfaces $S_{inter}$ \ivp{should we include that only for structure, what about its 'type'?}
@@ -1455,7 +1455,7 @@ which is partitioned into the following subsets:
 We call the predicted declaration file \emph{predicted.d.ts}
 while for the gold standard file we use the term \emph{gold.d.ts}.
 
-\begin{defn}[Functions \textit{Paths} and \textit{Filter$_X$}]
+\begin{defn}[Functions \textit{Paths} and \textit{Filter$_\mathcal{X}$}]
 	To capture the contents of a file, we define the
 	function~$\textit{Paths(*.d.ts)}$, which takes as an input a
 	TypeScript declaration file and returns a set of paths
@@ -1466,9 +1466,9 @@ while for the gold standard file we use the term \emph{gold.d.ts}.
 	%
 	%We define the $Paths$ function as the union of the two sets, just to be able to define precision and recall later in a general manner.
 	%
-	In the next step we apply a~$Filter_X$ function to
-	filter the output of the~$Paths$ function to keep only the paths in the set~$X$,
-	that is,~$Filter_X(Y) =  X \cap Y$.
+	In the next step we apply a~$Filter_\mathcal{X}$ function to
+	filter the output of the~$Paths$ function to keep only the paths in the set~$\mathcal{X}$,
+	that is,~$Filter_\mathcal{X}(\mathcal{Y}) =  \mathcal{X} \cap \mathcal{Y}$.
 \end{defn}
 As we are interested in evaluating both \textit{Structure}
 and \textit{Type}---the core elements of our pipeline as analyzed in \cref{sec:prodts}---and
@@ -1505,26 +1505,26 @@ as correctly predicting on average $6$ types out of the $10$ found in \textit{go
 %
 We compute the precision and recall for both subproblems using the formulas defined next.
 %
-We define $X \in \{S, T\}$ (\textit{Structure} and \textit{Type})
+We define $\mathcal{X} \in \{\mathcal{S}, \mathcal{T}\}$ (\textit{Structure} and \textit{Type})
 to denote the subproblem for which we perform measurements.
 %
-$X$'s range could be extended to include, for instance,
-$S_\text{fnRet}$ (function identifiers) to perform a finer analysis.
+$\mathcal{X}$'s range could be extended to include, for instance,
+$\mathcal{S}_\text{fnRet}$ (function identifiers) to perform a finer analysis.
 
-\begin{defn}[Precision and Recall for $X$] \label{def:precision_recall}
+\begin{defn}[Precision and Recall for $\mathcal{X}$] \label{def:precision_recall}
 	Given a declaration file \textit{predicted.d.ts},
-	an ideal declaration file \textit{gold.d.ts}, and a class of paths $X$,
-	we define precision and recall for $X$ as:
+	an ideal declaration file \textit{gold.d.ts}, and a class of paths $\mathcal{X}$,
+	we define precision and recall for $\mathcal{X}$ as:
 	%
 	\begin{equation}
-		P(X) =
-		\dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap {}}{Filter_X(Paths(gold.d.ts)) |}}{|Filter_X(Paths(predicted.d.ts)) |}
+		P(\mathcal{X}) =
+		\dfrac{\splitdfrac{|Filter_\mathcal{X}(Paths(predicted.d.ts)) \cap {}}{Filter_\mathcal{X}(Paths(gold.d.ts)) |}}{|Filter_\mathcal{X}(Paths(predicted.d.ts)) |}
 	\end{equation}
 
 	\begin{equation}
-		R(X) =
-		\dfrac{\splitdfrac{|Filter_X(Paths(predicted.d.ts)) \cap {}} {Filter_X(Paths(gold.d.ts)) |}}
-		{|Filter_X(Paths(gold.d.ts))|}.
+		R(\mathcal{X}) =
+		\dfrac{\splitdfrac{|Filter_\mathcal{X}(Paths(predicted.d.ts)) \cap {}} {Filter_\mathcal{X}(Paths(gold.d.ts)) |}}
+		{|Filter_\mathcal{X}(Paths(gold.d.ts))|}.
 	\end{equation}
 \end{defn}
 %
@@ -1577,9 +1577,9 @@ We summarise each tool as follows:
 	      % \item \texttt{prodts-gen}: Our tool which implements a more sophisticated static analysis.
 \end{itemize}
 % \cref{tab:structprec} shows the results of the comparison.
-For a type universe consists of $78$ types, and 48 JavaScript libraries as input with 2012 identifiers in total, the aggregate \textit{Structure} precision and recall across all modules are~$P(S_\text{total}) = 0.08$,
-$R(S_\text{total}) = 0.11$ for \textit{declFlag},~$P(S_\text{total}) = 0.8$,
-$R(S_\text{total}) = 0.79$ for \textit{dts-gen} respectively.
+For a type universe consists of $78$ types, and 48 JavaScript libraries as input with 2012 identifiers in total, the aggregate \textit{Structure} precision and recall across all modules are~$P(\mathcal{S}_\text{total}) = 0.08$,
+$R(\mathcal{S}_\text{total}) = 0.11$ for \textit{declFlag},~$P(\mathcal{S}_\text{total}) = 0.8$,
+$R(\mathcal{S}_\text{total}) = 0.79$ for \textit{dts-gen} respectively.
 Clearly \textit{dts-gen} outperforms \textit{declFlag} across all tasks.
 As a result, we used the output of \textit{dts-gen} as input in our type prediction subproblem. 
 
@@ -1781,7 +1781,7 @@ NL2Type, a tool by~\cite{malik19}, also uses
 a deep learning approach to the problem, and  relies on JSDoc comments as
 an additional type hint.
 %
-We could not compare directly to ML2Type because
+We could not compare directly to NL2Type because
 there are few examples with both JSDoc and available declaration
 files in the DefinitelyTyped repository.
 %
