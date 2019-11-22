@@ -1727,12 +1727,19 @@ and hence the context is not very informative.
 
 Finally, it is worth pointing out that DeepTyper has a type vocabulary of size $T = 11000$,
 much larger than our vocabulary of size $T=78$,
-because it includes user-defined types too.
+because it includes user-defined types.
 If DeepTyper were trained on a smaller size vocabulary the results---at least for the predicted
 types of parameters---might improve.
 Further, perhaps taking into account user-defined types needs extra consideration;
 simply learning user-defined identifier and type pairs, as DeepTyper does, might
-be inadequate and may, in fact, even worsen its performance.
+be inadequate and may even worsen its performance.
+
+We conjecture that \projectname outperforms DeepTyper for two reasons.  First, 
+\projectname's Char-Level LSTM captures the type of variable, despite variations 
+in its spelling (\ivp{add a back reference to where we talk about abbreviation
+familiies.} \autoref{todo}).  Second, \projectname's logical constraints define
+a wider, lexically independent, prediction context that notablly captures
+function returns.
 
 \paragraph{Comparison with JSNice}
 
@@ -1742,31 +1749,25 @@ Its purpose is for type inference (and other tasks) on JavaScript
 using statistics from dependency graphs learned on a large corpus.
 The evaluation on our data had to be performed manually because JSNIce is only available via a website interface.
 
-JSNice has a type lattice that contains only $T=6$ primitive types and exploits the relation paths between types of depth 3.
-Therefore, the tool does not consider the additional issues involved with predicting precise types,
-in which the system must infer what level of generality is most appropriate for the predicted types.
-Moreover, it does not entirely capture the flow and dependencies among typings.
+JSNice targets a type lattice that contains only $T=6$ primitive types and
+exploits the relation paths between types up to depth 3.  Thus, it may not
+capture some typing relevant element dependencies.  Because JSNice predicts only
+$6$ types, we can not directly compare it to \projectname, so, instead,  we
+report JSNice's results on two tasks. In the first task, we calculate its
+results over the 6 primitive types it targets; while, for the second, we report
+its results on \projectname's set of $T=78$.  The first task advantages JSNice;
+the second advantages \projectname.  On predicting parameter type in the first
+task, JSNice outperforms \projectname, as \cref{tab:typeprec2} shows. 
+This may be because of the property that we
+discussed already regarding the use of a small size vocabularies. \ivp{I don't
+understand this sentence/observation.}
 
-Due to the previous issue, we report results for two instantiations of JSNice:
-for the first one we calculated the results for the 6 primitive types only,
-while for the second one we included the results of rest $T=78$ wrongly identified types.
-Regarding the type recall of the parameters in \cref{tab:typeprec2} for the $T=6$ case,
-JSNice scored better results than our tool.
-This may be because of the property that we discussed already regarding the use of a small size vocabularies.
-% \ivp{add description of jsnice, 2 cases, one with 6 types only the one that jsnice is trained(results comparable with the result reported on jsnice for parameters but not for return type), 78 our set of types we do better in each case, main critique the failure to capture return types }
-
-Overall, we conjecture that the performance drop for DeepTyper and JSNice happens for the following reasons:
-\begin{enumerate}[label=(\roman*)]
-	\item The identifiers for functions are not as repeatable as the identifiers for parameters;
-	      DeepTyper and JSNice have less training data for function identifiers,
-	      while our Char-Level LSTM can captures variations of the same identifier regardless of its source.
-	\item The return type of a function is usually related to code at the bottom of the function's body.
-	      As a result, a learning approach that takes into account a limited amount of context
-	      can miss relationships that are not spatially close.
-	\item JSNice only captures shallow dependencies between identifiers and, thus,
-	      especially for function return types, there is occasionally insufficient information
-	      to capture the information flow.
-\end{enumerate}
+Otherwise, \projectname outperforms JSNice.  We conjecture that that this is due
+to same two reasons we believe \projectname outperforms DeepTyper:
+\projectname's grouping together names that share a type despite minor
+variations their names and its use of a more expansive context due to its
+logical constraints, as opposed to JSNice depth 3 traversal of program element
+relations.
 
 NL2Type, a tool by~\cite{malik19}, also uses
 a deep learning approach to the problem, and  relies on JSDoc comments as
