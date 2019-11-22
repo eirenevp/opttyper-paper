@@ -383,7 +383,7 @@ such as gradual typing systems~\cite{siek06} or rich type inference procedures, 
 Although these approaches provide both static and dynamic typing in the same program,
 they also require adding some optional type annotations to enable more precise inference.
 Hence, inferring types for dynamic
-languages without needing the programmer to provide at a least a subset of
+languages without needing the programmer to provide at least a subset of
 the type annotations remains an open challenge.
 
 Probabilistic type inference
@@ -406,11 +406,17 @@ fail to infer a useful type.
 The classic literature on conventional type systems takes great care to demonstrate
 that type inference only suggests sound types~\cite{DBLP:journals/jcss/Milner78,Pierce2002}.
 Probabilistic type inference takes a different perspective:
-a tool for type inference usefully reduces the human annotation burden
-so long as it frequently makes correct predictions, even if predictions are sometimes wrong.
+a tool for probabilistic type inference usefully reduces the human annotation burden
+as long as it frequently makes correct predictions, even if predictions are sometimes wrong.
 Hence, we evaluate probabilistic type inference with statistical metrics.
-The human in the loop can ignore incorrect or unsuitable type predictions,
-or detect them for example by classic type checkers.
+
+Probabilistic type inference is not in conflict with classical type inference but complements it.
+There are settings, like TypeScript, where sound and correct type inference is too imprecise.
+In these settings, probabilistic type inference helps the human in the loop to move a
+partially typed code base---one lacking so many type annotations that classical type inference
+can make little progress---to a sufficiently annotated state that classical type inference can take over and finish the job.
+% The human in the loop can ignore incorrect or unsuitable type predictions,
+% or detect them for example by classic type checkers.
 
 Two examples of probabilistic type inference systems are JSNice~\cite{raychev15},
 which uses probabilistic graphical models to statistically infer types of identifiers
