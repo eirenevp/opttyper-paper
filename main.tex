@@ -97,11 +97,11 @@
 \definecolor{myrose}{rgb}{0.78,0.50,0.63}
 %%%%%%%%%%% for comments %%%%%%%%%%%%%%%%%%%%%%%
 %\usepackage{color-edits}
-\usepackage[suppress]{color-edits}
-\addauthor{ivp}{Maroon}
-\addauthor{adg}{RoyalBlue}
-\addauthor{cas}{mygreen}
-\addauthor{ebr}{UscGold}
+% \usepackage[suppress]{color-edits}
+% \addauthor{ivp}{Maroon}
+% \addauthor{adg}{RoyalBlue}
+% \addauthor{cas}{mygreen}
+% \addauthor{ebr}{UscGold}
 
 \newcommand{\margincomment}[2]{\marginpar{\scriptsize\color{Maroon}#1 says: #2}}
 \newcommand{\adg}[1]{\margincomment{ADG}{#1}}
@@ -1265,12 +1265,14 @@ this family of abbreviations shares a type.
 A Char-Level LSTM is well-suited to predict the type for any identifier in
 an abbreviation families.
 
-\adg{Future: For example, in addition to the current experiment with types that appear at least 10,000 times, that minimum required count could be varied.}
+% \adg{Future: For example, in addition to the current experiment with types that appear at least 10,000 times, that minimum required count could be varied.}
 Our universe of types consists of the 78 built-in types or union of them
 that appear at least 10,000 times in our training set.
+The extension to a bigger set of types is straightforward, but we decide to work with a small set of types for the
+shake of rapid prototyping.
+
 We consider only built-in types
-to ensure that we do not introduce types that are not available to the compiler.
-We leave a consideration of user-defined types to future work.
+to ensure that we do not introduce types that are not available to the compiler. 
 
 Regarding the implementation details of the LSTM network, for the $F$ in \eqref{eq:lstmb},
 we use a feedforward neural network
@@ -1712,9 +1714,8 @@ be inadequate and may, in fact, even worsen its performance.
 
 \paragraph{Comparison with JSNice}
 
-\adg{"shallowly exploitin" doesn't sound like a Good Thing.  can we rephrase?}
 JSNice is a tool that learns statistical correlations between program elements
-by shallowly exploiting their relationship.
+by exploiting their relationship for a certain depth. %in their implementation it is 3
 Its purpose is for type inference (and other tasks) on JavaScript
 using statistics from dependency graphs learned on a large corpus.
 The evaluation on our data had to be performed manually because JSNIce is only available via a website interface.
