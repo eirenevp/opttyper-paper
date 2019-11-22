@@ -1016,16 +1016,15 @@ the DefinitelyTyped
 community officially recommends dts-gen~\citep{dtsgen}.
 This tool uses runtime information to produce a \lstinline{.d.ts} file that
 clearly defines the shape of the input API but does not provide type information for
-function arguments and returns.
-Dts-gen only collects
-dynamic information. As a result it emits many \texttt{any} types that the developer must refine manually.
+function arguments and returns. Because dts-gen only collects
+dynamic information it eventually emits many \texttt{any} types that the developer must refine manually.
 It is only meant to be used as a starting
 point for writing a high-quality declaration file.
 \citet{tstools2017} created the TSINFER and TSEVOLVE tools to address the same problem.
 % to assist programmers to create and maintain TypeScript declaration files.
 These tools work by analyzing a recorded snapshot of a concretely initialized library.
 Like dts-gen, they are good at capturing the structure of the definition file,
-but often fail to capture readable forms for argument and result types.
+but often construct random fresh type annotations, like \lstinline{interface_1342}, that lack meaning.
 
 \subsection{Problem Statement}\label{ssec:problem}
 % \begin{center}
