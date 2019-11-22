@@ -1001,18 +1001,26 @@ to infer TypeScript declaration files
 for an underlying JavaScript library.
 
 \subsection{Background: TypeScript's Type System}~\label{ssec:intro-typescript}
-Syntactically, TypeScript~\citep{typescript} is a typed superset of
+
+TypeScript~\citep{typescript} is a typed superset of
 JavaScript designed for developing large-scale, stable applications.
 TypeScript's compiler typechecks TypeScript programs then emits plain JavaScript
 to leverage the fact that JavaScript is the only cross-platform
 language that runs in any browser, any host, and any OS.
 Structural type systems consider record types (classes), whose fields or members have the same names and types, to be equal.
-To compromise between static and dynamic typing, TypeScript supports a
+TypeScript supports a
 structural type system because it permits TypeScript to handle many JavaScript idioms that depend on dynamic typing.
-One of the main goals of TypeScript's designers is to
-provide a smooth transition from JavaScript.
+One of the main goals of TypeScript's designers is to support idiomatic
+JavaScript to
+provide a smooth transition from JavaScript to TypeScript.
 %
-As a result TypeScript's type system is deliberately unsound~\citep{understandtypescript}.
+Therefore, TypeScript's type system is deliberately
+unsound~\citep{understandtypescript}.  It is an optional type system, whose
+annotations can be omitted and have no effect on runtime.  TypeScript erases 
+them when transpiling to JavaScript~\citep{understandtypescript}.
+TypeScript's type system defaults to assigning its \texttt{any} type to
+unannotated identifiers, like parameters.  Function returns are an exception;
+here, TypeScript does seek to infer a more specific type.
 
 TypeScript applications and libraries commonly take advantage of JavaScript's flourishing ecosystem
 and use untyped JavaScript libraries.
@@ -1022,27 +1030,13 @@ as separate TypeScript~\emph{declaration files} (\lstinline{.d.ts}).
 The TypeScript community has already
 made a huge effort to support this process by manually writing and maintaining
 declaration files for over five thousand of the most popular JavaScript
-libraries. These files are available on the DefinitelyTyped
-\citep{definitelytyped} repository.
+libraries. These files are available in the 
+DefinitelyTyped~\citep{definitelytyped} repository.
 Although this manual approach has proven
 useful, it raises the challenge of keeping declaration files
 in sync with the library implementations.
 
-Ideally, we would like to automatically infer the typed APIs of such
-libraries.
-% TypeScript supports a peculiar flavor of type inference:
-TypeScript's soft type system~\citep{softtyping}
-defaults to the \texttt{any} type.
-So, when a parameter has no type annotation, TypeScript assumes that it has type
-\texttt{any} and does not infer a more specific type.
-%
-TypeScript does, however, seek to infer more specific types for the return type of a function.
-%
-It is impractical for TypeScript code to implement run-time casts --- typical for optional type
-systems --- due to the type erasure that necessarily occurs when translating to plain JavaScript~\citep{understandtypescript}.
-
-% Therefore traditional static or dynamic analyses are not adequate to generate ready-to-use definition files.
-%
+Ideally, we would like to automatically infer the typed APIs of such libraries.
 For generating definition files for existing JavaScript libraries,
 the DefinitelyTyped
 community officially recommends dts-gen~\citep{dtsgen}.
@@ -1134,7 +1128,7 @@ includes type predictions for
 \end{itemize}
 %
 The output of our tool is essentially the declaration file from the \textit{Structure} subproblem
-but with some, or ideally all, of the \texttt{any} types substituted with built-in types, but not including user-defined ones.
+but with some, or, ideally all, of the \texttt{any} types substituted with built-in types, but not including user-defined ones.
 %
 % Let the \textit{Type} subproblem be the process of predicting types
 % to fill the holes left in the declaration files
@@ -1273,9 +1267,10 @@ Having established the general principle, we will aim to show how to modify a ty
 %         \bottomrule
 %     \end{tabular}
 % \end{table*}
+
 \subsection{Natural Constraints for TypeScript}\label{ssec:natprodts}
-We now focus our attention on extracting natural constraints for
-our problem.
+
+We now focus our attention on extracting natural constraints.
 The TypeScript community has already
 made a huge effort to support this process by writing and maintaining the
 declaration files for over four thousand of the most popular JavaScript
@@ -1291,13 +1286,15 @@ this family of abbreviations shares a type.
 A Char-Level LSTM is well-suited to predict the type for any identifier in
 an abbreviation families.
 
-Our universe of types consists of the 78 built-in types or unions of them
-that appear at least 10,000 times in our training set.
-The extension to a bigger set of types is straightforward, but we decide to work with a small set of types for the
+Our universe of types consists of the 78 built-in types or unions over these
+78 built-in types that appear at least 10,000 times in our training set.
+%
+Handling a larger set of types
+is straightforward, but we decide to work with a small set of types for the
 shake of rapid prototyping.
 %
-(It would be interesting to measure the effect
-on our results of varying the number of types known to \projectname, but we leave this for future work.)
+We leave measuring the effect
+of varying the number of types known to \projectname to future work.
 %
 We consider only built-in types
 to ensure that we do not introduce types that are not available to the compiler. 
@@ -1326,8 +1323,11 @@ to the correct label from the output $F$
 and sum all the values of the correct labels for the entire training set.
 
 \subsection{Realization of \projectname{}}\label{ssec:combprodts}
-In this subsection we describe the particular implementation details for our tool. Both the code for the deep learning and the combined optimization part is written in PyTorch~\cite{paszke2017}. Most of our design choices here are made empirically
-based on what we have noticed maximizes the performance of the framework.
+
+Here, we describe the implementation of \projectname. Both the code for the deep
+learning and the combined optimization part is written in
+PyTorch~\cite{paszke2017}. We base most of our design choices on empirically
+observing what maximizes the \projectname's performance.
 
 \paragraph{\textit{Natural} Constraints} We use \textsc{Adam}~\cite{kingma2014}, an extension of stochastic gradient descent,
 as our optimization algorithm for the \textit{Natural} constraints.
