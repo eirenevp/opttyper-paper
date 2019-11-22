@@ -964,6 +964,37 @@ associated probability vector $P = [\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})
 we select the element of the
 corresponding probability vector that is closest to one.
 
+An important theoretical question is whether the logical constraints are satisfied at the optimum
+of the combined logical and natural constraints.
+We conjecture there is a value $\lambda_0$ such that if we pick $\lambda > \lambda_0$,
+then the logical constraints are satisfied at the optimum of (\ref{eq:objective}).
+We leave this question for future work; instead, this paper presents an empirical evaluation
+of the optimization objective (\ref{eq:objective}).
+
+% For this part the trick is that whether the logical constraints are satisfied at the optimum
+%  depends on lambda. Does that make sense?
+% If lambda = 0 the logical constraints are not guaranteed to be satisfied,
+% and I expect that if we look at the predictions produced in our experiments, we will find sometimes that the constraints are not satisfied. 
+
+% (There are two general strategies in the above about how to approach theoretical claims:
+% understand the limiting case because that is often simpler,
+% and try out a simpler implementation to see if the proposed theorem is true.)
+
+% Instead what I claim is that there exists a value lambda0 such that,
+% as long as you pick lambda > lambda0, then the constraints are satisfied at optimum.
+
+% This depends on two ideas:
+% One, I claim that if you consider the logical constraints as a function
+% of the continuous type assignments,
+% we show under some conditions this function is bounded above by 1,
+% and that if the function is 1, then the constraints are satisfied.
+% (I can try to do this more formally once I have our notation from the paper.)
+
+% Then we argue that the likelihood term has a gap between the best non satisfying assignment
+% and the best satisfying one.
+% If lambda is big enough, the gap in the logical constraints is bigger
+% than the gap in the natural constraints, so the overall optimum will satisfy the logical constraints
+
 \section{\projectname: Predict TypeScript Type Signatures for JavaScript Libraries}
 \label{sec:prodts}
 To evaluate our approach in a real-world scenario, we
