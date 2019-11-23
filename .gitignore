@@ -10,3 +10,4 @@ __latexindent_temp.tex
 main.pdf
 *.pdf
 main.synctex(busy)
+.DS_Store
