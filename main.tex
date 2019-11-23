@@ -495,9 +495,9 @@ Our contributions can be summarized as:
 	      \projectname achieves a \emph{50\% reduction in error} (measured relatively) over these previous systems.
 \end{itemize}
 %
-\subsection{Our Framework via an Example}
-Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
-\begin{figure*}[t]
+% \subsection{Our Framework via an Example}
+% Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
+\begin{figure*}
 	\centering
 	\def\svgwidth{0.75\linewidth}
 	\input{./figs/example/example.pdf_tex}
@@ -512,11 +512,8 @@ Before formalizing our framework, we pictorially illustrate our approach in \cre
 	% \end{figure*}
 	%\subsection{Our Framework by Example}
 
-	% \vspace{.6em}
-	% \begin{minipage}{\textwidth}
-	% \end{minipage}%
-	\caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
-\end{figure*}%
+	\vspace{.6em}
+	\begin{minipage}{\textwidth}
 		Our input is a minimal JavaScript function
 		with no type annotations on its parameters or result.
 		%
@@ -587,12 +584,15 @@ Before formalizing our framework, we pictorially illustrate our approach in \cre
 		%
 		Box (f) also shows the solution matrix and Box (g) shows the induced type annotations,
 		now all predicted to be \lstinline{number}.
+	\end{minipage}%
+	\caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
+\end{figure*}%
 %
 \section{General Framework for Probabilistic Type Inference} \label{sec:framework}
 This section introduces our general framework,
 which we instantiate in the next section by building a tool for
 predicting types in TypeScript.
-% \cref{fig:fullexample} illustrates our general framework through a running example of predicting TypeScript types. 
+\cref{fig:fullexample} illustrates our general framework through a running example of predicting types. 
 
 % Our goal is to enhance the type inference
 % procedure for dynamic languages by incorporating into a single engine
