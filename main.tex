@@ -1327,7 +1327,7 @@ learning and the combined optimisation part is written in
 PyTorch~\cite{paszke2017}. We base most of our design choices on empirically
 observing what maximises \projectname's performance.
 
-\paragraph{\textit{Natural} Constraints} We use \textsc{Adam}~\cite{kingma2014}, an extension of stochastic gradient descent,
+\paragraph{\textit{Natural} Constraints} We use \textsc{Adam}~\cite{kingma2014}, an extension of stochastic gradient descent~\cite{robbins51},
 as our optimisation algorithm for the natural constraints.
 %
 The main difference between \textsc{Adam} and classical stochastic gradient descent
@@ -1377,11 +1377,16 @@ but is able to generalise to unseen inputs. For detailed implementation details 
 %   \end{figure*}
 %\subsection{Combining Logical and Natural Constraints}
 
-\paragraph{\textit{Logical} Constraints} To evaluate the minimum of the generated functions for the \textit{Logical} constraitns, we use a different adaptive optimisation algorithm,
+\paragraph{\textit{Logical} Constraints} 
+Solving the relaxed logical constraints corresponds to an optimization 
+problem as described in~\eqref{eq:logical}.
+To find the minimum of the generated functions for the logical constraitns, we use another alternative to stochastic gradient descent optimisation algorithm~\cite{robbins51},
 known as \textsc{RMSprop}~\cite{tieleman2014}.
 We set the maximum number of iterations to 2,000, which suffices in practice for the loss to stabilise.
 
-\paragraph{Combined optimisation} For the combination of the natural and logical constraints we implement the optimisation problem described in~\eqref{eq:objective} for $\lambda = 10$, while we leave the particular details for each subproblem the same. 
+\paragraph{Combined Optimisation} 
+We use $\lambda = 10$ in~\eqref{eq:objective} for combining the natural and logical constraints to a single optimisation problem and solve it using
+\textsc{RMSprop}~\cite{tieleman2014}, as we do it for solving only the logical constraints.
 % Adam~\cite{ruder2016} is being used to change the step of the optimizer on each iteration. 
 \section{Evaluation of \projectname{}}\label{sec:eval}
 
