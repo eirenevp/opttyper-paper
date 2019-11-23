@@ -434,7 +434,7 @@ type inference rules, and thus their predictions ignore useful logical informati
 
 \subsection{Our Contribution}
 Current type inference systems rely
-on one of two sources of information:
+on one of two sources of information
 \begin{enumerate}[label=(\Roman*)]
 	\item \emph{Logical Constraints} on type annotations that follow from the type system.
 	      These are the  constraints used by standard deterministic approaches for static type inference.
@@ -478,7 +478,7 @@ declaration files (\lstinline{.d.ts}).  Although this manual approach has been p
 effective, it raises the challenge of how to automatically maintain valid declaration files
 as library implementations evolve.
 
-Our contributions can be summarized as:
+Our contributions can be summarised as
 \begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
 	\item We introduce a principled framework to combine logical and natural constraints for type inference,
 	      based on transforming a type inference procedure into a numerical optimisation problem.
@@ -613,7 +613,7 @@ Given a program $U$ plus a type environment $\Gamma$ let $\Gamma \vdash U$ mean 
 The environment takes the form $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$ where each $x$ is an identifier and each $t$ is a literal type.
 
 Given an untyped program $U$,
-let \emph{probabilistic type inference} consist of these steps:
+let \emph{probabilistic type inference} consist of these steps
 \begin{enumerate}
 	\item We choose a finite universe consisting of $T$ distinct literal types $\{ l_\tau \mid \tau \in 1 \dots T \}$.
 	\item We compute a set $\{ x_v \mid v \in 1 \ldots V\}$ of a number $V$ of distinct identifiers in $U$ that need to be assigned types.
@@ -705,12 +705,12 @@ enforces and produces a boolean type constraints for them.
 
 In this work, we consider the following logical constraints.
 \begin{defn}[\emph{Grammar of Logical Constraints}]\label{def:log-gram}
-	A logical constraint is an expression $E$ of the following form.
+	A logical constraint is an expression $E$ of the following form
 	\begin{align*}
 		E & ::= x_v \mathrel{is} l_\tau \\ \numberthis\label{eq:gram}
 		  & \mid{} \mathrel{not} E      \\
 		  & \mid E \mathrel{and} E      \\
-		  & \mid E \mathrel{or} E
+		  & \mid E \mathrel{or} E.
 	\end{align*}
 	Let $\mathcal{E}$ be the set of all logical constraints.
 \end{defn}
@@ -751,7 +751,7 @@ defined as
 	\qqpi{P}{\mathrel{not} E}         & = 1-\qqpi{P}{E}                     \\
 	\qqpi{P}{E_1 \mathrel{and} E_2}   & = \qqpi{P}{E_1} \cdot \qqpi{P}{E_2} \\
 	\qqpi{P}{E_1 \mathrel{or} E_2}    & =
-	\qqpi{P}{E_1} + \qqpi{P}{E_2} - \qqpi{P}{E_1}\cdot\qqpi{P}{E_2}
+	\qqpi{P}{E_1} + \qqpi{P}{E_2} - \qqpi{P}{E_1}\cdot\qqpi{P}{E_2}.
 \end{align*}
 %The $\mathrel{is}$ relation describes that the probability that the type variable $x_v$ is the literal type $l_\tau$. 
 In the actual implementation, we use logits instead of probabilities
@@ -890,7 +890,7 @@ $P$ that is as close as possible to the natural constraints $\mathcal{M}$
 subject to the logical constraints being satisfied.
 A simple way to quantify the distance is via the \emph{Euclidean norm} $|| \cdot ||_2$ of a vector, that is, the square root of the sum of the squares of its elements.
 %
-% \cas{This could alternately be formalized as a multi-objective problem. I do not know what is best.
+% \cas{This could alternately be formalised as a multi-objective problem. I do not know what is best.
 % 	Maybe it is better to talk about maximizing [[ E ]], because our theorem talks about maximization.}
 %
 Hence, we obtain the constrained optimisation problem
@@ -1029,10 +1029,8 @@ and use untyped JavaScript libraries.
 To support static type checking of such applications,
 the types of such JavaScript libraries' APIs are expressed
 as separate TypeScript~\emph{declaration files} (\lstinline{.d.ts}).
-The TypeScript community has already
-made a huge effort to support this process by manually writing and maintaining
-declaration files for over five thousand of the most popular JavaScript
-libraries. These files are available in the 
+The TypeScript community actively supports this process by manually writing and maintaining
+declaration files, available in the 
 DefinitelyTyped~\citep{definitelytyped} repository.
 Although this manual approach has proven
 useful, it raises the challenge of keeping declaration files
@@ -1043,7 +1041,7 @@ For generating definition files for existing JavaScript libraries,
 the DefinitelyTyped
 community officially recommends \textit{dts-gen}~\citep{dtsgen}.
 This tool uses runtime information to produce a \lstinline{.d.ts} file that
-clearly defines the shape of the input API but does not provide type information for
+hepls to define the shape of the input API but does not provide type information for
 function arguments and returns. Because \textit{dts-gen} only collects
 dynamic information it eventually emits many \texttt{any} types that the developer must refine manually.
 It is only meant to be used as a starting
@@ -1122,7 +1120,7 @@ Our implementation takes as input three files:
 \end{enumerate}
 %
 \paragraph{Output:} A TypeScript declaration file for the
-JavaScript library, that we from now on we call \textit{predicted.d.ts} and
+JavaScript library, that we call it \textit{predicted.d.ts} and
 includes type predictions for
 \begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
 	\item the return type of the function, denoted as \emph{fnRet}, and
@@ -1186,10 +1184,10 @@ We also include return types inferred by the compiler as logical constraints.
 We identify 5 common type errors (\cref{tab:constraints}) that the \texttt{tsc}
 compiler emits, and turn them into type constraints. The main problem with
 this approach in isolation is that it produces an average total
-of only around 10 constraints per library. As this information is quite
-limited and incomplete, our work focuses on utilizing machine learning to augment
-the quality and amount of type constraints.
-
+of only around 10 constraints per library. 
+% As this information is quite
+% limited and incomplete, our work focuses on utilising machine learning to augment
+% the quality and amount of type constraints.
 The first row of \cref{tab:constraints}
 refers to identifying properties or methods that a type should implement
 and using them to generate a type constraint.
@@ -1275,7 +1273,7 @@ Having established the general principle, we will aim to show how to modify a ty
 We now focus our attention on extracting natural constraints.
 The TypeScript community has already
 made a huge effort to support this process by writing and maintaining the
-declaration files for over four thousand of the most popular JavaScript
+declaration files for over five thousand of the most popular JavaScript
 libraries. These files are available on the~\citet{definitelytyped}
 repository. The declaration files on this repository provide an excellent
 opportunity for statistical learning algorithms.
@@ -1288,7 +1286,8 @@ this family of abbreviations shares a type.
 A Char-Level LSTM is well-suited to predict the type for any identifier in
 an abbreviation families.
 %
-Our universe of types consists of the 78 types that appear at least 10,000 times in our training set. These are built-in TypeScript types and some commonly used unions of them. We note that our system cannot distinguish between a primitive and a complex type. 
+Our universe of types consists of the 78 types that appear at least 10,000 times in our training set. These are built-in TypeScript types and some commonly used unions of them. We note that our system cannot distinguish between a primitive and a complex type. We note that we consider only built-in types
+to ensure that we do not introduce types that are not available to the compiler. 
 %
 Handling a larger set of types
 is straightforward, but we decide to work with a small set of types for the
@@ -1297,8 +1296,6 @@ shake of rapid prototyping.
 We leave measuring the effect
 of varying the number of types known to \projectname to future work.
 %
-We consider only built-in types
-to ensure that we do not introduce types that are not available to the compiler. 
 
 Regarding the implementation details of the LSTM network, for the $F$ in \eqref{eq:lstmb},
 we use a feedforward neural network
@@ -1328,10 +1325,10 @@ and sum all the values of the correct labels for the entire training set.
 Here, we describe the implementation of \projectname. Both the code for the deep
 learning and the combined optimisation part is written in
 PyTorch~\cite{paszke2017}. We base most of our design choices on empirically
-observing what maximises the \projectname's performance.
+observing what maximises \projectname's performance.
 
 \paragraph{\textit{Natural} Constraints} We use \textsc{Adam}~\cite{kingma2014}, an extension of stochastic gradient descent,
-as our optimisation algorithm for the \textit{Natural} constraints.
+as our optimisation algorithm for the natural constraints.
 %
 The main difference between \textsc{Adam} and classical stochastic gradient descent
 is the use of adaptive instead of fixed learning rates.
@@ -1340,7 +1337,7 @@ Although there exist other algorithms with adaptive learning rates
 like \textsc{AdaGrad}~\cite{duchi2011} and \textsc{RMSprop}~\cite{tieleman2014},
 \textsc{Adam} tends to have better convergence~\cite{ruder2016}.
 % To do so we are using a \textit{Char-Level LSTM} which predicts for any identifier a probability vector over all the available types during the training.
-We used all 5,800 projects available from the DefinitelyTyped repository on 17th July 2019, all of these projects were popular enough as to a declaration file was written for them.
+We used all the 5,800 projects available from the DefinitelyTyped repository on 17th July 2019, all of these projects were popular enough as to a declaration file was written for them.
 %
 We trained our model for 1,000 epochs, for 78 different types,
 and obtained a validation accuracy of 0.79.
@@ -1384,7 +1381,7 @@ but is able to generalise to unseen inputs. For detailed implementation details 
 known as \textsc{RMSprop}~\cite{tieleman2014}.
 We set the maximum number of iterations to 2,000, which suffices in practice for the loss to stabilise.
 
-\paragraph{Combined optimisation} For the combination of the \textit{Natural} and \textit{Logical} constraints we implement the optimisation problem described in~\eqref{eq:objective} for $\lambda = 10$, while we leave the particular details for each subproblem the same. 
+\paragraph{Combined optimisation} For the combination of the natural and logical constraints we implement the optimisation problem described in~\eqref{eq:objective} for $\lambda = 10$, while we leave the particular details for each subproblem the same. 
 % Adam~\cite{ruder2016} is being used to change the step of the optimizer on each iteration. 
 \section{Evaluation of \projectname{}}\label{sec:eval}
 
@@ -1431,7 +1428,7 @@ which is partitioned into the following subsets
 	\item function identifiers $\mathcal{S}_\text{fnRet}$
 	      %\item method identifiers $S_{meth}$
 	\item function  parameters $\mathcal{S}_\text{param}$
-	\item either function or parameter identifiers $\mathcal{S}_\text{total} = \mathcal{S}_\text{fnRet} \cup \mathcal{S}_\text{param}$
+	\item either function or parameter identifiers $\mathcal{S}_\text{total} = \mathcal{S}_\text{fnRet} \cup \mathcal{S}_\text{param}$.
 	      %  \item variables $S_{var}$
 	      %   \item properties $S_{prop}$
 	      %    \item interfaces $S_{inter}$ \ivp{should we include that only for structure, what about its 'type'?}
@@ -1443,7 +1440,7 @@ which is partitioned into the following subsets
 	\item type returned by each function $\mathcal{T}_\text{fnRet}$
 	      %   \item type returned by each method $T_{meth}$
 	\item type of each function parameter $\mathcal{T}_\text{param}$
-	\item type for either function result or parameter $\mathcal{T}_\text{total} = \mathcal{T}_\text{fnRet} \cup \mathcal{T}_\text{param}$
+	\item type for either function result or parameter $\mathcal{T}_\text{total} = \mathcal{T}_\text{fnRet} \cup \mathcal{T}_\text{param}$.
 	      %    \item type of each variable $T_{var}$
 	      %   \item type of each property $T_{prop}$
 \end{itemize}
@@ -1467,7 +1464,7 @@ while for the gold standard file we use the term \emph{gold.d.ts}.
 	that is,~$Filter_\mathcal{X}(\mathcal{Y}) =  \mathcal{X} \cap \mathcal{Y}$.
 \end{defn}
 As we are interested in evaluating both \textit{Structure}
-and \textit{Type}---the core elements of our pipeline as analyzed in \cref{sec:prodts}---and
+and \textit{Type}---the core elements of our pipeline as analysed in \cref{sec:prodts}---and
 not only the final output, we measure the precision and recall for both stages independently.
 
 Precision for \textit{Structure} measures the proportion of entities found in \textit{predicted.d.ts}
@@ -1510,7 +1507,7 @@ $\mathcal{S}_\text{fnRet}$ (function identifiers) to perform a finer analysis.
 \begin{defn}[Precision and Recall for $\mathcal{X}$] \label{def:precision_recall}
 	Given a declaration file \textit{predicted.d.ts},
 	an ideal declaration file \textit{gold.d.ts}, and a class of paths $\mathcal{X}$,
-	we define precision and recall for $\mathcal{X}$ as:
+	we define precision and recall for $\mathcal{X}$ as
 	%
 	\begin{equation}
 		P(\mathcal{X}) =
@@ -1675,15 +1672,15 @@ The two tools that we compare against are
 We have tried specifically to address any unfair comparison.
 Since DeepTyper has a vocabulary of 11000 types, we measure the results on our set of 78 types
 and give every other type we encounter \textit{OutOfVoc}, so that it does not contribute to the final result.
-JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on Table 4, for T=6,
+JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on \cref{tab:typeprec2}, for $T=6$,
 which is the original implementation,
 the results for the types of the parameters are almost identical to the ones of the original JSNice paper.
 \cref{tab:typeprec2} summarises the results of our comparisons.
 
 The \emph{relative error reduction} is a standard way to express performance improvement in machine learning.
 In our case, it is how many fewer errors ProdTS makes as a proportion of the errors that JSNice makes.
-The JSNice T=78 precision of 0.37 implies an error rate 0.63,
-whereas the ProdTS T=78 precision of 0.68 implies an error rate 0.32.
+The JSNice $T=78$ precision of 0.37 implies an error rate 0.63,
+whereas the ProdTS $T=78$ precision of 0.68 implies an error rate 0.32.
 So the relative reduction in error is $(0.63-0.32) / 0.63 = 49.2\%$.
 
 \begin{table*}[t]
@@ -1868,16 +1865,16 @@ inherent trait of strongly, statically-typed, functional languages (like Haskell
 % typing when needed.
 
 Dynamic languages have also started to pay more attention to typings. Several
-JavaScript extensions, like Closure Compiler~\citep{closure} and
-TypeScript (see \cref{ssec:intro-typescript}), add optional type annotations to program
-variables using a gradual type system.
+JavaScript extensions, like Closure Compiler~\citep{closure}, Flow~\cite{flow} and
+TypeScript (see \cref{ssec:intro-typescript}) are all focusing on enabling
+sorts of static type checking for JavaScript.
 %
-In JavaScript, these annotations are
-provided by specially formatted comments known as JSDoc~\citep{jsdoc}.
+% In JavaScript, these annotations are
+% provided by specially formatted comments known as JSDoc~\citep{jsdoc}.
 %
 However, these
 extensions often fail to scale to realistic programs that make use of dynamic
-evaluation and complex libraries, for example jQuery, which cannot be analyzed
+evaluation and complex libraries, for example jQuery, which cannot be analysed
 precisely~\cite{jensen2009}.
 %
 There are similar extensions for other popular scripting languages,
@@ -1955,7 +1952,6 @@ DependentJS~\citep{dependentJS} incorporates dependent types into JavaScript.
 % predict finer-grained type constraints.
 
 \subsection{Machine Learning Over Source Code}
-
 Although the interdisciplinary field between machine learning and programming
 languages is still young, complete reviews of this area are
 already available.
@@ -1991,20 +1987,19 @@ detail (\autoref{ssec:typesubproblem}).
 %The closest related works to this end are 
 %discussed in~\cref{sec:related}. We can view the problem of matching an identifier to a type as a form supervised text classification problem~\cite{aggarwal12}.
 
-\section{Conclusion and Future Work}
-\label{sec:conclusion}
-
-This paper addresses the lack of rich type inference process for
-dynamically typed languages.
+\section{Conclusion and Future Work}\label{sec:conclusion}
+This paper proposes a new type inference approach for
+dynamically typed languages, leveraging different sources
+of information.
 %
-To tackle this problem we define a
+To conseptualise this we define a
 general probabilistic framework that combines
 information from traditional analyses with statistical reasoning
 for source code text, and thus enables us to to predict naturally occurring
 types.
 %
-To evaluate our framework, we built \projectname{}, a tool to
-generate typed TypeScript declaration files for untyped JavaScript
+We evaluate our framework by implementing \projectname{}, a tool that
+generates typed TypeScript declaration files for untyped JavaScript
 libraries.
 %
 Our experiments show that \projectname{} predicts function types
