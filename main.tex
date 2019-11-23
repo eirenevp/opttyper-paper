@@ -1386,7 +1386,7 @@ We set the maximum number of iterations to 2,000, which suffices in practice for
 
 \paragraph{Combined Optimisation} 
 We use $\lambda = 10$ in~\eqref{eq:objective} for combining the natural and logical constraints to a single optimisation problem and solve it using
-\textsc{RMSprop}~\cite{tieleman2014}, as we do it for solving only the logical constraints.
+\textsc{RMSprop}~\cite{tieleman2014} over 2,000 iterations.
 % Adam~\cite{ruder2016} is being used to change the step of the optimizer on each iteration. 
 \section{Evaluation of \projectname{}}\label{sec:eval}
 
