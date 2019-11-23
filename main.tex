@@ -1735,9 +1735,9 @@ simply learning user-defined identifier and type pairs, as DeepTyper does, might
 be inadequate and may even worsen its performance.
 
 We conjecture that \projectname outperforms DeepTyper for two reasons.  First, 
-\projectname's Char-Level LSTM captures the type of variable, despite variations 
+\projectname's Char-Level LSTM captures the type of a variable, despite variations 
 in its spelling (\cref{ssec:natprodts}).  Second, \projectname's logical constraints define
-a wider, lexically independent, prediction context that notablly captures
+a wider, lexically independent, prediction context that notably captures
 function returns.
 
 \paragraph{Comparison with JSNice}
@@ -1751,7 +1751,7 @@ The evaluation on our data had to be performed manually because JSNIce is only a
 JSNice targets a type lattice that contains only $T=6$ primitive types and
 exploits the relation paths between types up to depth 3.  Thus, it may not
 capture some typing relevant element dependencies.  Because JSNice predicts only
-$6$ types, we can not directly compare it to \projectname, so, instead,  we
+$6$ types, we cannot directly compare it to \projectname, so, instead,  we
 report JSNice's results on two tasks. In the first task, we calculate its
 results over the 6 primitive types it targets; while, for the second, we report
 its results on \projectname's set of $T=78$.  The first task advantages JSNice;
@@ -1761,10 +1761,10 @@ task, JSNice outperforms \projectname, as \cref{tab:typeprec2} shows.
 % discussed already regarding the use of a small size vocabularies. \ivp{I don't
 % understand this sentence/observation.}
 
-Otherwise, \projectname outperforms JSNice.  We conjecture that that this is due
-to same two reasons we believe \projectname outperforms DeepTyper:
-\projectname's grouping together names that share a type despite minor
-variations their names and its use of a more expansive context due to its
+Otherwise, \projectname outperforms JSNice.  We conjecture that this is due
+to the same two reasons we believe \projectname outperforms DeepTyper:
+\projectname's grouping together of names that share a type despite minor
+variations in their names and its use of a more expansive context due to its
 logical constraints, as opposed to JSNice depth 3 traversal of program element
 relations.
 
