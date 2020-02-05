@@ -1988,6 +1988,13 @@ DeepTyper~\citep{hellendoorn18}.
 Indeed, they serve as baselines in our evaluation, where we discuss them in
 detail (\autoref{ssec:typesubproblem}).
 
+\emph{Discussion of \citet{LambdaNet}:}
+They use a source-code analysis to generate a type dependency graph, and then use a graph neural network to make type predictions.
+Their type dependency graph has edges that are either logical or contextual, corresponding to what we call logical or natural constraints.
+They are able to predict user-defined types.
+They do not consider the problem of generating TypeScript signature files from the DefinitelyTyped repository, but instead use a dataset of native TypeScript projects from Github.
+Like us, they do not guarantee that the solution will solve the hard constraints.
+
 %The closest related works to this end are 
 %discussed in~\cref{sec:related}. We can view the problem of matching an identifier to a type as a form supervised text classification problem~\cite{aggarwal12}.
 
