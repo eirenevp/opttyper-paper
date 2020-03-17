@@ -1,7 +1,7 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
-\documentclass[sigconf,review, anonymous]{acmart}
-\acmConference[ESEC/FSE 2020]{The 28th ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering}{8 - 13 November, 2020}{Sacramento, California, United States}
-\settopmatter{printfolios=true,printccs=false,printacmref=false}
+
+\documentclass[acmsmall,review,anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
 %% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
@@ -18,10 +18,15 @@
 
 %% Conference information
 %% Supplied to authors by publisher for camera-ready submission;
+%% Journal information
+%% Supplied to authors by publisher for camera-ready submission;
 %% use defaults for review submission.
-\acmConference[PL'18]{ACM SIGPLAN Conference on Programming Languages}{January 01--03, 2018}{New York, NY, USA}
+\acmJournal{PACMPL}
+\acmVolume{1}
+\acmNumber{CONF} % CONF = POPL or ICFP or OOPSLA
+\acmArticle{1}
 \acmYear{2018}
-\acmISBN{} % \acmISBN{978-x-xxxx-xxxx-x/YY/MM}
+\acmMonth{1}
 \acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
 \startPage{1}
 
@@ -38,17 +43,9 @@
 %% Bibliography style
 \bibliographystyle{ACM-Reference-Format}
 %% Citation style
-%\citestyle{acmauthoryear}  %% For author/year citations
-\citestyle{acmnumeric}     %% For numeric citations
-%\setcitestyle{nosort}      %% With 'acmnumeric', to disable automatic
-                            %% sorting of references within a single citation;
-                            %% e.g., \cite{Smith99,Carpenter05,Baker12}
-                            %% rendered as [14,5,2] rather than [2,5,14].
-%\setcitesyle{nocompress}   %% With 'acmnumeric', to disable automatic
-                            %% compression of sequential references within a
-                            %% single citation;
-                            %% e.g., \cite{Baker12,Baker14,Baker16}
-                            %% rendered as [2,3,4] rather than [2-4].
+%% Note: author/year citations are required for papers published as an
+%% issue of PACMPL.
+\citestyle{acmauthoryear}   %% For author/year citations
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -329,26 +326,18 @@ linewidth=\linewidth
 \end{abstract}
 
 
-%% 2012 ACM Computing Classification System (CSS) concepts
-%% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
 \begin{CCSXML}
-	<ccs2012>
-	<concept>
-	<concept_id>10011007.10011006.10011008</concept_id>
-	<concept_desc>Software and its engineering~General programming languages</concept_desc>
-	<concept_significance>500</concept_significance>
-	</concept>
-	<concept>
-	<concept_id>10003456.10003457.10003521.10003525</concept_id>
-	<concept_desc>Social and professional topics~History of programming languages</concept_desc>
-	<concept_significance>300</concept_significance>
-	</concept>
-	</ccs2012>
+<ccs2012>
+<concept>
+<concept_id>10011007</concept_id>
+<concept_desc>Software and its engineering</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+</ccs2012>
 \end{CCSXML}
 
-\ccsdesc[500]{Software and its engineering~General programming languages}
-\ccsdesc[300]{Social and professional topics~History of programming languages}
-%% End of generated code
+\ccsdesc[500]{Software and its engineering}
+
 
 %% Keywords
 %% comma separated list
@@ -462,8 +451,8 @@ that sums the logical and natural constraints.
 Second, once we have a continuous function, we can optimise it:
 we set up an optimisation problem that returns the most natural type assignment for a
 program while at the same time respecting the logical constraints.
-To the best of our knowledge, no prior work has applied machine learning to infer types
-while simultaneously taking into account logical constraints extracted from a static type analysis.
+%To the best of our knowledge, no prior work has applied machine learning to infer types
+%while simultaneously taking into account logical constraints extracted from a static type analysis.
 
 We investigate the above challenge in a real-world language by building
 \projectname (from ``optimising for optional types''),
@@ -738,9 +727,17 @@ such that for all formulas $E$ and environments $\Gamma$,
 $\tilde{f}_{E}(M(\Gamma)) = f_E(M(\Gamma))$.
 
 To define a relaxed semantics, we introduce a continuous semantics of $E$ based on generalizations of two-valued logical conjuctions
-to many-valued~\cite{hajek1998}.
-Specifically, we use the product $t$-norm, because the binary operation associated with it is smooth and fits with our optimisation-based approach.
+to many-valued~\cite{hajek96}.
+Specifically, we use the product $t$-norm, because the binary operation associated with it is smooth and fits with our optimisation-based approach.  
+%We further justify this choice in \autoref{sec:relwork}.
 The product $t$-norm has already been used for obtaining continuous semantics in machine learning, for example by~\citet{rocktaschel15}.
+
+%for the 3 translations used the authors of that paper say using * may be better than the others. For the, why its better for optimization, this would require experiments, but one thing you can point to potentially if those work out, is that there is more gradient information in the product t-norm translation. 
+% the product t-norm over the alternatives proposed by Godel and
+% Lukasiewicz is that, when back-propagating from the loss to the clause weights, the gradients
+% flow evenly between both Y1 and Y2. With Godel’s t-norm, there is no gradient information
+% sent to Y1 when Y1 > Y2. Similarly, with Lukasiewicz’s t-norm, there is no gradient
+% information sent to either Y1 or Y2 when Y1 + Y2 < 1.
 
 The continuous semantics $\qqpi{P}{E}$ is a function $\Pi^{V \times T} \times \mathcal{E} \rightarrow [0, 1]$,
 defined as
@@ -889,7 +886,9 @@ Intuitively, we design the optimisation problem to be over
 probability matrices $P \in \Pi^{V \times T}$; we wish to find
 $P$ that is as close as possible to the natural constraints $\mathcal{M}$
 subject to the logical constraints being satisfied.
-A simple way to quantify the distance is via the \emph{Euclidean norm} $|| \cdot ||_2$ of a vector, that is, the square root of the sum of the squares of its elements.
+A simple way to quantify the distance is via the \emph{Euclidean norm} $|| \cdot ||_2$ of a vector,  which is a convex function and thus well suited with our optimisation approach.
+%that is, the square root of the sum of the squares of its elements
+
 %
 % \cas{This could alternately be formalised as a multi-objective problem. I do not know what is best.
 % 	Maybe it is better to talk about maximizing [[ E ]], because our theorem talks about maximization.}
@@ -1679,8 +1678,9 @@ We have tried specifically to address any unfair comparison.
 Since DeepTyper has a vocabulary of 11000 types, we measure the results on our set of 78 types
 and give every other type we encounter \textit{OutOfVoc}, so that it does not contribute to the final result.
 JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on \cref{tab:typeprec2}, for $T=6$,
-which is the original implementation,
-the results for the types of the parameters are almost identical to the ones of the original JSNice paper.
+which is a set of types appearing both in the JSNice implementation and ours.
+% The JSNice paper does not list the full set of types that are used (Fig.4 of the paper is illustrative and incomplete), nor does the corresponding Ph.D. thesis and code for the version of JSNice that does the type inference is not available.  Thus, we had to decide a specific number to work with. In practice, the set of types predicted by the public prototype seems to be small (cf. DeepTyper 4.3). Therefore, as we do not know the other object types Fig.4 of JSNice refers to, we have used the 5 specific types showed in the figure plus the general Object type, which we confirmed JSNice can predict. The comparison is fair because both tools have been trained on data that include these 6 types. It is true that JSNice does not predict return types but DeepTyper does; we do not view this as unfairness in the evaluation but an advantage of our method.
+The results for the types of the parameters are almost identical to the ones of the original JSNice paper.
 \cref{tab:typeprec2} summarises the results of our comparisons.
 
 The \emph{relative error reduction} is a standard way to express performance improvement in machine learning.
@@ -1749,12 +1749,13 @@ JSNice is a tool that learns statistical correlations between program elements
 by exploiting their relationship for a certain depth. %in their implementation it is 3
 Its purpose is for type inference (and other tasks) on JavaScript
 using statistics from dependency graphs learned on a large corpus.
-The evaluation on our data had to be performed manually because JSNIce is only available via a website interface.
+The evaluation on our data had to be performed manually because JSNice is only available via a website interface.
 
-JSNice targets a type lattice that contains only $T=6$ primitive types and
-exploits the relation paths between types up to depth 3.  Thus, it may not
-capture some typing relevant element dependencies.  Because JSNice predicts only
-$6$ types, we cannot directly compare it to \projectname, so, instead,  we
+JSNice targets a type lattice that contains $T=6$ primitive types plus some additional types under Object, 
+but as the exact details are not available we compare ourselves against these 6 known types.
+JSNice exploits the relation paths between types up to depth 3, thus it may not
+capture some typing relevant element dependencies.  Because JSNice prediction space is
+smaller than ours we cannot directly compare it to \projectname, so, instead,  we
 report JSNice's results on two tasks. In the first task, we calculate its
 results over the 6 primitive types it targets; while, for the second, we report
 its results on \projectname's set of $T=78$.  The first task advantages JSNice;
@@ -1990,12 +1991,12 @@ DeepTyper~\citep{hellendoorn18}.
 Indeed, they serve as baselines in our evaluation, where we discuss them in
 detail (\autoref{ssec:typesubproblem}).
 
-\emph{Discussion of \citet{LambdaNet}:}
-They use a source-code analysis to generate a type dependency graph, and then use a graph neural network to make type predictions.
-Their type dependency graph has edges that are either logical or contextual, corresponding to what we call logical or natural constraints.
-They are able to predict user-defined types.
-They do not consider the problem of generating TypeScript signature files from the DefinitelyTyped repository, but instead use a dataset of native TypeScript projects from Github.
-Like us, they do not guarantee that the solution will solve the hard constraints.
+\citet{LambdaNet} propose a different approach to probabilistic type inference for TypeScript. Their work is 
+based on graph neural networks \citep{allamanis17a}, which learn type dependency graphs extracted by static 
+code analysis on the training data. Their type dependency graph has edges that are either logical or contextual, corresponding to what we call logical or natural constraints.
+While, they are also able to predict user-defined types using open vocabulary techniques. However, the problem they
+are targeting is different than ours, as they do not consider the problem of generating TypeScript signature files from a JavaScript file, but instead predict types for native unnotated TypeScript.
+%Like us, they do not guarantee that the solution will solve the hard constraints.
 
 %The closest related works to this end are 
 %discussed in~\cref{sec:related}. We can view the problem of matching an identifier to a type as a form supervised text classification problem~\cite{aggarwal12}.
