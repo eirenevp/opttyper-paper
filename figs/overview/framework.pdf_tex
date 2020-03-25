@@ -56,7 +56,7 @@
     \put(0,0){\includegraphics[width=\unitlength,page=1]{./figs/overview/framework.pdf}}%
     \put(0.02573581,0.24330811){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Untyped Code\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{./figs/overview/framework.pdf}}%
-    \put(0.61382404,0.24330811){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Optimizer\end{tabular}}}}%
+    \put(0.61382404,0.24330811){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Optimiser\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=3]{./figs/overview/framework.pdf}}%
     \put(0.28652776,0.4674356){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Logical Constraints\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=4]{./figs/overview/framework.pdf}}%
