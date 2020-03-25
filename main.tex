@@ -74,9 +74,9 @@
 \usepackage{tabularx}
 \usepackage{adjustbox}
 \usepackage{caption}
-\usepackage{subcaption}
+%\usepackage{subcaption}
 %\usepackage{booktabs}
-\usepackage{listings}
+% \usepackage{listings}
 \usepackage{xspace}
 \usepackage[inline]{enumitem}
 \usepackage{bm}
@@ -216,7 +216,7 @@ linewidth=\linewidth
 \begin{document}
 
 %% Title information
-\title[Probabilistic Type Inference]{\textsc{OptTyper}: Probabilistic Type Inference \\ by Optimising Logical and Natural Constraints}
+\title{\textsc{OptTyper}: Probabilistic Type Inference by Optimising Logical and Natural Constraints}
 %\title[Short Title]{Full Title}         %% [Short Title] is optional;
 %% when present, will be used in
 %% header instead of Full Title.
@@ -351,9 +351,17 @@ linewidth=\linewidth
 %% commands, abstract environment, Computing Classification System
 %% environment and commands, and keywords command.
 \maketitle
-
 \section{Introduction}
 
+\adgcomment{PhD award April 1; TYR April 6; OOPSLA deadline May 15, 23 pages excluding bibliography}
+\adgcomment{Priorities:
+Upload version of paper to Arxiv by April 1:
+Paragraph in the intro about the SE problem of inferring signatures for JS libraries.
+LambdaNet: describe what it does, and why we are doing something different.
+Plan an experiment of running LambdaNet on our problem - describe this as future work.
+Tidy the theoretical development.  The appendix ought to be readable as a self-contained document.
+If you can do those things, then let's put this on Arxiv, ahead of April 1.
+Circulate to Earl and Charles by Friday 27th, ideally.  Put on Arxiv early next week, and at same time send to Gordon.}
 Statically-typed programming languages aim to enforce correctness and safety  properties
 on programs by guaranteeing constraints on program behaviour.
 A large scale user-study
@@ -371,9 +379,8 @@ Dynamically typed languages, which either lack or do not require type
 annotations, are relatively more popular~\cite{meyerovich12}.  Initially
 designed for quick and dirty scripting or rapid prototyping, these languages
 have begun reaching the limits of what can be achieved without the help of type
-annotations, as witnessed by the heavy industrial investment in
-(TypeScript~\cite{typescript} and Flow~\cite{flow} are just two
-examples) and proliferation of static type systems for these languages.
+annotations, as witnessed by the heavy industrial investment in and proliferation of static type systems for these languages (TypeScript~\cite{typescript} and Flow~\cite{flow} are just two
+examples).
 Retrofit for dynamic languages, these type systems include gradual~\cite{siek06}
 and optional type systems~\citep{bracha2004pluggable}.  Like classical type systems, these type systems
 require annotations to provide benefits.  Hence, reducing the annotation type tax
@@ -422,6 +429,22 @@ the text~\cite{allamanis17}. However, none explicitly models the underlying
 type inference rules, and thus their predictions ignore useful logical information.
 %This is a missed opportunity that we aim to address in this work.
 
+\subsection{Problem of Creating TypeScript Signatures for JavaScript Libraries}
+We investigate the above challenge in a real-world language by building
+\projectname (from ``optimising for optional types''),
+a tool that alleviates the effort of generating a
+TypeScript declaration file for existing JavaScript libraries.
+TypeScript is a superset of JavaScript that adds static typing to the language.
+In fact, as JavaScript libraries and frameworks are very popular, many
+TypeScript applications need to use untyped JavaScript libraries.
+To support static type
+checking of such applications the typed
+APIs of the libraries are expressed as separate TypeScript
+declaration files (\lstinline{.d.ts}).  Although this manual approach has been proven
+effective, it raises the challenge of how to automatically maintain valid declaration files
+as library implementations evolve.
+-- also later mention our formulation of this problem as one of the contributions of the paper
+
 \subsection{Our Contribution}
 Current type inference systems rely
 on one of two sources of information
@@ -454,19 +477,7 @@ program while at the same time respecting the logical constraints.
 %To the best of our knowledge, no prior work has applied machine learning to infer types
 %while simultaneously taking into account logical constraints extracted from a static type analysis.
 
-We investigate the above challenge in a real-world language by building
-\projectname (from ``optimising for optional types''),
-a tool that alleviates the effort of generating a
-TypeScript declaration file for existing JavaScript libraries.
-TypeScript is a superset of JavaScript that adds static typing to the language.
-In fact, as JavaScript libraries and frameworks are very popular, many
-TypeScript applications need to use untyped JavaScript libraries.
-To support static type
-checking of such applications the typed
-APIs of the libraries are expressed as separate TypeScript
-declaration files (\lstinline{.d.ts}).  Although this manual approach has been proven
-effective, it raises the challenge of how to automatically maintain valid declaration files
-as library implementations evolve.
+
 
 Our contributions can be summarised as
 \begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
@@ -487,24 +498,26 @@ Our contributions can be summarised as
 %
 % \subsection{Our Framework via an Example}
 % Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
+
+%
+\section{General Framework for Probabilistic Type Inference} \label{sec:framework}
+\begin{figure}[!t]
+    \centering
+    \def\svgwidth{\linewidth}
+    \input{./figs/overview/framework.pdf_tex}
+    \caption{Overview of general framework that combines logical
+    and natural constraints in a single optimisation problem.} \label{fig:overview}
+\end{figure}
+This section introduces our general framework, shown in~\cref{fig:overview}
+which we instantiate in the next section by building a tool for
+predicting types in TypeScript.
+\cref{fig:fullexample} illustrates our general framework through a running example of predicting types. 
+
 \begin{figure*}
 	\centering
-	\def\svgwidth{0.75\linewidth}
-	\input{./figs/example/example.pdf_tex}
-
-	%
-	% \begin{figure*}[!t]
-	%   \centering
-	%   \def\svgwidth{\linewidth}
-	%   \input{./figs/overview/framework.pdf_tex}
-	%   \caption{Overview of general framework that combines logical
-	%     and natural constraints in a single optimisation problem.} \label{fig:overview}
-	% \end{figure*}
-	%\subsection{Our Framework by Example}
-
-	\vspace{.6em}
-	\begin{minipage}{\textwidth}
-		Our input is a minimal JavaScript function
+	\def\svgwidth{\linewidth}
+	\scalebox{.77}{\input{./figs/example/example.pdf_tex}}
+	\caption[An overview of the three type inference procedures via a minimal example.]{Our input is a minimal JavaScript function
 		with no type annotations on its parameters or result.
 		%
 		By default, TypeScript's compiler assigns its wildcard type \lstinline+any+ to
@@ -573,17 +586,12 @@ Our contributions can be summarised as
 		is the natural constraint for variable $v$.
 		%
 		Box (f) also shows the solution matrix and Box (g) shows the induced type annotations,
-		now all predicted to be \lstinline{number}.
-	\end{minipage}%
-	\caption{An overview of the three type inference procedures via a minimal example.}\label{fig:fullexample}
-\end{figure*}%
-%
-\section{General Framework for Probabilistic Type Inference} \label{sec:framework}
-This section introduces our general framework,
-which we instantiate in the next section by building a tool for
-predicting types in TypeScript.
-\cref{fig:fullexample} illustrates our general framework through a running example of predicting types. 
-
+		now all predicted to be \lstinline{number}.}
+	%	\begin{minipage}{\textwidth}
+	%\end{minipage}%
+\label{fig:fullexample}
+\vspace{-13pt}
+\end{figure*}
 % Our goal is to enhance the type inference
 % procedure for dynamic languages by incorporating into a single engine
 % both information learned from a corpus of typed code
@@ -710,9 +718,9 @@ We explain how to specify a \emph{continuous relaxation} of the discrete logical
 A formula $E$ can be viewed as a boolean function $f_E: \{0, 1\}^{V \times T} \rightarrow \{0, 1\}$
 that maps binary matrices to $\{0, 1\}$.
 To see this, we can convert an environment
-$\Gamma$ into a $V \times T$ binary matrix $M$ by setting $m_{v,\tau} = 1$ if
+$\Gamma$ into a $V \times T$ binary matrix $B$ by setting $b_{v,\tau} = 1$ if
 $(x_v, l_\tau) \in \Gamma,$ and 0 otherwise.
-Let $M(\Gamma)$ be the binary
+Let $B(\Gamma)$ be the binary
 matrix corresponding to $\Gamma$.
 Also, define $\Pi^{V \times T}$ to be the set
 of all \emph{probability matrices} of size $V \times T$,
@@ -724,7 +732,7 @@ that always agrees with the logical semantics, that is,
 a relaxed semantics is a function
 $\tilde{f}_{E} : \Pi^{V \times T}  \rightarrow [0, 1]$
 such that for all formulas $E$ and environments $\Gamma$,
-$\tilde{f}_{E}(M(\Gamma)) = f_E(M(\Gamma))$.
+$\tilde{f}_{E}(B(\Gamma)) = f_E(B(\Gamma)) := \qqpi{B(\Gamma)}{E}$.
 
 To define a relaxed semantics, we introduce a continuous semantics of $E$ based on generalizations of two-valued logical conjuctions
 to many-valued~\cite{hajek96}.
@@ -753,7 +761,7 @@ defined as
 \end{align*}
 %The $\mathrel{is}$ relation describes that the probability that the type variable $x_v$ is the literal type $l_\tau$. 
 In the actual implementation, we use logits instead of probabilities
-for numerical stability, see Appendix A. We note also, that our relaxation for the $\mathrel{or}$ operator, depends on the random initialization of the optimiser, and thus the final answer will be 
+for numerical stability, see \cref{app:appendix-logit}. We note also, that our relaxation for the $\mathrel{or}$ operator, depends on the random initialization of the optimiser, and thus the final answer will be 
 either $\qqpi{P}{E_1}$ or $\qqpi{P}{E_2}$ with high probability but 
 not always the same.
 
@@ -762,7 +770,21 @@ not always the same.
 % 	and I think that there is a sense in which this is indeed true,
 % 	but there are some more tricky corner cases, e.g., if E does not depend
 % 	on all of the variables in $\Gamma$.}
-To motivate this continuous semantics, recall that in our setting, we know $E$ but
+We define  a logical satisfaction relation $\Gamma \models E$, as follows
+          \begin{align*} 
+              \Gamma \models x_v \mathrel{is} l_\tau & \Leftrightarrow \Gamma(x_v)=l_\tau                                  \\
+              \Gamma \models{} \mathrel{not} E       & \Leftrightarrow{} \mathrel{not} \Gamma \models E                    \\ \numberthis \label{eq:logsat}
+              \Gamma \models E_1 \mathrel{and} E_2   & \Leftrightarrow \Gamma \models E_1 \mathrel{and} \Gamma \models E_2 \\
+              \Gamma \models E_1 \mathrel{or} E_2
+                                                     & \Leftrightarrow \Gamma \models E_1 \mathrel{or} \Gamma \models E_2.
+          \end{align*}
+Now we can show the following theorem, that give us 
+a correspondence between numerical semantics and typing enviriments. 
+\begin{theorem} \label{thm:soft2hard}
+  For all $E$ and $\Gamma$, $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E$.
+\end{theorem}
+
+To motivate further this continuous semantics, recall that in our setting, we know $E$ but
 do not know $P$. We argue that the continuous semantics,
 when considered as a function of $P$, can serve as a sensible
 objective for an optimisation problem to infer $P$.
@@ -771,18 +793,11 @@ the deterministic logical semantics of $E$, and it is maximised
 by probability matrices $P$ which correspond to satisfying type environments.
 The following theorem formalises the idea:
 \begin{theorem}
-	For any $E$, if $P = M(\Gamma)$ for some $\Gamma$ that satisfies $E$, then $P \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
+For all $\Gamma$ and all $E$,
+$\Gamma \models E$
+if and only if $B(\Gamma) \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
 \end{theorem}
-
-To sketch the proof, two facts can be seen immediately.
-First, for any formula $E$, the function $\tilde{f}(P) = \qqpi{P}{E}$ is a relaxation
-of the true logical semantics. That is, for any environment $\Gamma$, we have that
-$\tilde{f}(M(\Gamma)) = \qqpi{M(\Gamma)}{E} = 1$ if and only if $\Gamma$ satisfies $E.$ This can be shown
-by induction on the structure of $E$.
-Second, for any matrix $P \in \Pi^{V \times T}$,
-we have the bound $\tilde{f}(P) \leq 1$. Putting these two facts together
-immediately yields the theorem.
-
+For proofs see~\cref{app:proofs}.
 
 \subsection{Natural Constraints via Machine Learning}\label{ssec:natcon}
 
@@ -1046,11 +1061,7 @@ function arguments and returns. Because \textit{dts-gen} only collects
 dynamic information it eventually emits many \texttt{any} types that the developer must refine manually.
 It is only meant to be used as a starting
 point for writing a high-quality declaration file.
-\citet{tstools2017} created the TSINFER and TSEVOLVE tools to address the same problem.
-% to assist programmers to create and maintain TypeScript declaration files.
-These tools work by analyzing a recorded snapshot of a concretely initialised library.
-Like \textit{dts-gen}, they are good at capturing the structure of the definition file,
-but often construct random fresh type annotations, like \lstinline{interface_1342}, that lack meaning.
+
 
 \subsection{Problem Statement}\label{ssec:problem}
 % \begin{center}
@@ -1349,7 +1360,7 @@ Our dataset was randomly split by project into 80\% training data,
 %
 Splitting the available data in these three different sets is a common practice in machine learning
 to ensure that the learning model does not simply memorise the training data
-but is able to generalise to unseen inputs. For specific implementation details of the LSTM refer to Appendix B.
+but is able to generalise to unseen inputs. For specific implementation details of the LSTM refer to \cref{app:neural}.
 
 % \begin{figure*}[!t]
 %     \centering
@@ -1668,13 +1679,16 @@ so we made the necessary adjustments to meet the requirements of our setting.
 For all of our evaluations we have used the same Structure file, that is, the one produced by \textit{dts-gen}.
 The two tools that we compare against are
 \begin{itemize}[label={\tiny$\bullet$}]
+    \item TSINFER~\cite{tstools2017}: A tool
+     based on a combination of a static and dynamic analysis that uses a recorded snapshot of a concretely initialised library to 
+     generate TypeScript declaration files from JavaScript libraries.
 	\item DeepTyper~\cite{hellendoorn18}: A tool based on deep learning which learns types for every identifier.
 	      The network is trained using previously annotated TypeScript code.
 	\item JSNice~\cite{raychev15}: A tool based on probabilistic graphical models which analyzes relationships
 	      between program elements to infer types for JavaScript files.
 \end{itemize}
 
-We have tried specifically to address any unfair comparison.
+% We have tried specifically to address any unfair comparison.
 Since DeepTyper has a vocabulary of 11000 types, we measure the results on our set of 78 types
 and give every other type we encounter \textit{OutOfVoc}, so that it does not contribute to the final result.
 JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on \cref{tab:typeprec2}, for $T=6$,
@@ -1686,18 +1700,19 @@ The results for the types of the parameters are almost identical to the ones of 
 The \emph{relative error reduction} is a standard way to express performance improvement in machine learning.
 In our case, it is how many fewer errors ProdTS makes as a proportion of the errors that JSNice makes.
 The JSNice $T=78$ precision of 0.37 implies an error rate 0.63,
-whereas the ProdTS $T=78$ precision of 0.68 implies an error rate 0.32.
+whereas the \projectname{} $T=78$ precision of 0.68 implies an error rate 0.32.
 So the relative reduction in error is $(0.63-0.32) / 0.63 = 49.2\%$.
 
 \begin{table*}[t]
 	\centering
 	\caption{Aggregate \textit{Type} precision and recall across all evaluated modules for DeepTyper and JSNice; as input we use 41 JavaScript libraries with 860 identifiers in total (270 funRet, 590 param).
-		The superscript $T$ has the same meaning as in \cref{tab:typeprec1}, where $N = 6$ consists of the six types predicted by JSNice.
+		The superscript $T$ has the same meaning as in \cref{tab:typeprec1}, where $T = 6$ consists of the six types predicted by JSNice.
 		Boldface indicates the best results of the full set of $T=78$ types.}\label{tab:typeprec2}
 	\begin{tabular}{ccccccc}
 		\toprule
 		Tool                                  & $P(\mathcal{T}^T_\text{fnRet})$ & $R(\mathcal{T}^T_\text{fnRet})$ & $P(\mathcal{T}^T_\text{param})$ & $R(\mathcal{T}^T_\text{param})$ & $P(\mathcal{T}^T_\text{total})$ & $R(\mathcal{T}^T_\text{total})$ \\
 		\midrule
+		TSINFER\tiny{($T=78$)}              & 0.14                  & 0.19                  & 0.01                  & 0.00                  & 0.08                  & 0.01                  \\
 		DeepTyper\tiny{($T=78$)}              & 0.20                  & 0.20                  & 0.50                  & 0.52                  & 0.35                  & 0.36                  \\
 
 		JSNice \tiny{($T=6$)}                 & 0.15                  & 0.15                  & 0.78                  & 0.80                  & 0.47                  & 0.48                  \\
@@ -1708,6 +1723,13 @@ So the relative reduction in error is $(0.63-0.32) / 0.63 = 49.2\%$.
 		\bottomrule
 	\end{tabular}
 \end{table*}
+
+\paragraph{Comparison with TSINFER}
+%Like \textit{dts-gen}, they are good at capturing the structure of the definition file,
+TSINFER addresses the same problem as we do but without
+using any form of learning. TSINFER uses
+a dynamic analysis to construct the interface that
+a type implements and often gives fresh type annotations, like \lstinline{interface_1342}, that lack meaning. As our evaluation is based on a nominal view for typings, TSINFER performs poorely under our evaluation.
 
 \paragraph{Comparison with DeepTyper}
 DeepTyper is a deep learning framework that outputs a type vector for every identifier
@@ -1991,7 +2013,7 @@ DeepTyper~\citep{hellendoorn18}.
 Indeed, they serve as baselines in our evaluation, where we discuss them in
 detail (\autoref{ssec:typesubproblem}).
 
-\citet{LambdaNet} propose a different approach to probabilistic type inference for TypeScript. Their work is 
+\citet{wei20} propose a different approach to probabilistic type inference for TypeScript. Their work is 
 based on graph neural networks \citep{allamanis17a}, which learn type dependency graphs extracted by static 
 code analysis on the training data. Their type dependency graph has edges that are either logical or contextual, corresponding to what we call logical or natural constraints.
 While, they are also able to predict user-defined types using open vocabulary techniques. However, the problem they
@@ -2099,9 +2121,255 @@ while the LogSumExp function is defined as
 	\text{LogSumExp}(\bm{x}) = \log\left( \sum_i \exp\{x_i\} \right).
 \end{equation*}
 
+\section{Appendix: Formal Proofs}\label{app:proofs}
+\subsection{Proofs for Logical Constraints}
+
+
+\begin{lemma} \label{lem:binary}
+    For all $E$ and $\Gamma$, $\qqpi{B(\Gamma)}{E} \in \{0,1\}$.
+\end{lemma}
+
+\begin{proof} %\label{cor:binary}
+    By structural induction on the continuous semantics.
+\end{proof}
+
+
+\begin{lemma}
+For all $E$, $E_1$, $E_2$, and $\Gamma$:
+\begin{enumerate}
+    \item $\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\qqpi{B(\Gamma)}{E} = 1)$
+    \item $\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1$
+    \item $\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} + \qqpi{B(\Gamma)}{E_2} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1$
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+  These follow by cases analyses based on Lemma~\ref{lem:binary}.
+\end{proof}
+
+
+% \begin{cor}
+% As a corollary of Lemma 2.1, we can state that
+% \[\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\qqpi{B(\Gamma)}{E} = 1).\] 
+% \end{cor}
+
+% \begin{cor}
+% As a corollary of Lemma 2.1, we can state that
+% \[\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1.\] 
+% \end{cor}
+
+
+% \begin{cor}
+% As a corollary of Lemma 2.1, we can state that
+% \[\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} + \qqpi{B(\Gamma)}{E_2} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1.\] 
+% \end{cor}
+
+
+\begin{lemma} \label{lem:models}
+    For all $E$ and $\Gamma$, either $\Gamma \models E$ or $\Gamma \models{} \mathrel{not} E$.
+\end{lemma}
+
+\begin{proof}
+    By structural induction on the satisfaction relation.
+\end{proof}
+
+% \begin{cor}
+% As a corollary of Lemma 2.2, we can state that
+% $\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\Gamma \models{} E$. 
+% \end{cor}
+
+% Irene: explain why this theorem corresponds to the result in the book?
+This theorem corresponds to a result in the book of ~\citet{hajek1998}.
+
+\begin{theorem} \label{thm:soft2hard}
+  For all $E$ and $\Gamma$: $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E$.
+\end{theorem}
+
+\begin{proof}
+  We prove the property by \emph{structural induction}; that is,
+  we prove that $\phi(N)$ holds for all $N$, where $\phi(N)$ is as follows.
+        %\begin{quote}
+        \begin{equation*}
+            \phi(N) \triangleq
+                \forall E, \forall \Gamma :
+                size(E)=N \Rightarrow (\Gamma \models E \Leftrightarrow \qqpi{B(\Gamma)}{E} = 1).
+        \end{equation*}
+        %\end{quote}
+        
+  We proceed by course-of-values induction on $N$.
+  Consider any $E, \Gamma$ and $N = size(E)$. We proceed by a case analysis at $E$.
+  \begin{description}
+      \item[Base Case]
+                  For $N=1$, the base case is $E = (x_v \mathrel{is} l_\tau)$.
+                  For any $\Gamma$ we are to show
+                  \begin{equation*}
+                  \Gamma \models x_v \mathrel{is} l_\tau \Leftrightarrow{}\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1.
+                  \end{equation*}
+                  
+                  By definition, $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = p_{v,\tau}$
+                  where $p_{v,\tau}$ is the probability that variable $x_v$ has type $l_\tau$ according to the matrix $B(\Gamma)$. 
+                  By definition of $B(\Gamma)$ and because $B$ results to  a binary matrix,  
+                  $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1$
+                  means that the element $p_{v,\tau}$ is equal to $1$, that is 
+                  $\Gamma \models x_v \mathrel{is} l_\tau$.
+                  Also, $\Gamma \models x_v \mathrel{is} l_\tau$, implies that $\Gamma(x_v)=l_\tau$. By definition, that
+                  means  $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1$.
+      
+     \item[Case $E ={} \mathrel{not} E'$.]
+                  We are to show
+                  $\Gamma \models{} \mathrel{not} E' \Leftrightarrow \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1$.
+                  We have that,
+                  \begin{align*}
+%                       \Gamma \models{} \mathrel{not} E' \Leftrightarrow{} & \mathrel{not}  \Gamma \models{}  E'  \\
+                        \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1 & \Leftrightarrow{} &  \\
+                        1- \qqpi{B(\Gamma)}{E'} = 1 & \Leftrightarrow{} & \text{(Definition)}  \\
+                        \qqpi{B(\Gamma)}{E'} = 0 & \Leftrightarrow{} &  \\
+                        \mathrel{not} (\qqpi{B(\Gamma)}{E'} = 1) & \Leftrightarrow{} & \text{(Cor. 2.2)} \\
+                        \mathrel{not}  \Gamma \models{}  E'
+                        & \Leftrightarrow{} & \text{(Induction Hypothesis)} \\
+                         \Gamma \models{} \mathrel{not} E' & & \text{(Definition)}.
+                  \end{align*}
+          
+           \item[Case $E = (E_1 \mathrel{and} E_2)$.] 
+                   For $size(E_1)<N$ and $size(E_2) < N$, we are to show that
+                  $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
+                  \begin{align*}
+                      \Gamma \models (E_1 \mathrel{and} E_2)                            & \Leftrightarrow &  \\
+                      \Gamma \models E_1 \mathrel{and} \Gamma \models E_2               & \Leftrightarrow & \text{(Definition)}  \\
+                      \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 & \Leftrightarrow & \text{(Induction Hypothesis)}           \\
+                      \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1             & \Leftrightarrow &  \text{(Lemma 2.1)}           \\                 
+                      \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1                  &   &  \text{(Definition)}                                         \\
+                  \end{align*}
+                  which completes the proof for this case.
+
+            \item[Case $E = (E_1 \mathrel{or} E_2)$.]
+                  For $size(E_1) < N$ and $size(E_2) < N$, we are to show
+                  $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
+                  \begin{align*}
+                      \Gamma \models (E_1 \mathrel{or} E_2)                                                                     & \Leftrightarrow & \\
+                      \Gamma \models E_1 \mathrel{or} \Gamma \models E_2                                                        & \Leftrightarrow &\text{(Definition)} \\
+                      \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1                                          & \Leftrightarrow & \text{(Induction Hypothesis)}                                  \\
+                      (\qqpi{B(\Gamma)}{E_1} - 1) \cdot (1- \qqpi{B(\Gamma)}{E_2}) = 0                                          & \Leftrightarrow                                  \\
+                      \qqpi{B(\Gamma)}{E_1} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} + \qqpi{B(\Gamma)}{E_2} - 1 = 0 & \Leftrightarrow                         &\text{(Case Analysis \& Lemma 2.1)}         \\
+                      \qqpi{B(\Gamma)}{E_1 \mathrel{or} E_2} = 1                                                               &. 
+                  \end{align*}
+                  which completes the proof for this case.
+    \end{description}
+\end{proof}
+
+
+\begin{lemma}\label{lem:bounds}
+    For all $E$ and for all $P \in [0, 1]^{V \times T}$,  then $0 \leq \qqpi{P}{E} \leq 1$.
+\end{lemma}
+\begin{proof}
+    By structural induction on the expression $E$.
+\end{proof}
+
+
+\begin{lemma} \label{thm:soft2hard_v2}
+    For all $E$, and all type environments $\Gamma$,
+    then if not $\Gamma \models E$, then
+    $\qqpi{B(\Gamma)}{E} = 0$.
+\end{lemma}
+
+\begin{proof}
+    This is a corollary of Claim 2.1. If not $\Gamma \models E$,  then $\Gamma \models{} \mathrel{not} E$, by the logical satisfaction relation. Then, by Lemma~\ref{lem:binary},
+    $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1$.
+    By the definition of continuous semantics,
+    $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1 - \qqpi{B(\Gamma)}{E}$.
+\end{proof}
+
+
+\begin{lemma}\label{lem:positive}
+For all $E$,
+$$\max_{P \in \Pi^{V \times T}} \qqpi{P}{E} > 0.$$
+\end{lemma}
+%\cascomment{I am not assuming that $P = B(\Gamma)$ for some $\Gamma$.}
+\begin{proof}
+For all matrices $Q  \in \Pi^{V \times T}$, we have
+\begin{align}
+\textstyle \max_{P \in \Pi^{V \times T}} \qqpi{P}{E} > \qqpi{Q}{E}.
+\end{align}
+Choose $Q \in \Pi^{V \times T}$ such as $q_{v,t} = 1/T$ for all $v \in 1 \ldots V$ and $t \in 1 \ldots T$. We proceed by course-of-value induction on N.  Consider any $E, P$ and $N = size(E)$. We proceed by a case analysis at $E$.
+
+ \begin{description}
+      \item[Base Case]
+                  For $N=1$, the base case is $E = (x_v \mathrel{is} l_\tau)$.
+                  For any $P$ we are to show
+                  $\max_{P \in \Pi^{V \times T}} \qqpi{P}{x_v \mathrel{is} l_\tau} > 0$.
+                  
+                  By assumption \ivpcomment{is that correct?}, $\qqpi{P}{x_v \mathrel{is} l_\tau} = q_{v,\tau} = 1/T > 0$.
+     \item[Case $E ={} \mathrel{not} E'$.]
+                  We are to show
+                   $\max_{P \in \Pi^{V \times T}} \qqpi{P}{\mathrel{not} E'} > 0$.
+                   
+                  By definition, we have that
+                  $
+                       \max_{P \in \Pi^{V \times T}} \qqpi{P}{\mathrel{not} E'} > 0  \Leftrightarrow{}  
+                        \max_{P \in \Pi^{V \times T}} (1- \qqpi{P}{E'}) > 0 $.
+                      % By the induction hypothesis
+                      % we have that $\max_{P \in \Pi^{V \times T}} \qqpi{P}{E'} > 0$, 
+                       
+                       By Lemma~\ref{lem:positive} we know that $ 0 \leq \qqpi{P}{E'} \leq 1$.          
+                     
+           \item[Case $E = (E_1 \mathrel{and} E_2)$.] 
+                   For $size(E_1)<N$ and $size(E_2) < N$, we are to show that~$
+                  \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{and} E_2} > 0
+                $. Our induction hypothesis holds for all $M<N$. We have that
+                  \begin{align*}
+                \textstyle        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1} > 0 \mathrel{and}
+                        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_2} > 0   & \Rightarrow & 
+                        \text{(Induction Hypothesis)} \\ 
+                        max_{P \in \Pi^{V \times T}} (\qqpi{P}{E_1}\cdot\qqpi{P}{E_2}) > 0  
+                      & \Leftrightarrow & \text{(Definition)}\\
+                    \textstyle     \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{and} E_2} > 0.                          &  & 
+                  \end{align*}
+                  which completes the proof for this case.
+
+            \item[Case $E = (E_1 \mathrel{or} E_2)$.]
+              For $size(E_1)<N$ and $size(E_2) < N$, we are to show that~$
+                  \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{or} E_2} > 0
+                $. Our induction hypothesis holds for all $M<N$. We have that
+                  \begin{align*}
+                \textstyle        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1} > 0 \mathrel{and}
+                        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_2} > 0   & \Rightarrow & 
+                        \text{(Induction Hypothesis)} \\
+                        max_{P \in \Pi^{V \times T}} (\qqpi{P}{E_1} + \qqpi{P}{E_2} -\qqpi{P}{E_1}\cdot\qqpi{P}{E_2}) > 0  
+                      & \Leftrightarrow & \text{(Definition)}\\
+                    \textstyle     \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{or} E_2} > 0.                          &  & 
+                  \end{align*}
+                  which completes the proof for this case.
+                
+    \end{description}
+
+\end{proof}
+% A formula $E$ is a \emph{tautology} if and only if $\Gamma \models E$ for all $\Gamma$ such that $fv(E) \subseteq dom(\Gamma)$.
+
+% Statement of originality about this theorem.
+% We are unaware of a result to this effect being proved for other optimizations of logical properties.
+
+% \restate{Theorem~\ref{thm:argmax}}
+
+\begin{theorem}\label{thm:argmax}
+For all $\Gamma$ and all $E$,
+$\Gamma \models E$
+if and only if $B(\Gamma) \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
+\end{theorem}
+\begin{proof}
+Consider any $\Gamma$ and $E$.
+Either $\Gamma \models E$ or not.
+
+If $\Gamma \models E$ then the theorem follows as a simple consequence of Theorem~\ref{thm:soft2hard}.
+
+Otherwise both sides of the biconditional are always false:
+$\Gamma \models E$ is false by assumption,
+and $B(\Gamma) \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$
+is false by Lemma~\ref{lem:positive}. (We can show that $\qqpi{B(\Gamma)}{E} = 0$ by considering that $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1$.) So the biconditional is trivially true.
+\end{proof}
+
+
 \section{Appendix: Neural Model }\label{app:neural} 
 In this appendix we present the implementation details of the deep neural  used in \cref{ssec:natprodts}.
-\begin{lstlisting}[numbers=none,caption={Our Chararacter Level \textit{LSTM} model.},captionpos=b]
+\begin{lstlisting}[numbers=none,caption={Our Character Level \textit{LSTM} model.},captionpos=b]
   LSTMClassifier(
   (embedding): Embedding(90, 128)
   (lstm): LSTM(128, 64)
