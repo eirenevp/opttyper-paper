@@ -1,10 +1,11 @@
 \ProvidesPackage{andymacros}[]
 
 \usepackage{amsfonts}
-\usepackage{amsmath}
+%\usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{stmaryrd}
+
 
 \usepackage{xcolor}
 \usepackage{soul}
@@ -131,54 +132,54 @@
 % Listing for F# code.                                                %
 % --------------------------------------------------------------------- %
 
-\lstset{language=[Objective]Caml,
-  morekeywords=[1]{type,val,fun,model,table,static,inst,out,rnd,det,qry,let,in,of,try,if,then,else,rec,input,field,latent,var,observed,output,hyper,link,sizeof,infer,len,param,init,sample,random,marginal,observe,upto,range,scan,nil,yield,unit,bool,int,real,string,vector,row_vector,matrix,local,fail,fst,snd,case,inl,inr,elsif,gen,static,withprior,withhyper,sm,im,sv,iv,target,def,return,ty,lp,void,skip,gen, double},
-%  morekeywords=[1]{Vector,Matrix,PositiveDefiniteMatrix,Sampleable},
-%  morekeywords=[1]{Bernoulli,Poisson,Gaussian,VectorGaussian,Gamma,Discrete,DiscreteUniform,Beta,Binomial,Dirichlet,Wishart,Marginal},
-  morekeywords=[2]{public,interface},
-  morekeywords=[3]{},%
-  morekeywords=[4]{fv,dom,env,clauses},%
-  morekeywords=[5]{,genquant, transformed, parameters, data, generated, quantities, model, functions},
-  morestring=[b]",
-  sensitive=true,%
-  columns=[l]fullflexible,
-  texcl=true,
-  mathescape=true,
-%  xleftmargin=10pt,
-  identifierstyle={\sffamily},
-  keywordstyle=[1]{\sffamily\bfseries\color{dkblue}},
-  keywordstyle=[2]{\sffamily\bfseries\color{dkblue}},
-  keywordstyle=[3]{\sffamily\bfseries\color{black}},
-  keywordstyle=[4]{\rmfamily\itshape},
-  keywordstyle=[5]{\sffamily\bfseries\color{dkblue}},
-  morecomment=[s]{(*}{*)},
-  morecomment=[is]{(*---\ }{*)},
-  morecomment=*[l][identifierstyle]{//},
-  morecomment=*[l][identifierstyle]{///},
-% Here is the range marker stuff
-  rangeprefix=(*---\ ,
-  includerangemarker=false,
-  basicstyle=\ttfamily,
-  stringstyle=\ttfamily\color{dkred},
-  commentstyle=\rmfamily\itshape\color{dkgreen},
-  showspaces=false,
-  showstringspaces=false,
-  literate={/\\}{$\wedge\,$}{2} {\\/}{$\vee\,$}{2}
-  {==}{$\sim$}{1}
-  {>>>}{$\Athen[]\,$}{1}
-  {|->}{$\mapsto$}{1}
-  {Bluec}{{\maybecolor{dkblue}c}}{1}
-  {->}{$\rightarrow\,$}{1} 
-  {=>}{$\Rightarrow\,$}{1}
-  {<-}{$\leftarrow\,$}{1}
-  {<=>}{$\Leftrightarrow\,$}{3}
-  {~}{$\sim\;\,$}{1}
-  {'}{$\delta$}{1},
-  tabsize=2,
-  breaklines=true,
-  %moredelim=[is][\it\sffamily\textcolor{midred}]{\%\%}{\%\%}}
-  moredelim=[is][\sffamily\textcolor{midred}]{\%\%}{\%\%},
-  moredelim=[is][\sc\textcolor{dkgreen}]{+++}{+++}}
+% \lstset{language=[Objective]Caml,
+%   morekeywords=[1]{type,val,fun,model,table,static,inst,out,rnd,det,qry,let,in,of,try,if,then,else,rec,input,field,latent,var,observed,output,hyper,link,sizeof,infer,len,param,init,sample,random,marginal,observe,upto,range,scan,nil,yield,unit,bool,int,real,string,vector,row_vector,matrix,local,fail,fst,snd,case,inl,inr,elsif,gen,static,withprior,withhyper,sm,im,sv,iv,target,def,return,ty,lp,void,skip,gen, double},
+% %  morekeywords=[1]{Vector,Matrix,PositiveDefiniteMatrix,Sampleable},
+% %  morekeywords=[1]{Bernoulli,Poisson,Gaussian,VectorGaussian,Gamma,Discrete,DiscreteUniform,Beta,Binomial,Dirichlet,Wishart,Marginal},
+%   morekeywords=[2]{public,interface},
+%   morekeywords=[3]{},%
+%   morekeywords=[4]{fv,dom,env,clauses},%
+%   morekeywords=[5]{,genquant, transformed, parameters, data, generated, quantities, model, functions},
+%   morestring=[b]",
+%   sensitive=true,%
+%   columns=[l]fullflexible,
+%   texcl=true,
+%   mathescape=true,
+% %  xleftmargin=10pt,
+%   identifierstyle={\sffamily},
+%   keywordstyle=[1]{\sffamily\bfseries\color{dkblue}},
+%   keywordstyle=[2]{\sffamily\bfseries\color{dkblue}},
+%   keywordstyle=[3]{\sffamily\bfseries\color{black}},
+%   keywordstyle=[4]{\rmfamily\itshape},
+%   keywordstyle=[5]{\sffamily\bfseries\color{dkblue}},
+%   morecomment=[s]{(*}{*)},
+%   morecomment=[is]{(*---\ }{*)},
+%   morecomment=*[l][identifierstyle]{//},
+%   morecomment=*[l][identifierstyle]{///},
+% % Here is the range marker stuff
+%   rangeprefix=(*---\ ,
+%   includerangemarker=false,
+%   basicstyle=\ttfamily,
+%   stringstyle=\ttfamily\color{dkred},
+%   commentstyle=\rmfamily\itshape\color{dkgreen},
+%   showspaces=false,
+%   showstringspaces=false,
+%   literate={/\\}{$\wedge\,$}{2} {\\/}{$\vee\,$}{2}
+%   {==}{$\sim$}{1}
+%   {>>>}{$\Athen[]\,$}{1}
+%   {|->}{$\mapsto$}{1}
+%   {Bluec}{{\maybecolor{dkblue}c}}{1}
+%   {->}{$\rightarrow\,$}{1} 
+%   {=>}{$\Rightarrow\,$}{1}
+%   {<-}{$\leftarrow\,$}{1}
+%   {<=>}{$\Leftrightarrow\,$}{3}
+%   {~}{$\sim\;\,$}{1}
+%   {'}{$\delta$}{1},
+%   tabsize=2,
+%   breaklines=true,
+%   %moredelim=[is][\it\sffamily\textcolor{midred}]{\%\%}{\%\%}}
+%   moredelim=[is][\sffamily\textcolor{midred}]{\%\%}{\%\%},
+%   moredelim=[is][\sc\textcolor{dkgreen}]{+++}{+++}}
 
 \newcommand{\kw}[1]{\mbox{\lstinline$#1$}}
 \newcommand{\lev}[1]{\mbox{\color{dkgreen}$\mathbf{\textsc{#1}}$}}
@@ -188,80 +189,6 @@
 % Listing for JavaScript code.                                                %
 % --------------------------------------------------------------------- %
 
-%% JavaScript
-% JavaScript support
-\usepackage{listings}
-\lstset{ %
-backgroundcolor=\color{white}, % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
-basicstyle=\normal, % the size of the fonts that are used for the code
-breakatwhitespace=true, % sets if automatic breaks should only happen at whitespace
-breaklines=true, % sets automatic line breaking
-captionpos=b, % sets the caption-position to bottom
-commentstyle=\color{mygreen}, % comment style
-deletekeywords={...}, % if you want to delete keywords from the given language
-%escapeinside={\%}, % if you want to add LaTeX within your code
-escapeinside={*@}{@*}, % if you want to add LaTeX within your code
-extendedchars=true, % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
-%frame=single, % adds a frame around the code
-keepspaces=true, % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-columns=flexible,
-keywordstyle=\color{blue}, % keyword style
-morekeywords={*,...}, % if you want to add more keywords to the set
-numbers=left, % where to put the line-numbers; possible values are (none, left, right)
-numbersep=2pt, % how far the line-numbers are from the code
-numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
-rulecolor=\color{black}, % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
-showspaces=false, % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
-showstringspaces=false, % underline spaces within strings only
-showtabs=false, % show tabs within strings adding particular underscores
-stepnumber=1, % the step between two line-numbers. If it's 1, each line will be numbered
-%stringstyle=\color{mymauve}, % string literal style
-tabsize=2, % sets default tabsize to 2 spaces
-title=\lstname % show the filename of files included with \lstinputlisting; also try caption instead of title
-}
-
-\lstdefinelanguage{JavaScript}{
-keywords={const, typeof, new, true, false, catch, function, 
-  return, null, catch, switch, var, if, in, while, do, else, 
-  case, break, class, export,throw, implements, import, this,
-  exports, interface, readonly},
-keywordstyle=\color{myrose},
-ndkeywords={boolean, string, number, any, bool, Array, Array<any>},
-ndkeywordstyle=\color{Maroon}\bfseries,
-identifierstyle=\color{RoyalBlue},
-sensitive=false,
-%escapechar=!,
-comment=[l]{//},
-morecomment=[s]{/*}{*/},
-commentstyle=\color{mygray}\ttfamily,
-%stringstyle=\color{red}\ttfamily,
-morestring=[b]',
-morestring=[b]"
-}
- 
-\newlength{\listingindent}                %declare a new length
-\setlength{\listingindent}{\parindent} 
-
-\lstset{
-language=JavaScript,
-extendedchars=true,
-basicstyle=\small\ttfamily,
-showstringspaces=false,
-showspaces=false,
-numbers=none,
-numberstyle=\color{mygray}\tiny,
-numbersep=1pt,
-tabsize=2,
-breaklines=true,
-showtabs=false,
-captionpos=b,
-xleftmargin=\listingindent,         
-framexleftmargin=\listingindent,    
-framextopmargin=6pt,
-framexbottommargin=6pt, 
-frame=tlrb, framerule=0pt,
-linewidth=\linewidth
-}
 
 
 % --------------------------------------------------------------------- %
@@ -274,7 +201,7 @@ linewidth=\linewidth
 \makeatother
 
 \begin{comment}
-\newtheorem{theoremI}{Theorem}
+\newtheorem{theorem}{Theorem}
 \newtheorem{propositionI}{Proposition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{definition}{Definition}
@@ -366,9 +293,9 @@ linewidth=\linewidth
 
 % variant of display environment for listings...
 % the spacing is a pain to get right...
- \lstnewenvironment{displaylisting}[1]
-   {~\\\noindent\textbf{#1}\\[-.8ex]\hbra\vspace{-2ex}}
-   {\vspace{-2ex}\hket\vspace{1ex}}
+%  \lstnewenvironment{displaylisting}[1]
+%   {~\\\noindent\textbf{#1}\\[-.8ex]\hbra\vspace{-2ex}}
+%   {\vspace{-2ex}\hket\vspace{1ex}}
 
 % --------------------------------------------------------------------- %
 % Proof rule.                                                           %

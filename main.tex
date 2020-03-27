@@ -1,9 +1,15 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
 
-\documentclass[acmsmall,review,anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+%ivp for submission add ,review,anonymous remove nonacm
+\documentclass[acmsmall,nonacm]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+
+\makeatletter
+\let\@authorsaddresses\@empty
+\makeatother
 
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
+
 %% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
 %\documentclass[sigplan,review]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
 %% For single-blind review submission, w/ CCS and ACM Reference
@@ -21,13 +27,14 @@
 %% Journal information
 %% Supplied to authors by publisher for camera-ready submission;
 %% use defaults for review submission.
+% ivp for submission uncomment 26-32 lines
 \acmJournal{PACMPL}
-\acmVolume{1}
-\acmNumber{CONF} % CONF = POPL or ICFP or OOPSLA
-\acmArticle{1}
-\acmYear{2018}
-\acmMonth{1}
-\acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
+% \acmVolume{1}
+% \acmNumber{CONF} % CONF = POPL or ICFP or OOPSLA
+% \acmArticle{1}
+% \acmYear{2018}
+% \acmMonth{1}
+% \acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
 \startPage{1}
 
 %% Copyright information
@@ -85,6 +92,8 @@
 \newcommand{\projectname}{\textsc{OptTyper}\xspace}
 \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
 
+% Restating a theorem
+\newcommand{\restate}[1]{\textsc{Restatement of #1}. \hspace*{1pt} \it}
 
 \definecolor{Maroon}{cmyk}{0.4,0.87,0.68,0.32} 
 \definecolor{RoyalBlue}{rgb}{0.0,0.14,0.6}
@@ -92,7 +101,7 @@
 \definecolor{UscGold}{rgb}{1.0,0.8,0.0}
 \definecolor{mygray}{rgb}{0.35,0.35,0.35}
 \definecolor{mypurple}{rgb}{0.69,0.50,0.63}
-\definecolor{myrose}{rgb}{0.78,0.50,0.63}
+\definecolor{myrose}{rgb}{0.58,0.50,0.63}
 %%%%%%%%%%% for comments %%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{color-edits}
 % \usepackage[suppress]{color-edits}
@@ -117,31 +126,13 @@
 % to see it again, when using suppress is no longer visible
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-% Theorems, etc.														{{{2
-\newenvironment{proof-idea}{\noindent{\bf Proof Idea}\hspace*{1em}}{\bigskip}
-
-\theoremstyle{plain}
-\newtheorem{thm}{Theorem}[section]
-\newtheorem{lem}[thm]{Lemma}
-\newtheorem{prop}[thm]{Proposition}
-\newtheorem{cor}[thm]{Corollary}
-
-\theoremstyle{remark}
-\newtheorem*{rem}{Remark}
-
-\theoremstyle{definition}
-\newtheorem{defn}{Definition}[section]
-\newtheorem{conj}{Conjecture}
-%}}}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 %% JavaScript
 % JavaScript support
 \usepackage{listings}
 \lstset{ %
 backgroundcolor=\color{white}, % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
-basicstyle=\normal, % the size of the fonts that are used for the code
+basicstyle=\scriptsize, % the size of the fonts that are used for the code
 breakatwhitespace=true, % sets if automatic breaks should only happen at whitespace
 breaklines=true, % sets automatic line breaking
 captionpos=b, % sets the caption-position to bottom
@@ -187,7 +178,7 @@ morestring=[b]',
 morestring=[b]"
 }
  
-\newlength{\listingindent}                %declare a new length
+\newlength{\listingindent}  %declare a new length
 \setlength{\listingindent}{\parindent} 
 
 \lstset{
@@ -240,50 +231,104 @@ linewidth=\linewidth
 %% extraction tools.
 
 %% Author with single affiliation.
-\author{First1 Last1}
-\authornote{with author1 note}          %% \authornote is optional;
+\author{Irene Vlassi-Pandi}
+%\authornote{with author1 note}          %% \authornote is optional;
 %% can be repeated if necessary
 \orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
 \affiliation{
 	\position{Position1}
-	\department{Department1}              %% \department is recommended
-	\institution{Institution1}            %% \institution is required
-	\streetaddress{Street1 Address1}
-	\city{City1}
-	\state{State1}
-	\postcode{Post-Code1}
-	\country{Country1}                    %% \country is recommended
+	%\department{Department1}              %% \department is recommended
+	\institution{University of Edinburgh}            %% \institution is required
+	%\streetaddress{Street1 Address1}
+%	\city{Edinburgh}
+	%\state{State1}
+	%\postcode{Post-Code1}
+	\country{UK}                    %% \country is recommended
 }
-\email{first1.last1@inst1.edu}          %% \email is recommended
+%\email{irene.vp@ed.ac.uk}          %% \email is recommended
 
-%% Author with two affiliations and emails.
-\author{First2 Last2}
-\authornote{with author2 note}          %% \authornote is optional;
+%% Author with single affiliation.
+\author{Earl T. Barr}
+%\authornote{with author1 note}          %% \authornote is optional;
 %% can be repeated if necessary
 \orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
 \affiliation{
-	\position{Position2a}
-	\department{Department2a}             %% \department is recommended
-	\institution{Institution2a}           %% \institution is required
-	\streetaddress{Street2a Address2a}
-	\city{City2a}
-	\state{State2a}
-	\postcode{Post-Code2a}
-	\country{Country2a}                   %% \country is recommended
+%	\position{Position1}
+	%\department{Department1}              %% \department is recommended
+	\institution{University College London}            %% \institution is required
+%	\streetaddress{Street1 Address1}
+%	\city{London}
+%	\state{State1}
+%	\postcode{Post-Code1}
+	\country{UK}                    %% \country is recommended
 }
-\email{first2.last2@inst2a.com}         %% \email is recommended
-\affiliation{
-	\position{Position2b}
-	\department{Department2b}             %% \department is recommended
-	\institution{Institution2b}           %% \institution is required
-	\streetaddress{Street3b Address2b}
-	\city{City2b}
-	\state{State2b}
-	\postcode{Post-Code2b}
-	\country{Country2b}                   %% \country is recommended
-}
-\email{first2.last2@inst2b.org}         %% \email is recommended
+%\email{e.barr@ucl.ac.uk}          %% \email is recommended
 
+%% Author with two affiliations and emails.
+\author{Andrew D. Gordon}
+%\authornote{with author2 note}          %% \authornote is optional;
+%% can be repeated if necessary
+\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+%	\position{Position2a}
+%	\department{Department2a}             %% \department is recommended
+	\institution{Microsoft Research Cambridge}           %% \institution is required
+%	\streetaddress{Street2a Address2a}
+%	\city{Cambridge}
+%	\state{State2a}
+%	\postcode{Post-Code2a}
+	\country{UK}                   %% \country is recommended
+}
+%\email{first2.last2@inst2a.com}         %% \email is recommended
+\affiliation{
+%	\position{Position2b}
+%	\department{Department2b}             %% \department is recommended
+	\institution{University of Edinburgh}           %% \institution is required
+%	\streetaddress{Street3b Address2b}
+%	\city{City2b}
+%	\state{State2b}
+%	\postcode{Post-Code2b}
+	\country{UK}                   %% \country is recommended
+}
+%\email{first2.last2@inst2b.org}         %% \email is recommended
+
+%% Author with two affiliations and emails.
+\author{Charles Sutton}
+%\authornote{with author2 note}          %% \authornote is optional;
+%% can be repeated if necessary
+\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+%	\position{Position2a}
+%	\department{Department2a}             %% \department is recommended
+	\institution{Google AI}           %% \institution is required
+%	\streetaddress{Street2a Address2a}
+	\city{Mountain View}
+	\state{CA}
+%	\postcode{Post-Code2a}
+	\country{USA}                   %% \country is recommended
+}
+%\email{first2.last2@inst2a.com}         %% \email is recommended
+\affiliation{
+%	\position{Position2b}
+%	\department{Department2b}             %% \department is recommended
+	\institution{University of Edinburgh}           %% \institution is required
+%	\streetaddress{Street3b Address2b}
+%	\city{City2b}
+%	\state{State2b}
+%	\postcode{Post-Code2b}
+	%\country{Country2b}                   %% \country is recommended
+}
+%\email{csutton@inf.ed.ac.uk}
+\affiliation{
+%	\position{Position2c}
+%	\department{Department2c}             %% \department is recommended
+	\institution{The Alan Turing Institute}           %% \institution is required
+%	\streetaddress{Street3c Address2c}
+%	\city{City2c}
+%	\state{State2c}
+%	\postcode{Post-Code2c}
+	\country{UK}                   %% \country is recommended
+}
 
 %% Abstract
 %% Note: \begin{abstract}...\end{abstract} environment must come
@@ -352,16 +397,6 @@ linewidth=\linewidth
 %% environment and commands, and keywords command.
 \maketitle
 \section{Introduction}
-
-\adgcomment{PhD award April 1; TYR April 6; OOPSLA deadline May 15, 23 pages excluding bibliography}
-\adgcomment{Priorities:
-Upload version of paper to Arxiv by April 1:
-Paragraph in the intro about the SE problem of inferring signatures for JS libraries.
-LambdaNet: describe what it does, and why we are doing something different.
-Plan an experiment of running LambdaNet on our problem - describe this as future work.
-Tidy the theoretical development.  The appendix ought to be readable as a self-contained document.
-If you can do those things, then let's put this on Arxiv, ahead of April 1.
-Circulate to Earl and Charles by Friday 27th, ideally.  Put on Arxiv early next week, and at same time send to Gordon.}
 Statically-typed programming languages aim to enforce correctness and safety  properties
 on programs by guaranteeing constraints on program behaviour.
 A large scale user-study
@@ -373,7 +408,7 @@ which imposes the burden of declaring and maintaining these annotations on the p
 Strongly statically-typed, usually functional languages, like Haskell or ML,
 offer type inference procedures that reduce
 the cost of explicitly writing types but come with
-a steep learning curve~\citep{wadler98,tirronen15}.
+a steep learning curve~\citep{tirronen15}.
 
 Dynamically typed languages, which either lack or do not require type
 annotations, are relatively more popular~\cite{meyerovich12}.  Initially
@@ -384,8 +419,24 @@ examples).
 Retrofit for dynamic languages, these type systems include gradual~\cite{siek06}
 and optional type systems~\citep{bracha2004pluggable}.  Like classical type systems, these type systems
 require annotations to provide benefits.  Hence, reducing the annotation type tax
-for dynamic languages remains an open challenge.
+for dynamic languages remains an open research topic.
 
+\subsection{Problem of Creating TypeScript Signatures for JavaScript Libraries}
+TypeScript is a superset of JavaScript that adds static typing to the language.
+In fact, as JavaScript libraries and frameworks are very popular, many
+TypeScript applications need to use untyped JavaScript libraries.
+To support static type
+checking of such applications the typed
+APIs of the libraries are expressed as separate TypeScript
+declaration files (\lstinline{.d.ts}). 
+\cite{definitelytyped} is a public repository that contains declaration files for more than $5000$ libraries and has more than $10000$ contributors.
+Although this manual approach has been proven
+effective, it raises the challenge of how to automatically maintain valid declaration files
+as library implementations evolve. We investigate the above problem by building
+\projectname (from ``optimising for optional types''),
+a tool based on a new probabilistic type inference approach, that allows us to generate TypeScript  signatures with respect to logical constraints extracted from JavaScript code at test time.
+
+\subsection{Probabilistic Type Inference}
 Probabilistic type inference
 has recently been proposed as an attempt to reduce the burden
 of writing and maintaining type
@@ -411,7 +462,7 @@ as long as it frequently makes correct predictions, even if predictions are some
 Hence, we evaluate probabilistic type inference with statistical metrics.
 
 Probabilistic type inference is not in conflict with classical type inference but complements it.
-There are settings, like TypeScript~\cite{typescript}, where correct type inference is too imprecise.
+There are settings, like TypeScript, where correct type inference is too imprecise.
 In these settings, probabilistic type inference helps the human in the loop to move a
 partially typed code base---one lacking so many type annotations that classical type inference
 can make little progress---to a sufficiently annotated state that classical type inference can take over and finish the job.
@@ -421,29 +472,13 @@ can make little progress---to a sufficiently annotated state that classical type
 Two examples of probabilistic type inference systems are JSNice~\cite{raychev15},
 which uses probabilistic graphical models to statistically infer types of identifiers
 in programs written in JavaScript,
-and DeepTyper~\cite{hellendoorn18}, which targets TypeScript~\cite{typescript} via deep learning techniques.
+and DeepTyper~\cite{hellendoorn18}, which targets TypeScript via deep learning techniques.
 %see \cref{sec:related} for a more elaborate comparison to related work.
 Previous approaches all use machine learning to capture the structural
 similarities between typed and untyped source code and to extract a statistical model for
 the text~\cite{allamanis17}. However, none explicitly models the underlying
 type inference rules, and thus their predictions ignore useful logical information.
 %This is a missed opportunity that we aim to address in this work.
-
-\subsection{Problem of Creating TypeScript Signatures for JavaScript Libraries}
-We investigate the above challenge in a real-world language by building
-\projectname (from ``optimising for optional types''),
-a tool that alleviates the effort of generating a
-TypeScript declaration file for existing JavaScript libraries.
-TypeScript is a superset of JavaScript that adds static typing to the language.
-In fact, as JavaScript libraries and frameworks are very popular, many
-TypeScript applications need to use untyped JavaScript libraries.
-To support static type
-checking of such applications the typed
-APIs of the libraries are expressed as separate TypeScript
-declaration files (\lstinline{.d.ts}).  Although this manual approach has been proven
-effective, it raises the challenge of how to automatically maintain valid declaration files
-as library implementations evolve.
--- also later mention our formulation of this problem as one of the contributions of the paper
 
 \subsection{Our Contribution}
 Current type inference systems rely
@@ -478,7 +513,6 @@ program while at the same time respecting the logical constraints.
 %while simultaneously taking into account logical constraints extracted from a static type analysis.
 
 
-
 Our contributions can be summarised as
 \begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
 	\item We introduce a principled framework to combine logical and natural constraints for type inference,
@@ -486,19 +520,20 @@ Our contributions can be summarised as
 	      %\item Use fuzzy logic in the context of programming languages.
 	\item As an instantiation of this framework, we implement \projectname, a tool to generate probabilistic type
 	      signatures on TypeScript from JavaScript libraries.
-	      \projectname seeks to predict types for methods that are declared in a TypeScript declaration file.
+	      \projectname seeks to predict types for functions that are declared in a TypeScript declaration file.
 	\item We evaluate \projectname on a corpus of 5800 JavaScript libraries for which
-	      the DefinitelyTyped repository provides type declaration files.
+	      the DefinitelyTyped~\cite{definitelytyped} repository provides type declaration files.
 	      We find that combining natural and logical constraints
 	      has better performance than either alone.
 	      Further, \projectname outperforms state-of-the-art systems,
-	      JSNice~\cite{raychev15} and DeepTyper~\cite{hellendoorn18}.
+	      JSNice and DeepTyper.
 	      \projectname achieves a \emph{50\% reduction in error} (measured relatively) over these previous systems.
+	\item \projectname achieves its high performance by combining logical and natural constraints at test time; it is the first tool for probabilistic type inference to do so.
+% 	\adg{do we have good evidence that the combination at test time is the root cause of our results?}
 \end{itemize}
-%
+
 % \subsection{Our Framework via an Example}
 % Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
-
 %
 \section{General Framework for Probabilistic Type Inference} \label{sec:framework}
 \begin{figure}[!t]
@@ -608,15 +643,15 @@ that requires type annotations on identifiers.
 %
 Given a program $U$ plus a typing environment $\Gamma$ let $\Gamma \vdash U$ mean that the program $U$ is well-typed according to the (deterministic) type system, given types for identifiers provided by $\Gamma$.
 %
-The environment takes $Gamma$ is a set of pairs $\{ x : l \}$ where $x$  is an identifier and each $l$ is a literal type.
-
+A typing environment $\Gamma$ is a finite function
+with domain $\{ x_v \mid v \in 1 \ldots V\}$, where $x_v$  is an identifier, and range $\{ l_\tau \mid \tau \in 1 \dots T \}$, where each $l_\tau$ is a literal type.
 Given an untyped program $U$,
 let \emph{probabilistic type inference} consist of these steps
 \begin{enumerate}
 	\item We choose a finite universe consisting of $T$ distinct literal types $\{ l_\tau \mid \tau \in 1 \dots T \}$.
 	\item We compute a set $\{ x_v \mid v \in 1 \ldots V\}$ of a number $V$ of distinct identifiers in $U$ that need to be assigned types.
 	\item \label{step:constraints} We extract a set of constraints from $U$.
-	\item \label{step:optimise} By optimising these constraints, we construct a matrix $M$ with $V$ rows and $T$ columns,
+	\item \label{step:optimise} By optimising these constraints, we construct a matrix $P$ with $V$ rows and $T$ columns,
 	      such that each row is a probability vector (over the $T$ literal types).
 	\item For each identifier $x_v$, we set type $t_v$ to the literal type $l_\tau$ which we compute from the $v$th probability vector (the one for identifier $x_v$).  In this work, we pick the column $\tau$ that has the maximum probability in $x_v$'s probability vector.
 	\item The outcome is the environment $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$.
@@ -658,7 +693,7 @@ we formalise type inference as a problem in
 numerical optimisation, with the goal to find a relaxed type assignment
 that satisfies as much as possible both sorts of constraints.
 The result of this optimisation procedure is the
-$M$ matrix of probabilities described in step~(\ref{step:optimise}).
+$P$ matrix of probabilities described in step~(\ref{step:optimise}).
 % We explain the above formalization in more detail in the remainder of this section.
 
 \subsection{Logical Constraints in Continuous Space}\label{ssec:logcon}
@@ -702,7 +737,7 @@ realisation.  The generator takes into account a set of rules that the type syst
 enforces and produces a boolean type constraints for them.
 
 In this work, we consider the following logical constraints.
-\begin{defn}[\emph{Grammar of Logical Constraints}]\label{def:log-gram}
+\begin{definition}[\emph{Grammar of Logical Constraints}]\label{def:log-gram}
 	A logical constraint is an expression $E$ of the following form
 	\begin{align*}
 		E & ::= x_v \mathrel{is} l_\tau \\ \numberthis\label{eq:gram}
@@ -711,7 +746,7 @@ In this work, we consider the following logical constraints.
 		  & \mid E \mathrel{or} E.
 	\end{align*}
 	Let $\mathcal{E}$ be the set of all logical constraints.
-\end{defn}
+\end{definition}
 % CS: Commenting out notation that is already defined in the setup now.
 \paragraph{Continuous Relaxation}
 We explain how to specify a \emph{continuous relaxation} of the discrete logical semantics.
@@ -736,8 +771,7 @@ $\tilde{f}_{E}(B(\Gamma)) = f_E(B(\Gamma)) := \qqpi{B(\Gamma)}{E}$.
 
 To define a relaxed semantics, we introduce a continuous semantics of $E$ based on generalizations of two-valued logical conjuctions
 to many-valued~\cite{hajek96}.
-Specifically, we use the product $t$-norm, because the binary operation associated with it is smooth and fits with our optimisation-based approach.  
-%We further justify this choice in \autoref{sec:relwork}.
+Specifically, we use the product $t$-norm, because the binary operation associated with it is smooth and fits with our optimisation-based approach. We further justify this choice in \autoref{ssec:softlogic}.
 The product $t$-norm has already been used for obtaining continuous semantics in machine learning, for example by~\citet{rocktaschel15}.
 
 %for the 3 translations used the authors of that paper say using * may be better than the others. For the, why its better for optimization, this would require experiments, but one thing you can point to potentially if those work out, is that there is more gradient information in the product t-norm translation. 
@@ -779,7 +813,7 @@ We define  a logical satisfaction relation $\Gamma \models E$, as follows
                                                      & \Leftrightarrow \Gamma \models E_1 \mathrel{or} \Gamma \models E_2.
           \end{align*}
 Now we can show the following theorem, that give us 
-a correspondence between numerical semantics and typing enviriments. 
+a correspondence between numerical semantics and typing environments. 
 \begin{theorem} \label{thm:soft2hard}
   For all $E$ and $\Gamma$, $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E$.
 \end{theorem}
@@ -792,7 +826,7 @@ The reason is that it relaxes
 the deterministic logical semantics of $E$, and it is maximised
 by probability matrices $P$ which correspond to satisfying type environments.
 The following theorem formalises the idea:
-\begin{theorem}
+\begin{theorem}\label{thm:argmax}
 For all $\Gamma$ and all $E$,
 $\Gamma \models E$
 if and only if $B(\Gamma) \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
@@ -828,13 +862,13 @@ over possible types.
 % Natural because they (the LSTM constraints) arise from a naturally occurring corpus 
 % cf "On the naturalness of software".  But our method is modular and we could plug in
 % other forms of language model, for instance.
-\begin{defn}[\emph{Natural Constraints}]\label{eq:natural}
+\begin{definition}[\emph{Natural Constraints}]\label{eq:natural}
 	For each identifier $x_v$ in a program $U$,
 	a \emph{natural constraint} is a probability vector $\bm{\mu}_v = [\mu_{v1}, \ldots, \mu_{vT}]^\mathsf{T}$.
 	We aggregate the probability vectors of the learning model in a matrix
 	defined as $\mathcal{M} = \begin{bmatrix} \bm{\mu}_1 & \ldots & \bm{\mu}_{V} \end{bmatrix}^\mathsf{T}$.
 	% Given such a matrix, we denote $M[v]$ for the probability vector $\bm{\mu}_v$.
-\end{defn}
+\end{definition}
 
 In principle, natural constraints can be defined based on any property of $U,$
 including names and comments.
@@ -1070,43 +1104,45 @@ point for writing a high-quality declaration file.
 % \end{minipage}
 % \end{center}
 
-%   \begin{figure*}[t]
-%     \centering
-%     \begin{minipage}[c]{.6\textwidth}
-%       \begin{lstlisting}[language=JavaScript,numbers=left]
-%       exports.byteLength = byteLength
-%       ...
+  \begin{figure*}[t]
+    \centering
+    \begin{minipage}[c]{.6\textwidth}
+      \begin{lstlisting}[language=JavaScript,numbers=left]
+      exports.byteLength = byteLength
+      ...
 
-%       function getLens (b64) {
-%       ... return validLen, placeHoldersLen] 
-%       }
+      function getLens (b64) {
+      ... return validLen, placeHoldersLen] 
+      }
 
-%       function byteLength (b64) {
-%           var lens = getLens(b64)      
-%           var validLen = lens[0]
-%           var placeHoldersLen = lens[1]
-%           return ((validLen + placeHoldersLen) * 3 / 4)
-%                  - placeHoldersLen 
-%       } 
-%       ...
-%   \end{lstlisting}
-%   \end{minipage}
-%     \begin{minipage}[t]{.5\textwidth}
-%       \raggedleft
-%       \begin{lstlisting}[language=JavaScript, numbers=none]
-%       export function byteLength(b64: any): any;
-%       \end{lstlisting}
-%     \end{minipage}\hfill
-%     \begin{minipage}[t]{.5\textwidth}
-%       \raggedright
-%       \begin{lstlisting}[language=JavaScript,numbers=none]
-%       export function byteLength(b64: string): number;
-%       \end{lstlisting}
-%     \end{minipage}
-%     \caption{ Center: Example of untyped JavaScript
-%       code. This an excerpt from the library \texttt{base64-js}. Left: Declaration file after the \textit{Structure} stage, Right: Declaration file after the \textit{Type} stage.}
-%     \label{fig:declarations-b64a}
-%   \end{figure*}
+      function byteLength (b64) {
+          var lens = getLens(b64)      
+          var validLen = lens[0]
+          var placeHoldersLen = lens[1]
+          return ((validLen + placeHoldersLen) * 3 / 4)
+                 - placeHoldersLen 
+      } 
+      ...
+  \end{lstlisting}
+  \end{minipage}
+    \begin{minipage}[t]{.5\textwidth}
+    %  \raggedleft
+      \begin{lstlisting}[language=JavaScript, numbers=none]
+      export function 
+        byteLength(b64: any): any;
+      \end{lstlisting}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{.5\textwidth}
+     % \raggedright
+      \begin{lstlisting}[language=JavaScript,numbers=none]
+      export function 
+        byteLength(b64: string): number;
+      \end{lstlisting}
+    \end{minipage}
+    \caption{ Center: Example of untyped JavaScript
+      code. This an excerpt from the library \texttt{base64-js}. Left: Declaration file after the \textit{Structure} stage, Right: Declaration file after the \textit{Type} stage.}
+    \label{fig:declarations-b64a}
+  \end{figure*}
 We consider the problem of predicting a TypeScript declaration file
 for an underlying JavaScript library. We approach this problem by defining
 two consecutive subproblems:
@@ -1129,6 +1165,9 @@ Our implementation takes as input three files:
 	\item TypeScript's default library declaration file,
 	      that is, the built-in types defined by the standard library.\footnote{\url{https://github.com/Microsoft/TypeScript/blob/master/lib/lib.d.ts}}
 \end{enumerate}
+
+An example input, showing all three files,
+is shown in \cref{fig:declarations-b64a}.
 %
 \paragraph{Output:} A TypeScript declaration file for the
 JavaScript library, that we call it \textit{predicted.d.ts} and
@@ -1206,7 +1245,9 @@ The file \lstinline{lib.d.ts} includes interfaces for the built-in types of the 
 These interfaces contain the typed signatures of each property and method
 that a built-in type implements. We use these interfaces to construct a set of
 possible built-in types that we could assign to our injected type and therefore a proper
-type constraint.
+type constraint. For a concrete example of this procedure, 
+see~\cref{fig:jscode-base64,fig:log-base64a}.
+
 
 Our purpose is to establish the principle that a combination of natural and logical constraints can outperform either on its own, and outperforms the state-of-the-art.
 %
@@ -1221,63 +1262,63 @@ This technique seems a useful device that could be employed in other situations,
 %
 Having established the general principle, we will aim to show how to modify a type-checker to omit constraints directly in future work.
 
-% \begin{figure*}[t]
-%     \begin{minipage}[c]{\textwidth}
-% \begin{lstlisting}[language=JavaScript,numbers=left]
-%     function toByteArray<B64, TOBYTEARRAY>(b64: B64): TOBYTEARRAY {
-%         ...
-%         var len = b64.length; // B64<:.length
-%         ...
-%         tmp = (revLookup[b64.charCodeAt(i)] << 18) // B64<:.charCodeAt()
-%     }
-% \end{lstlisting}
-%         % \begin{tablenotes}
-%         % \item \scriptsize{
-%         %     (line 3): Type-Error: The left-hand side of an arithmetic operation should be of type any,number or an enum type.
-%         %     The error corresponds to the following constraint:
-%         %     $NUM = any \mathrel{|} number \mathrel{|} enum$ }
-%         % \end{tablenotes}
-%     \end{minipage}
-%     \caption{TypeScript code snippet of base64-js library augmented with type parameters for each of the formal variables and the return type, along with two constraint on lines 3 and 5.}\label{fig:jscode-base64}
-% \end{figure*}
+\begin{figure*}[t]
+    \begin{minipage}[c]{\textwidth}
+\begin{lstlisting}[language=JavaScript,numbers=left]
+    function toByteArray<B64, TOBYTEARRAY>(b64: B64): TOBYTEARRAY {
+        ...
+        var len = b64.length; // B64 <: .length
+        ...
+        tmp = (revLookup[b64.charCodeAt(i)] << 18) // B64 <: .charCodeAt()
+    }
+\end{lstlisting}
+        % \begin{tablenotes}
+        % \item \scriptsize{
+        %     (line 3): Type-Error: The left-hand side of an arithmetic operation should be of type any,number or an enum type.
+        %     The error corresponds to the following constraint:
+        %     $NUM = any \mathrel{|} number \mathrel{|} enum$ }
+        % \end{tablenotes}
+    \end{minipage}
+    \caption{TypeScript code snippet of base64-js library augmented with type parameters for each of the formal variables and the return type, along with two constraint on lines 3 and 5.}\label{fig:jscode-base64}
+\end{figure*}
 
-% \begin{table*}[t]
-%     \centering
-%     \caption{Left: Logical constraints extracted from TypeScript code,
-%     Center: Interfaces that include the property length,
-%     Right: Final logical constraints.}\label{fig:log-base64a}
-%     \begin{tabular}{ccc}
-%         \toprule\\
-%         \multicolumn{3}{c}{Types $\coloneqq$ String $\mathbin{|}$ Number $\mathbin{|}$ \textit{Array<any>}}\\
-%         \midrule\\
-%         \begin{minipage}{0.25\textwidth}
-%             {\begin{align*}
-%                 B64 & <: .length\\
-%                 B64 & <: .charCodeAt()
-%             \end{align*}}
-%         \end{minipage} &
-%         \begin{minipage}{0.35\textwidth}
-% {\begin{lstlisting}[language=JavaScript,numbers=none]
-% interface String {
-%     readonly length: number;
-%     charCodeAt(index: number): number;
-%     ...
-% }
-% interface Array<any> {
-%     readonly length: number;
-%     ...
-% }
-% \end{lstlisting}}
-%         \end{minipage} &
-%         \begin{minipage}{0.3\textwidth}
-%             {\begin{align*}
-%                 B64 & = String \mathbin{or} \textit{Array<any>}\\
-%                 B64 & = String
-%             \end{align*}}
-%         \end{minipage}\\
-%         \bottomrule
-%     \end{tabular}
-% \end{table*}
+\begin{table*}[t]
+    \centering
+    \caption{Left: Logical constraints extracted from TypeScript code,
+    Center: Interfaces that include the property length,
+    Right: Final logical constraints.}\label{fig:log-base64a}
+    \begin{tabular}{ccc}
+        \toprule\\
+        \multicolumn{3}{c}{Types $\coloneqq$ String $\mathbin{|}$ Number $\mathbin{|}$ \textit{Array<any>}}\\
+        \midrule\\
+        \begin{minipage}{0.25\textwidth}
+            {\begin{align*}
+                B64 & <: .length\\
+                B64 & <: .charCodeAt()
+            \end{align*}}
+        \end{minipage} &
+        \begin{minipage}{0.35\textwidth}
+{\begin{lstlisting}[language=JavaScript,numbers=none]
+interface String {
+    readonly length: number;
+    charCodeAt(index: number): number;
+    ...
+}
+interface Array<any> {
+    readonly length: number;
+    ...
+}
+\end{lstlisting}}
+        \end{minipage} &
+        \begin{minipage}{0.3\textwidth}
+            {\begin{align*}
+                B64 & = String \mathbin{or} \textit{Array<any>}\\
+                B64 & = String
+            \end{align*}}
+        \end{minipage}\\
+        \bottomrule
+    \end{tabular}
+\end{table*}
 
 \subsection{Natural Constraints for TypeScript}\label{ssec:natprodts}
 
@@ -1352,23 +1393,21 @@ We used all the 5,800 projects available from the DefinitelyTyped repository on 
 %
 We trained our model for 1,000 epochs, for 78 different types,
 and obtained a validation accuracy of 0.79.
-%
-% \cref{fig:Char-Level} shows a summary.
-%
+\cref{fig:Char-Level} shows a summary, while for specific implementation details of the LSTM refer to \cref{app:neural}.
+
 Our dataset was randomly split by project into 80\% training data,
 10\% validation data and 10\% test data.
 %
 Splitting the available data in these three different sets is a common practice in machine learning
 to ensure that the learning model does not simply memorise the training data
-but is able to generalise to unseen inputs. For specific implementation details of the LSTM refer to \cref{app:neural}.
-
-% \begin{figure*}[!t]
-%     \centering
-%     \def\svgwidth{\linewidth}
-%     \input{./figs/char-level/char-level.pdf_tex}
-% \begin{subfigure}{\textwidth}
-%   \centering
-% %\begin{minipage}[!h]{\textwidth}
+but is able to generalise to unseen inputs. 
+\begin{figure*}[!t]
+    \centering
+    \def\svgwidth{\linewidth}
+    \input{./figs/char-level/char-level.pdf_tex}
+\begin{subfigure}{\textwidth}
+  \centering
+%\begin{minipage}[!h]{\textwidth}
 %      %\raggedleft
 %     \begin{lstlisting}[numbers=none]
 %   LSTMClassifier(
@@ -1377,15 +1416,15 @@ but is able to generalise to unseen inputs. For specific implementation details 
 %   (hidden2out): Linear(in_features=64, out_features=78, bias=True)
 %   (softmax): LogSoftmax()
 %   (optimisation fun): ADAM)
-% \end{lstlisting}
-% %  \end{minipage}
-%   \end{subfigure}
-%   \caption{Pipeline of learning naming conventions with 
-%   a Char-Level \textit{LSTM}, represented by a probability vector for each identifier,
-%   including function and parameter identifiers.
-%   }
-%   \label{fig:Char-Level}
-%   \end{figure*}
+%\end{lstlisting}
+%  \end{minipage}
+  \end{subfigure}
+  \caption{Pipeline of learning naming conventions with 
+  a Char-Level \textit{LSTM}, represented by a probability vector for each identifier,
+  including function and parameter identifiers.
+  }
+  \label{fig:Char-Level}
+  \end{figure*}
 %\subsection{Combining Logical and Natural Constraints}
 
 \paragraph{\textit{Logical} Constraints} 
@@ -1428,7 +1467,7 @@ It computes type annotations on average for 58 files in about 60 seconds
 for solving logical constraints and natural constraints, and in about 65 seconds for the combined optimisation.
 \subsection{Precision and Recall for Declaration Files}
 
-\begin{defn}[\emph{Paths}]
+\begin{definition}[\emph{Paths}]
 	Let a \emph{path} be either a \emph{structural path}, or a \emph{type path}.
 	%
 	A \emph{structural path} is a fully-qualified name~$\textit{n}$.
@@ -1436,7 +1475,7 @@ for solving logical constraints and natural constraints, and in about 65 seconds
 	A \emph{type path} is a pair~$\textit{(n,ty)}$ of a fully-qualified name~$\textit{n}$ and a type~$\textit{ty}$.
 	%
 	Let the variable~$\mathcal{X}$ range over sets of paths.
-\end{defn}
+\end{definition}
 
 Let~$\mathcal{S}$ be the set of all structural paths,
 which is partitioned into the following subsets
@@ -1464,7 +1503,7 @@ which is partitioned into the following subsets
 We call the predicted declaration file \emph{predicted.d.ts}
 while for the gold standard file we use the term \emph{gold.d.ts}.
 
-\begin{defn}[Functions \textit{Paths} and \textit{Filter$_\mathcal{X}$}]
+\begin{definition}[Functions \textit{Paths} and \textit{Filter$_\mathcal{X}$}]
 	To capture the contents of a file, we define the
 	function~$\textit{Paths(*.d.ts)}$, which takes as an input a
 	TypeScript declaration file and returns a set of paths
@@ -1478,7 +1517,7 @@ while for the gold standard file we use the term \emph{gold.d.ts}.
 	In the next step we apply a~$Filter_\mathcal{X}$ function to
 	filter the output of the~$Paths$ function to keep only the paths in the set~$\mathcal{X}$,
 	that is,~$Filter_\mathcal{X}(\mathcal{Y}) =  \mathcal{X} \cap \mathcal{Y}$.
-\end{defn}
+\end{definition}
 As we are interested in evaluating both \textit{Structure}
 and \textit{Type}---the core elements of our pipeline as analysed in \cref{sec:prodts}---and
 not only the final output, we measure the precision and recall for both stages independently.
@@ -1520,7 +1559,7 @@ to denote the subproblem for which we perform measurements.
 $\mathcal{X}$'s range could be extended to include, for instance,
 $\mathcal{S}_\text{fnRet}$ (function identifiers) to perform a finer analysis.
 
-\begin{defn}[Precision and Recall for $\mathcal{X}$] \label{def:precision_recall}
+\begin{definition}[Precision and Recall for $\mathcal{X}$] \label{def:precision_recall}
 	Given a declaration file \textit{predicted.d.ts},
 	an ideal declaration file \textit{gold.d.ts}, and a class of paths $\mathcal{X}$,
 	we define precision and recall for $\mathcal{X}$ as
@@ -1535,7 +1574,7 @@ $\mathcal{S}_\text{fnRet}$ (function identifiers) to perform a finer analysis.
 		\dfrac{\splitdfrac{|Filter_\mathcal{X}(Paths(predicted.d.ts)) \cap {}} {Filter_\mathcal{X}(Paths(gold.d.ts)) |}}
 		{|Filter_\mathcal{X}(Paths(gold.d.ts))|}.
 	\end{equation}
-\end{defn}
+\end{definition}
 %
 The maximum precision and recall that we can obtain is equal to $1$.
 %
@@ -2013,8 +2052,10 @@ DeepTyper~\citep{hellendoorn18}.
 Indeed, they serve as baselines in our evaluation, where we discuss them in
 detail (\autoref{ssec:typesubproblem}).
 
+% need to say They combine logical and natural constraints at training time, whereas \projectname combines logical and natural constraints at test time.
+
 \citet{wei20} propose a different approach to probabilistic type inference for TypeScript. Their work is 
-based on graph neural networks \citep{allamanis17a}, which learn type dependency graphs extracted by static 
+based on graph neural networks~\citep{allamanis17a}, which learn type dependency graphs extracted by static 
 code analysis on the training data. Their type dependency graph has edges that are either logical or contextual, corresponding to what we call logical or natural constraints.
 While, they are also able to predict user-defined types using open vocabulary techniques. However, the problem they
 are targeting is different than ours, as they do not consider the problem of generating TypeScript signature files from a JavaScript file, but instead predict types for native unnotated TypeScript.
@@ -2023,12 +2064,32 @@ are targeting is different than ours, as they do not consider the problem of gen
 %The closest related works to this end are 
 %discussed in~\cref{sec:related}. We can view the problem of matching an identifier to a type as a form supervised text classification problem~\cite{aggarwal12}.
 
+\subsection{Soft Logic}\label{ssec:softlogic}
+Recently, there is a resurgence of interest for soft logic in the context of machine learning. By soft logic we mean a many-valued logic, where the truth values lie on the unit interval $[0,1]$. The 
+reason for this resurgence is twofold: First,
+soft logic allows the modeling of multiple notions
+of similarity. Second, and more relevant for our
+interests, the resulting compound formulas are 
+amenable to continuous optimisation approaches. Thus, they provide a framework to exploit the relational structure of different problems~\cite{kimmig12}. 
+
+In the context of fuzzy logic, the three most
+important extensions are: G{\"o}del logic, {\L}ukasiewicz logic, and product logic~\cite{hajek1998}, with the latter two attracting more interest. For example, the {\L}ukasiewicz logic is used in \citet{bach17} due 
+to its convient relationship to their relaxed MAX 
+SAT problem formulation. In our case, the relationships expressed by the logical constraints are non-convex and we focus on smooth optimisation
+formulations; the product logic is more
+suitable since the other two are non-smooth and 
+would require relaxations. For 
+deep learning, this logic is also important as it 
+allows to perform back-propagation~\cite{evans18}.
+
+% Translations are completely standard when one  incorporates logic into optimization, 
+
 \section{Conclusion and Future Work}\label{sec:conclusion}
 This paper proposes a new type inference approach for
 dynamically typed languages, leveraging different sources
 of information.
 %
-To conseptualise this we define a
+To conceptualise this we define a
 general probabilistic framework that combines
 information from traditional analyses with statistical reasoning
 for source code text, and thus enables us to to predict naturally occurring
@@ -2147,23 +2208,6 @@ For all $E$, $E_1$, $E_2$, and $\Gamma$:
 \end{proof}
 
 
-% \begin{cor}
-% As a corollary of Lemma 2.1, we can state that
-% \[\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\qqpi{B(\Gamma)}{E} = 1).\] 
-% \end{cor}
-
-% \begin{cor}
-% As a corollary of Lemma 2.1, we can state that
-% \[\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1.\] 
-% \end{cor}
-
-
-% \begin{cor}
-% As a corollary of Lemma 2.1, we can state that
-% \[\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} + \qqpi{B(\Gamma)}{E_2} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1.\] 
-% \end{cor}
-
-
 \begin{lemma} \label{lem:models}
     For all $E$ and $\Gamma$, either $\Gamma \models E$ or $\Gamma \models{} \mathrel{not} E$.
 \end{lemma}
@@ -2178,13 +2222,10 @@ For all $E$, $E_1$, $E_2$, and $\Gamma$:
 % \end{cor}
 
 % Irene: explain why this theorem corresponds to the result in the book?
-This theorem corresponds to a result in the book of ~\citet{hajek1998}.
 
-\begin{theorem} \label{thm:soft2hard}
-  For all $E$ and $\Gamma$: $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E$.
-\end{theorem}
 
-\begin{proof}
+\restate{Theorem~\ref{thm:soft2hard}} For all $E$ and $\Gamma$: $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E$.
+\begin{proof}The above theorem corresponds to a result in the book of ~\citet{hajek1998}.
   We prove the property by \emph{structural induction}; that is,
   we prove that $\phi(N)$ holds for all $N$, where $\phi(N)$ is as follows.
         %\begin{quote}
@@ -2198,7 +2239,7 @@ This theorem corresponds to a result in the book of ~\citet{hajek1998}.
   We proceed by course-of-values induction on $N$.
   Consider any $E, \Gamma$ and $N = size(E)$. We proceed by a case analysis at $E$.
   \begin{description}
-      \item[Base Case]
+      \item[$Base\;Case$]
                   For $N=1$, the base case is $E = (x_v \mathrel{is} l_\tau)$.
                   For any $\Gamma$ we are to show
                   \begin{equation*}
@@ -2214,7 +2255,7 @@ This theorem corresponds to a result in the book of ~\citet{hajek1998}.
                   Also, $\Gamma \models x_v \mathrel{is} l_\tau$, implies that $\Gamma(x_v)=l_\tau$. By definition, that
                   means  $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1$.
       
-     \item[Case $E ={} \mathrel{not} E'$.]
+     \item[$Case \; E ={} \mathrel{not} E'$.]
                   We are to show
                   $\Gamma \models{} \mathrel{not} E' \Leftrightarrow \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1$.
                   We have that,
@@ -2223,25 +2264,25 @@ This theorem corresponds to a result in the book of ~\citet{hajek1998}.
                         \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1 & \Leftrightarrow{} &  \\
                         1- \qqpi{B(\Gamma)}{E'} = 1 & \Leftrightarrow{} & \text{(Definition)}  \\
                         \qqpi{B(\Gamma)}{E'} = 0 & \Leftrightarrow{} &  \\
-                        \mathrel{not} (\qqpi{B(\Gamma)}{E'} = 1) & \Leftrightarrow{} & \text{(Cor. 2.2)} \\
+                        \mathrel{not} (\qqpi{B(\Gamma)}{E'} = 1) & \Leftrightarrow{} & \text{(Lemma~\ref{lem:binary})} \\
                         \mathrel{not}  \Gamma \models{}  E'
                         & \Leftrightarrow{} & \text{(Induction Hypothesis)} \\
                          \Gamma \models{} \mathrel{not} E' & & \text{(Definition)}.
                   \end{align*}
           
-           \item[Case $E = (E_1 \mathrel{and} E_2)$.] 
+           \item[$Case \; E = (E_1 \mathrel{and} E_2)$.] 
                    For $size(E_1)<N$ and $size(E_2) < N$, we are to show that
                   $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
                   \begin{align*}
                       \Gamma \models (E_1 \mathrel{and} E_2)                            & \Leftrightarrow &  \\
                       \Gamma \models E_1 \mathrel{and} \Gamma \models E_2               & \Leftrightarrow & \text{(Definition)}  \\
                       \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 & \Leftrightarrow & \text{(Induction Hypothesis)}           \\
-                      \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1             & \Leftrightarrow &  \text{(Lemma 2.1)}           \\                 
+                      \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1             & \Leftrightarrow &  \text{(Lemma~\ref{lem:binary})}           \\                 
                       \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1                  &   &  \text{(Definition)}                                         \\
                   \end{align*}
                   which completes the proof for this case.
 
-            \item[Case $E = (E_1 \mathrel{or} E_2)$.]
+            \item[$Case \; E = (E_1 \mathrel{or} E_2)$.]
                   For $size(E_1) < N$ and $size(E_2) < N$, we are to show
                   $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
                   \begin{align*}
@@ -2249,7 +2290,7 @@ This theorem corresponds to a result in the book of ~\citet{hajek1998}.
                       \Gamma \models E_1 \mathrel{or} \Gamma \models E_2                                                        & \Leftrightarrow &\text{(Definition)} \\
                       \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1                                          & \Leftrightarrow & \text{(Induction Hypothesis)}                                  \\
                       (\qqpi{B(\Gamma)}{E_1} - 1) \cdot (1- \qqpi{B(\Gamma)}{E_2}) = 0                                          & \Leftrightarrow                                  \\
-                      \qqpi{B(\Gamma)}{E_1} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} + \qqpi{B(\Gamma)}{E_2} - 1 = 0 & \Leftrightarrow                         &\text{(Case Analysis \& Lemma 2.1)}         \\
+                      \qqpi{B(\Gamma)}{E_1} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} + \qqpi{B(\Gamma)}{E_2} - 1 = 0 & \Leftrightarrow                         &\text{(Case Analysis \& Lemma~\ref{lem:binary})}         \\
                       \qqpi{B(\Gamma)}{E_1 \mathrel{or} E_2} = 1                                                               &. 
                   \end{align*}
                   which completes the proof for this case.
@@ -2292,13 +2333,13 @@ For all matrices $Q  \in \Pi^{V \times T}$, we have
 Choose $Q \in \Pi^{V \times T}$ such as $q_{v,t} = 1/T$ for all $v \in 1 \ldots V$ and $t \in 1 \ldots T$. We proceed by course-of-value induction on N.  Consider any $E, P$ and $N = size(E)$. We proceed by a case analysis at $E$.
 
  \begin{description}
-      \item[Base Case]
+      \item[$Base\;Case$]
                   For $N=1$, the base case is $E = (x_v \mathrel{is} l_\tau)$.
                   For any $P$ we are to show
                   $\max_{P \in \Pi^{V \times T}} \qqpi{P}{x_v \mathrel{is} l_\tau} > 0$.
                   
-                  By assumption \ivpcomment{is that correct?}, $\qqpi{P}{x_v \mathrel{is} l_\tau} = q_{v,\tau} = 1/T > 0$.
-     \item[Case $E ={} \mathrel{not} E'$.]
+                  By assumption, $\qqpi{P}{x_v \mathrel{is} l_\tau} = q_{v,\tau} = 1/T > 0$.
+     \item[$Case \; E ={} \mathrel{not} E'$.]
                   We are to show
                    $\max_{P \in \Pi^{V \times T}} \qqpi{P}{\mathrel{not} E'} > 0$.
                    
@@ -2311,7 +2352,7 @@ Choose $Q \in \Pi^{V \times T}$ such as $q_{v,t} = 1/T$ for all $v \in 1 \ldots 
                        
                        By Lemma~\ref{lem:positive} we know that $ 0 \leq \qqpi{P}{E'} \leq 1$.          
                      
-           \item[Case $E = (E_1 \mathrel{and} E_2)$.] 
+           \item[$Case \; E = (E_1 \mathrel{and} E_2)$.] 
                    For $size(E_1)<N$ and $size(E_2) < N$, we are to show that~$
                   \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{and} E_2} > 0
                 $. Our induction hypothesis holds for all $M<N$. We have that
@@ -2325,7 +2366,7 @@ Choose $Q \in \Pi^{V \times T}$ such as $q_{v,t} = 1/T$ for all $v \in 1 \ldots 
                   \end{align*}
                   which completes the proof for this case.
 
-            \item[Case $E = (E_1 \mathrel{or} E_2)$.]
+            \item[$Case\;E = (E_1 \mathrel{or} E_2)$.]
               For $size(E_1)<N$ and $size(E_2) < N$, we are to show that~$
                   \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{or} E_2} > 0
                 $. Our induction hypothesis holds for all $M<N$. We have that
@@ -2347,13 +2388,11 @@ Choose $Q \in \Pi^{V \times T}$ such as $q_{v,t} = 1/T$ for all $v \in 1 \ldots 
 % Statement of originality about this theorem.
 % We are unaware of a result to this effect being proved for other optimizations of logical properties.
 
-% \restate{Theorem~\ref{thm:argmax}}
 
-\begin{theorem}\label{thm:argmax}
-For all $\Gamma$ and all $E$,
+\restate{Theorem~\ref{thm:argmax}} For all $\Gamma$ and all $E$,
 $\Gamma \models E$
 if and only if $B(\Gamma) \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
-\end{theorem}
+
 \begin{proof}
 Consider any $\Gamma$ and $E$.
 Either $\Gamma \models E$ or not.
