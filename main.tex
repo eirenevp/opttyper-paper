@@ -440,7 +440,7 @@ a tool based on a new probabilistic type inference approach, that allows us to g
 Probabilistic type inference
 has recently been proposed as an attempt to reduce the burden
 of writing and maintaining type
-annotations~\cite{raychev15,xu16,hellendoorn18}.
+annotations~\cite{raychev15,hellendoorn18,wei20}.
 Just as the availability of large data sets has transformed artificial intelligence,
 the increased volume of publicly available source code, through
 code repositories like GitHub\footnote{\href{https://github.com}{https://github.com}}
@@ -528,7 +528,7 @@ Our contributions can be summarised as
 	      Further, \projectname outperforms state-of-the-art systems,
 	      JSNice and DeepTyper.
 	      \projectname achieves a \emph{50\% reduction in error} (measured relatively) over these previous systems.
-	\item \projectname achieves its high performance by combining logical and natural constraints at test time; it is the first tool for probabilistic type inference to do so.
+	\item \projectname achieves its high performance by combining logical and natural constraints at test time; to the best of our knowledge, it is the first tool for probabilistic type inference to do so.
 % 	\adg{do we have good evidence that the combination at test time is the root cause of our results?}
 \end{itemize}
 
@@ -2054,7 +2054,7 @@ detail (\autoref{ssec:typesubproblem}).
 
 % need to say They combine logical and natural constraints at training time, whereas \projectname combines logical and natural constraints at test time.
 
-\citet{wei20} propose a different approach to probabilistic type inference for TypeScript. Their work is 
+\citet{wei20} propose a different approach to probabilistic type inference for TypeScript. LambdaNet is 
 based on graph neural networks~\citep{allamanis17a}, which learn type dependency graphs extracted by static 
 code analysis on the training data. Their type dependency graph has edges that are either logical or contextual, corresponding to what we call logical or natural constraints.
 While, they are also able to predict user-defined types using open vocabulary techniques. However, the problem they
@@ -2306,18 +2306,18 @@ For all $E$, $E_1$, $E_2$, and $\Gamma$:
 \end{proof}
 
 
-\begin{lemma} \label{thm:soft2hard_v2}
-    For all $E$, and all type environments $\Gamma$,
-    then if not $\Gamma \models E$, then
-    $\qqpi{B(\Gamma)}{E} = 0$.
-\end{lemma}
+% \begin{lemma} \label{thm:soft2hard_v2}
+%     For all $E$, and all type environments $\Gamma$,
+%     then if not $\Gamma \models E$, then
+%     $\qqpi{B(\Gamma)}{E} = 0$.
+% \end{lemma}
 
-\begin{proof}
-    This is a corollary of Claim 2.1. If not $\Gamma \models E$,  then $\Gamma \models{} \mathrel{not} E$, by the logical satisfaction relation. Then, by Lemma~\ref{lem:binary},
-    $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1$.
-    By the definition of continuous semantics,
-    $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1 - \qqpi{B(\Gamma)}{E}$.
-\end{proof}
+% \begin{proof}
+%     This is a corollary of Claim 2.1. If not $\Gamma \models E$,  then $\Gamma \models{} \mathrel{not} E$, by the logical satisfaction relation. Then, by Lemma~\ref{lem:binary},
+%     $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1$.
+%     By the definition of continuous semantics,
+%     $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1 - \qqpi{B(\Gamma)}{E}$.
+% \end{proof}
 
 
 \begin{lemma}\label{lem:positive}
@@ -2330,57 +2330,57 @@ For all matrices $Q  \in \Pi^{V \times T}$, we have
 \begin{align}
 \textstyle \max_{P \in \Pi^{V \times T}} \qqpi{P}{E} > \qqpi{Q}{E}.
 \end{align}
-Choose $Q \in \Pi^{V \times T}$ such as $q_{v,t} = 1/T$ for all $v \in 1 \ldots V$ and $t \in 1 \ldots T$. We proceed by course-of-value induction on N.  Consider any $E, P$ and $N = size(E)$. We proceed by a case analysis at $E$.
+Choose $Q \in \Pi^{V \times T}$ such as $q_{v,t} = 1/T$ for all $v \in 1 \ldots V$ and $t \in 1 \ldots T$. We proceed by course-of-value induction on N.  Consider any $E, P$ and $N = size(E)$. The proof completes by course-of-values induction on $N$.
 
- \begin{description}
-      \item[$Base\;Case$]
-                  For $N=1$, the base case is $E = (x_v \mathrel{is} l_\tau)$.
-                  For any $P$ we are to show
-                  $\max_{P \in \Pi^{V \times T}} \qqpi{P}{x_v \mathrel{is} l_\tau} > 0$.
+%  \begin{description}
+%       \item[$Base\;Case$]
+%                   For $N=1$, the base case is $E = (x_v \mathrel{is} l_\tau)$.
+%                   For any $P$ we are to show
+%                   $\max_{P \in \Pi^{V \times T}} \qqpi{P}{x_v \mathrel{is} l_\tau} > 0$.
                   
-                  By assumption, $\qqpi{P}{x_v \mathrel{is} l_\tau} = q_{v,\tau} = 1/T > 0$.
-     \item[$Case \; E ={} \mathrel{not} E'$.]
-                  We are to show
-                   $\max_{P \in \Pi^{V \times T}} \qqpi{P}{\mathrel{not} E'} > 0$.
+%                   By assumption, $\qqpi{P}{x_v \mathrel{is} l_\tau} = q_{v,\tau} = 1/T > 0$.
+%      \item[$Case \; E ={} \mathrel{not} E'$.]
+%                   We are to show
+%                   $\max_{P \in \Pi^{V \times T}} \qqpi{P}{\mathrel{not} E'} > 0$.
                    
-                  By definition, we have that
-                  $
-                       \max_{P \in \Pi^{V \times T}} \qqpi{P}{\mathrel{not} E'} > 0  \Leftrightarrow{}  
-                        \max_{P \in \Pi^{V \times T}} (1- \qqpi{P}{E'}) > 0 $.
-                      % By the induction hypothesis
-                      % we have that $\max_{P \in \Pi^{V \times T}} \qqpi{P}{E'} > 0$, 
+%                   By definition, we have that
+%                   $
+%                       \max_{P \in \Pi^{V \times T}} \qqpi{P}{\mathrel{not} E'} > 0  \Leftrightarrow{}  
+%                         \max_{P \in \Pi^{V \times T}} (1- \qqpi{P}{E'}) > 0 $.
+%                       % By the induction hypothesis
+%                       % we have that $\max_{P \in \Pi^{V \times T}} \qqpi{P}{E'} > 0$, 
                        
-                       By Lemma~\ref{lem:positive} we know that $ 0 \leq \qqpi{P}{E'} \leq 1$.          
+%                       By Lemma~\ref{lem:positive} we know that $ 0 \leq \qqpi{P}{E'} \leq 1$.          
                      
-           \item[$Case \; E = (E_1 \mathrel{and} E_2)$.] 
-                   For $size(E_1)<N$ and $size(E_2) < N$, we are to show that~$
-                  \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{and} E_2} > 0
-                $. Our induction hypothesis holds for all $M<N$. We have that
-                  \begin{align*}
-                \textstyle        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1} > 0 \mathrel{and}
-                        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_2} > 0   & \Rightarrow & 
-                        \text{(Induction Hypothesis)} \\ 
-                        max_{P \in \Pi^{V \times T}} (\qqpi{P}{E_1}\cdot\qqpi{P}{E_2}) > 0  
-                      & \Leftrightarrow & \text{(Definition)}\\
-                    \textstyle     \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{and} E_2} > 0.                          &  & 
-                  \end{align*}
-                  which completes the proof for this case.
+%           \item[$Case \; E = (E_1 \mathrel{and} E_2)$.] 
+%                   For $size(E_1)<N$ and $size(E_2) < N$, we are to show that~$
+%                   \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{and} E_2} > 0
+%                 $. Our induction hypothesis holds for all $M<N$. We have that
+%                   \begin{align*}
+%                 \textstyle        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1} > 0 \mathrel{and}
+%                         \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_2} > 0   & \Rightarrow & 
+%                         \text{(Induction Hypothesis)} \\ 
+%                         max_{P \in \Pi^{V \times T}} (\qqpi{P}{E_1}\cdot\qqpi{P}{E_2}) > 0  
+%                       & \Leftrightarrow & \text{(Definition)}\\
+%                     \textstyle     \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{and} E_2} > 0.                          &  & 
+%                   \end{align*}
+%                   which completes the proof for this case.
 
-            \item[$Case\;E = (E_1 \mathrel{or} E_2)$.]
-              For $size(E_1)<N$ and $size(E_2) < N$, we are to show that~$
-                  \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{or} E_2} > 0
-                $. Our induction hypothesis holds for all $M<N$. We have that
-                  \begin{align*}
-                \textstyle        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1} > 0 \mathrel{and}
-                        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_2} > 0   & \Rightarrow & 
-                        \text{(Induction Hypothesis)} \\
-                        max_{P \in \Pi^{V \times T}} (\qqpi{P}{E_1} + \qqpi{P}{E_2} -\qqpi{P}{E_1}\cdot\qqpi{P}{E_2}) > 0  
-                      & \Leftrightarrow & \text{(Definition)}\\
-                    \textstyle     \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{or} E_2} > 0.                          &  & 
-                  \end{align*}
-                  which completes the proof for this case.
+%             \item[$Case\;E = (E_1 \mathrel{or} E_2)$.]
+%               For $size(E_1)<N$ and $size(E_2) < N$, we are to show that~$
+%                   \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{or} E_2} > 0
+%                 $. Our induction hypothesis holds for all $M<N$. We have that
+%                   \begin{align*}
+%                 \textstyle        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1} > 0 \mathrel{and}
+%                         \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_2} > 0   & \Rightarrow & 
+%                         \text{(Induction Hypothesis)} \\
+%                         max_{P \in \Pi^{V \times T}} (\qqpi{P}{E_1} + \qqpi{P}{E_2} -\qqpi{P}{E_1}\cdot\qqpi{P}{E_2}) > 0  
+%                       & \Leftrightarrow & \text{(Definition)}\\
+%                     \textstyle     \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{or} E_2} > 0.                          &  & 
+%                   \end{align*}
+%                   which completes the proof for this case.
                 
-    \end{description}
+%     \end{description}
 
 \end{proof}
 % A formula $E$ is a \emph{tautology} if and only if $\Gamma \models E$ for all $\Gamma$ such that $fv(E) \subseteq dom(\Gamma)$.
