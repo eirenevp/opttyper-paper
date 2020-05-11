@@ -1,11 +1,11 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
 
 %ivp for submission add ,review,anonymous remove nonacm
-\documentclass[acmsmall,nonacm]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\documentclass[acmsmall, review, anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
 
-\makeatletter
-\let\@authorsaddresses\@empty
-\makeatother
+% \makeatletter
+% \let\@authorsaddresses\@empty
+% \makeatother
 
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
@@ -359,11 +359,9 @@ linewidth=\linewidth
 	program transformation and static analysis of the JavaScript code, with natural constraints obtained from a deep learning
 	model, which learns naming conventions for types from a large code base.
 	%
-	We evaluate \projectname on a data set of 5,800 open-source JavaScript projects
-	that have type annotations in
-	the well-known DefinitelyTyped repository. We find that combining logical
+	We evaluate \projectname on a data set of 300 open-source TypeScript.\ivpcomment{change?} We find that combining logical
 	and natural constraints yields a large improvement in performance
-	over either kind of information individually, and produces 50\% fewer incorrect
+	over either kind of information individually, and produces 50\% fewer incorrect \ivpcomment{change number}
 	type predictions
 	than previous approaches.
 	%
@@ -421,21 +419,6 @@ and optional type systems~\citep{bracha2004pluggable}.  Like classical type syst
 require annotations to provide benefits.  Hence, reducing the annotation type tax
 for dynamic languages remains an open research topic.
 
-\subsection{Problem of Creating TypeScript Signatures for JavaScript Libraries}
-TypeScript is a superset of JavaScript that adds static typing to the language.
-In fact, as JavaScript libraries and frameworks are very popular, many
-TypeScript applications need to use untyped JavaScript libraries.
-To support static type
-checking of such applications the typed
-APIs of the libraries are expressed as separate TypeScript
-declaration files (\lstinline{.d.ts}). 
-\cite{definitelytyped} is a public repository that contains declaration files for more than $5000$ libraries and has more than $10000$ contributors.
-Although this manual approach has been proven
-effective, it raises the challenge of how to automatically maintain valid declaration files
-as library implementations evolve. We investigate the above problem by building
-\projectname (from ``optimising for optional types''),
-a tool based on a new probabilistic type inference approach, that allows us to generate TypeScript  signatures with respect to logical constraints extracted from JavaScript code at test time.
-
 \subsection{Probabilistic Type Inference}
 Probabilistic type inference
 has recently been proposed as an attempt to reduce the burden
@@ -479,6 +462,10 @@ similarities between typed and untyped source code and to extract a statistical 
 the text~\cite{allamanis17}. However, none explicitly models the underlying
 type inference rules, and thus their predictions ignore useful logical information.
 %This is a missed opportunity that we aim to address in this work.
+\ivpcomment{change that sentence}
+ We investigate the above problem by building
+\projectname (from ``optimising for optional types''),
+a tool based on a new probabilistic type inference approach, that allows us to generate TypeScript  signatures with respect to logical constraints extracted from JavaScript code at test time.
 
 \subsection{Our Contribution}
 Current type inference systems rely
@@ -518,15 +505,13 @@ Our contributions can be summarised as
 	\item We introduce a principled framework to combine logical and natural constraints for type inference,
 	      based on transforming a type inference procedure into a numerical optimisation problem.
 	      %\item Use fuzzy logic in the context of programming languages.
-	\item As an instantiation of this framework, we implement \projectname, a tool to generate probabilistic type
-	      signatures on TypeScript from JavaScript libraries.
-	      \projectname seeks to predict types for functions that are declared in a TypeScript declaration file.
-	\item We evaluate \projectname on a corpus of 5800 JavaScript libraries for which
-	      the DefinitelyTyped~\cite{definitelytyped} repository provides type declaration files.
-	      We find that combining natural and logical constraints
+	\item As an instantiation of this framework, we implement \projectname, a tool to generate probabilistic types
+	       on TypeScript files.
+	   %   \projectname seeks to predict types for functions that are declared in a TypeScript declaration file.
+	\item We evaluate \projectname on a corpus of 5800 TypeScript files and find that combining natural and logical constraints
 	      has better performance than either alone.
 	      Further, \projectname outperforms state-of-the-art systems,
-	      JSNice and DeepTyper.
+	      LambdaNet, DeepTyper and JSNice.
 	      \projectname achieves a \emph{50\% reduction in error} (measured relatively) over these previous systems.
 	\item \projectname achieves its high performance by combining logical and natural constraints at test time; to the best of our knowledge, it is the first tool for probabilistic type inference to do so.
 % 	\adg{do we have good evidence that the combination at test time is the root cause of our results?}
@@ -804,6 +789,7 @@ not always the same.
 % 	and I think that there is a sense in which this is indeed true,
 % 	but there are some more tricky corner cases, e.g., if E does not depend
 % 	on all of the variables in $\Gamma$.}
+\ivpcomment{probably we dont need this definition}
 We define  a logical satisfaction relation $\Gamma \models E$, as follows
           \begin{align*} 
               \Gamma \models x_v \mathrel{is} l_\tau & \Leftrightarrow \Gamma(x_v)=l_\tau                                  \\
@@ -814,10 +800,12 @@ We define  a logical satisfaction relation $\Gamma \models E$, as follows
           \end{align*}
 Now we can show the following theorem, that give us 
 a correspondence between numerical semantics and typing environments. 
-\begin{theorem} \label{thm:soft2hard}
-  For all $E$ and $\Gamma$, $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E$.
-\end{theorem}
+%\begin{theorem} 
+\label{thm:soft2hard}
 
+  For all $E$ and $\Gamma$, $\qqpi{P}{E} = 1 \Leftrightarrow \Gamma \models E$.
+%\end{theorem}
+\ivpcomment{rephrase and add Hajek reference} 
 To motivate further this continuous semantics, recall that in our setting, we know $E$ but
 do not know $P$. We argue that the continuous semantics,
 when considered as a function of $P$, can serve as a sensible
@@ -825,13 +813,14 @@ objective for an optimisation problem to infer $P$.
 The reason is that it relaxes
 the deterministic logical semantics of $E$, and it is maximised
 by probability matrices $P$ which correspond to satisfying type environments.
-The following theorem formalises the idea:
-\begin{theorem}\label{thm:argmax}
-For all $\Gamma$ and all $E$,
-$\Gamma \models E$
-if and only if $B(\Gamma) \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
-\end{theorem}
-For proofs see~\cref{app:proofs}.
+
+% The following theorem formalises the idea:
+% \begin{theorem}\label{thm:argmax}
+% For all $\Gamma$ and all $E$,
+% $\Gamma \models E$
+% if and only if $B(\Gamma) \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
+% \end{theorem}
+% For proofs see~\cref{app:proofs}.
 
 \subsection{Natural Constraints via Machine Learning}\label{ssec:natcon}
 
@@ -1005,9 +994,8 @@ logical constraints.
 If these constraints are consistent, then the obtained probability vectors correspond to one-hot vectors.
 Similarly, for $\lambda \rightarrow 0$ the first term dominates and we obtain the solution that best matches the natural constraints,
 which is naturally $M$ itself. By choosing $\lambda$ well,
-we can trace the Pareto frontier between the two types of constraints,
-and identify a value that minimises the original problem \eqref{eq:opt_naive}.
-
+we identify a value that minimises the original problem \eqref{eq:opt_naive}.
+\cascomment{add lagrange  multipliers explanation}
 To obtain a final hard assignment $\Gamma,$ we first solve \eqref{eq:objective} to obtain the optimal $Y$, compute the
 associated probability vector $P = [\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}$. Then, for each identifier $x_v,$
 we select the element of the
@@ -1044,12 +1032,11 @@ of a system based on optimising objective (\ref{eq:objective}).
 % If lambda is big enough, the gap in the logical constraints is bigger
 % than the gap in the natural constraints, so the overall optimum will satisfy the logical constraints
 
-\section{\projectname: Predict TypeScript Type Signatures for JavaScript Libraries}
+\section{\projectname: Predict Types for TypeScript}
 \label{sec:prodts}
 To evaluate our approach in a real-world scenario, we
 implement an end-to-end application, called \projectname, which aims
-to infer TypeScript declaration files
-for an underlying JavaScript library.
+to infer types for untyped TypeScript files.
 
 \subsection{Background: TypeScript's Type System}~\label{ssec:intro-typescript}
 
@@ -1073,28 +1060,28 @@ TypeScript's type system defaults to assigning its \texttt{any} type to
 unannotated identifiers, like parameters.  Function returns are an exception;
 here, TypeScript does seek to infer a more specific type.
 
-TypeScript applications and libraries commonly take advantage of JavaScript's flourishing ecosystem
-and use untyped JavaScript libraries.
-To support static type checking of such applications,
-the types of such JavaScript libraries' APIs are expressed
-as separate TypeScript~\emph{declaration files} (\lstinline{.d.ts}).
-The TypeScript community actively supports this process by manually writing and maintaining
-declaration files, available in the 
-DefinitelyTyped~\citep{definitelytyped} repository.
-Although this manual approach has proven
-useful, it raises the challenge of keeping declaration files
-in sync with the library implementations.
+% TypeScript applications and libraries commonly take advantage of JavaScript's flourishing ecosystem
+% and use untyped JavaScript libraries.
+% To support static type checking of such applications,
+% the types of such JavaScript libraries' APIs are expressed
+% as separate TypeScript~\emph{declaration files} (\lstinline{.d.ts}).
+% The TypeScript community actively supports this process by manually writing and maintaining
+% declaration files, available in the 
+% DefinitelyTyped~\citep{definitelytyped} repository.
+% Although this manual approach has proven
+% useful, it raises the challenge of keeping declaration files
+% in sync with the library implementations.
 
-Ideally, we would like to automatically infer the typed APIs of such libraries.
-For generating definition files for existing JavaScript libraries,
-the DefinitelyTyped
-community officially recommends \textit{dts-gen}~\citep{dtsgen}.
-This tool uses runtime information to produce a \lstinline{.d.ts} file that
-hepls to define the shape of the input API but does not provide type information for
-function arguments and returns. Because \textit{dts-gen} only collects
-dynamic information it eventually emits many \texttt{any} types that the developer must refine manually.
-It is only meant to be used as a starting
-point for writing a high-quality declaration file.
+% Ideally, we would like to automatically infer the typed APIs of such libraries.
+% For generating definition files for existing JavaScript libraries,
+% the DefinitelyTyped
+% community officially recommends \textit{dts-gen}~\citep{dtsgen}.
+% This tool uses runtime information to produce a \lstinline{.d.ts} file that
+% hepls to define the shape of the input API but does not provide type information for
+% function arguments and returns. Because \textit{dts-gen} only collects
+% dynamic information it eventually emits many \texttt{any} types that the developer must refine manually.
+% It is only meant to be used as a starting
+% point for writing a high-quality declaration file.
 
 
 \subsection{Problem Statement}\label{ssec:problem}
@@ -1155,13 +1142,9 @@ two consecutive subproblems:
 \end{itemize}
 
 \paragraph{Input:}
-Our implementation takes as input three files:
+Our implementation takes as input two files:
 \begin{enumerate}
-	\item A JavaScript library file.
-	\item The output of the \textit{Structure} subproblem.
-	      We obtain this file from \textit{dts-gen}~\cite{dtsgen}.
-	      %This file comes from a third party tool and thus
-	      %why we use as an input in the formal problem statement, in the actual
+	\item A TypeScript untyped file.
 	\item TypeScript's default library declaration file,
 	      that is, the built-in types defined by the standard library.\footnote{\url{https://github.com/Microsoft/TypeScript/blob/master/lib/lib.d.ts}}
 \end{enumerate}
@@ -1169,27 +1152,17 @@ Our implementation takes as input three files:
 An example input, showing all three files,
 is shown in \cref{fig:declarations-b64a}.
 %
-\paragraph{Output:} A TypeScript declaration file for the
-JavaScript library, that we call it \textit{predicted.d.ts} and
+\paragraph{Output:} A TypeScript type-annotated file for the
+JavaScript library, that 
 includes type predictions for
 \begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
 	\item the return type of the function, denoted as \emph{fnRet}, and
 	\item type annotations for the function's arguments, denoted as \emph{param}.
 \end{itemize}
-%
-The output of our tool is essentially the declaration file from the \textit{Structure} subproblem
-but with some, or, ideally all, of the \texttt{any} types substituted with built-in types, but not including user-defined ones.
-%
-% Let the \textit{Type} subproblem be the process of predicting types
-% to fill the holes left in the declaration files
-% following the \textit{Structure}.
-In \cref{sec:eval}, we present metrics on the performance of tools, including \projectname, on the \textit{Type} subproblem,
-given skeleton definition files produced by the \textit{Structure} subproblem. 
-% The \textit{Structure} subproblem is not a simple syntactic process as a JavaScript module can export functions by arbitrary execution of code, to obtain full accuracy we would need to execute the code rather than simply parse it.
-% In other words, our main focus is to apply our probabilistic
-% type inference of the types in the \textit{Structure} subproblem to meliorate the \textit{Type}
-% process.
-% For detailed metrics and evaluation see \cref{sec:eval}.  // trimmed
+
+% In \cref{sec:eval}, we present metrics on the performance of tools, including \projectname, on the \textit{Type} subproblem,
+% given skeleton definition files produced by the \textit{Structure} subproblem. 
+
 
 \begin{table*}[t]
 	\centering
@@ -1401,6 +1374,7 @@ Our dataset was randomly split by project into 80\% training data,
 Splitting the available data in these three different sets is a common practice in machine learning
 to ensure that the learning model does not simply memorise the training data
 but is able to generalise to unseen inputs. 
+\ivpcomment{change figure}
 \begin{figure*}[!t]
     \centering
     \def\svgwidth{\linewidth}
@@ -1458,14 +1432,15 @@ The metrics presented next can easily be extended to evaluate to those exported
 entities we currently exclude.
 The following definitions formalise these metrics.
 
-\paragraph{Experimental Setup}
+% \paragraph{Experimental Setup}
 
-All experiments are conducted on an NVIDIA Titan Xp with 12GB VRam,
-in combination with a 2-core Intel Core i5 CPU with 8GB of RAM.
-Our resulting model requires about 400MB of RAM to be loaded into memory and can be run on both a GPU and CPU.
-It computes type annotations on average for 58 files in about 60 seconds
-for solving logical constraints and natural constraints, and in about 65 seconds for the combined optimisation.
-\subsection{Precision and Recall for Declaration Files}
+% All experiments are conducted on an NVIDIA Titan Xp with 12GB VRam,
+% in combination with a 2-core Intel Core i5 CPU with 8GB of RAM.
+% Our resulting model requires about 400MB of RAM to be loaded into memory and can be run on both a GPU and CPU.
+% It computes type annotations on average for 58 files in about 60 seconds
+% for solving logical constraints and natural constraints, and in about 65 seconds for the combined optimisation.
+
+\subsection{Multiclass Accuracy}
 
 \begin{definition}[\emph{Paths}]
 	Let a \emph{path} be either a \emph{structural path}, or a \emph{type path}.
@@ -1477,17 +1452,14 @@ for solving logical constraints and natural constraints, and in about 65 seconds
 	Let the variable~$\mathcal{X}$ range over sets of paths.
 \end{definition}
 
-Let~$\mathcal{S}$ be the set of all structural paths,
-which is partitioned into the following subsets
-\begin{itemize}[label={\tiny$\bullet$}]
-	\item function identifiers $\mathcal{S}_\text{fnRet}$
-	      %\item method identifiers $S_{meth}$
-	\item function  parameters $\mathcal{S}_\text{param}$
-	\item either function or parameter identifiers $\mathcal{S}_\text{total} = \mathcal{S}_\text{fnRet} \cup \mathcal{S}_\text{param}$.
-	      %  \item variables $S_{var}$
-	      %   \item properties $S_{prop}$
-	      %    \item interfaces $S_{inter}$ \ivp{should we include that only for structure, what about its 'type'?}
-\end{itemize}
+% Let~$\mathcal{S}$ be the set of all structural paths,
+% which is partitioned into the following subsets
+% \begin{itemize}[label={\tiny$\bullet$}]
+% 	\item function identifiers $\mathcal{S}_\text{fnRet}$
+% 	      %\item method identifiers $S_{meth}$
+% 	\item function  parameters $\mathcal{S}_\text{param}$
+% 	\item either function or parameter identifiers $\mathcal{S}_\text{total} = \mathcal{S}_\text{fnRet} \cup \mathcal{S}_\text{param}$.
+% \end{itemize}
 
 Let~$\mathcal{T}$ be the set of all type paths,
 which is partitioned into the following subsets
@@ -1505,9 +1477,9 @@ while for the gold standard file we use the term \emph{gold.d.ts}.
 
 \begin{definition}[Functions \textit{Paths} and \textit{Filter$_\mathcal{X}$}]
 	To capture the contents of a file, we define the
-	function~$\textit{Paths(*.d.ts)}$, which takes as an input a
-	TypeScript declaration file and returns a set of paths
-	to represent the structure and types of the file.
+	function~$\textit{Paths(*.ts)}$, which takes as an input a
+	TypeScript file and returns a set of paths
+	to represent the types of the file.
 	%fully qualified names to all of its available entities defined in the file,
 	%along with a set of tuples of (fully qualified name, type)
 	%to capture the link from a name to a type.
@@ -1518,35 +1490,35 @@ while for the gold standard file we use the term \emph{gold.d.ts}.
 	filter the output of the~$Paths$ function to keep only the paths in the set~$\mathcal{X}$,
 	that is,~$Filter_\mathcal{X}(\mathcal{Y}) =  \mathcal{X} \cap \mathcal{Y}$.
 \end{definition}
-As we are interested in evaluating both \textit{Structure}
-and \textit{Type}---the core elements of our pipeline as analysed in \cref{sec:prodts}---and
-not only the final output, we measure the precision and recall for both stages independently.
+% As we are interested in evaluating both \textit{Structure}
+% and \textit{Type}---the core elements of our pipeline as analysed in \cref{sec:prodts}---and
+% not only the final output, we measure the precision and recall for both stages independently.
 
-Precision for \textit{Structure} measures the proportion of entities found in \textit{predicted.d.ts}
-that are also included in \textit{gold.d.ts}.
-%
-For example, if we get an $80\%$ \textit{Structure} precision that means
-that, on average, out of the $10$ entities that we found, $8$ exist in \textit{gold.d.ts}, while $2$ do not.
-%
-Recall for \textit{Structure} measures the proportion of entities that exist in \textit{gold.d.ts}
-that we found in \textit{predicted.d.ts}.
-%
-For example, if we compute a $70\%$ \textit{Structure} recall
-that means that, on average, out of $10$ entities in \textit{gold.d.ts},
-we successfully identified $7$ of them, while $3$ were not recognised.
+% Precision for \textit{Structure} measures the proportion of entities found in \textit{predicted.d.ts}
+% that are also included in \textit{gold.d.ts}.
+% %
+% For example, if we get an $80\%$ \textit{Structure} precision that means
+% that, on average, out of the $10$ entities that we found, $8$ exist in \textit{gold.d.ts}, while $2$ do not.
+% %
+% Recall for \textit{Structure} measures the proportion of entities that exist in \textit{gold.d.ts}
+% that we found in \textit{predicted.d.ts}.
+% %
+% For example, if we compute a $70\%$ \textit{Structure} recall
+% that means that, on average, out of $10$ entities in \textit{gold.d.ts},
+% we successfully identified $7$ of them, while $3$ were not recognised.
 
-For measuring \textit{Type}, we exclude all entities that we found in \textit{predicted.d.ts}
-but not found in \textit{gold.d.ts} since we do not have a means to evaluate their validity.
+For measuring \textit{Type}, we exclude all entities that we found in \textit{predicted.ts}
+but not found in \textit{gold.ts} since we do not have a means to evaluate their validity.
 %
 Precision for \textit{Type} measures the proportion of correct types
-found in the corresponding \textit{predicted.d.ts} file
-with respect to the types defined in \textit{gold.d.ts}.
+found in the corresponding \textit{predicted.ts} file
+with respect to the types defined in \textit{gold.ts}.
 %
-For example, we interpret a $90\%$ \textit{Type} precision
-as finding on average $9$ correct types out of the $10$ predicted.
+% For example, we interpret a $90\%$ \textit{Type} precision
+% as finding on average $9$ correct types out of the $10$ predicted.
 %
 Recall for \textit{Type} measures the percentage of correct types
-found in \textit{gold.d.ts} with respect to the total number of types defined in \textit{gold.d.ts}.
+found in \textit{gold.ts} with respect to the total number of types defined in \textit{gold.ts}.
 %
 For example, we interpret a $60\%$ \textit{Type} recall
 as correctly predicting on average $6$ types out of the $10$ found in \textit{gold.d.ts}.
@@ -1566,22 +1538,22 @@ $\mathcal{S}_\text{fnRet}$ (function identifiers) to perform a finer analysis.
 	%
 	\begin{equation}
 		P(\mathcal{X}) =
-		\dfrac{\splitdfrac{|Filter_\mathcal{X}(Paths(predicted.d.ts)) \cap {}}{Filter_\mathcal{X}(Paths(gold.d.ts)) |}}{|Filter_\mathcal{X}(Paths(predicted.d.ts)) |}
+		\dfrac{\splitdfrac{|Filter_\mathcal{X}(Paths(predicted.ts)) \cap {}}{Filter_\mathcal{X}(Paths(gold.ts)) |}}{|Filter_\mathcal{X}(Paths(predicted.ts)) |}
 	\end{equation}
 
 	\begin{equation}
 		R(\mathcal{X}) =
-		\dfrac{\splitdfrac{|Filter_\mathcal{X}(Paths(predicted.d.ts)) \cap {}} {Filter_\mathcal{X}(Paths(gold.d.ts)) |}}
-		{|Filter_\mathcal{X}(Paths(gold.d.ts))|}.
+		\dfrac{\splitdfrac{|Filter_\mathcal{X}(Paths(predicted.ts)) \cap {}} {Filter_\mathcal{X}(Paths(gold.ts)) |}}
+		{|Filter_\mathcal{X}(Paths(gold.ts))|}.
 	\end{equation}
 \end{definition}
 %
 The maximum precision and recall that we can obtain is equal to $1$.
 %
-For \textit{Structure}, the larger the precision the more relevant entities are returned than irrelevant ones,
-while the larger the recall the more existing entities are discovered.
+% For \textit{Structure}, the larger the precision the more relevant entities are returned than irrelevant ones,
+% while the larger the recall the more existing entities are discovered.
 %
-Similarly, for \textit{Type}, the larger the precision the more precise are the identified types,
+For \textit{Type}, the larger the precision the more precise are the identified types,
 while the larger the recall the more existing types are discovered.
 
 Our contributions presented in \cref{sec:framework,sec:prodts} concern the second subproblem of the workflow,
@@ -1589,48 +1561,28 @@ that is, the type prediction phase.
 %
 Here, we describe an integrated, end-to-end approach so we focus on presenting a holistic evaluation of the problem.
 %
-Thus, we also present results from the first subproblem,
-although our method does not contribute to its improvement.
-%
-% For the same reason, we start by presenting the results related to the \textit{Type} subproblem.
+% Thus, we also present results from the first subproblem,
+% although our method does not contribute to its improvement.
 
-\subsection{Comparison for \textit{Structure} Subproblem}\label{ssec:structure_comparison}
-% There are currently two 
-% As defined before given a declaration file, the corresponding
-% $Structure$ file is the outcome of replacing each type with the most general type \texttt{any}.
-% We define as the structure of a declaration file another file which contains
-% merely the shape of a particular module while every type is being annotated as
+% \subsection{Comparison for \textit{Structure} Subproblem}\label{ssec:structure_comparison}
 
-% \begin{table*}[t]
-% 	\centering
-% 	\caption{Aggregate \textit{Structure} precision and recall across all modules.
-% 		Our type universe consists of $78$ types, while we use 48 JavaScript libraries as input with 2012 identifiers in total.} \label{tab:structprec}
-% 	\begin{tabular}{ccccccc}
-% 		\toprule                                                                                                                                              \\
-% 		Tool              & $P(S_\text{fnRet})$ & $R(S_\text{fnRet})$ & $P(S_\text{param})$ & $R(S_\text{param})$ & $P(S_\text{total})$ & $R(S_\text{total})$ \\
-% 		\midrule                                                                                                                                              \\
-% 		\textit{declFlag} & 0.09                & 0.11                & 0.08                & 0.11                & 0.08                & 0.11                \\
-% 		\textit{\textit{dts-gen}}  & 0.88                & 0.84                & 0.83                & 0.79                & 0.83                & 0.79                \\
-% 		\bottomrule
-% 	\end{tabular}
-% \end{table*}
-For tackling the first subproblem, that is predict the structure of a declaration file for JavaScript library, we compare two tools that can output a structure file: \textit{declFlag} and \textit{dts-gen}.
-We summarise each tool as follows
-\begin{itemize}[label={\tiny$\bullet$}]
-	\item \textit{declFlag}: The TypeScript compiler, when called with the flag
-	      \texttt{--declaration}, statically generates some exported definitions.
-	\item \textit{dts-gen}: A tool that dynamically examines JavaScript objects at
-	      runtime to generate exported definitions.
-	      % \item \texttt{prodts-gen}: Our tool which implements a more sophisticated static analysis.
-\end{itemize}
-% \cref{tab:structprec} shows the results of the comparison.
-For a type universe consists of $78$ types, and 48 JavaScript libraries as input with 2012 identifiers in total, the aggregate \textit{Structure} precision and recall across all modules are~$P(\mathcal{S}_\text{total}) = 0.08$,
-$R(\mathcal{S}_\text{total}) = 0.11$ for \textit{declFlag},~$P(\mathcal{S}_\text{total}) = 0.8$,
-$R(\mathcal{S}_\text{total}) = 0.79$ for \textit{dts-gen} respectively.
-Clearly \textit{dts-gen} outperforms \textit{declFlag} across all tasks.
-As a result, we used the output of \textit{dts-gen} as input in our type prediction subproblem. 
+% For tackling the first subproblem, that is predict the structure of a declaration file for JavaScript library, we compare two tools that can output a structure file: \textit{declFlag} and \textit{dts-gen}.
+% We summarise each tool as follows
+% \begin{itemize}[label={\tiny$\bullet$}]
+% 	\item \textit{declFlag}: The TypeScript compiler, when called with the flag
+% 	      \texttt{--declaration}, statically generates some exported definitions.
+% 	\item \textit{dts-gen}: A tool that dynamically examines JavaScript objects at
+% 	      runtime to generate exported definitions.
+% \end{itemize}
+% % \cref{tab:structprec} shows the results of the comparison.
+% For a type universe consists of $78$ types, and 48 JavaScript libraries as input with 2012 identifiers in total, the aggregate \textit{Structure} precision and recall across all modules are~$P(\mathcal{S}_\text{total}) = 0.08$,
+% $R(\mathcal{S}_\text{total}) = 0.11$ for \textit{declFlag},~$P(\mathcal{S}_\text{total}) = 0.8$,
+% $R(\mathcal{S}_\text{total}) = 0.79$ for \textit{dts-gen} respectively.
+% Clearly \textit{dts-gen} outperforms \textit{declFlag} across all tasks.
+% As a result, we used the output of \textit{dts-gen} as input in our type prediction subproblem. 
 
-The \textit{Structure} subproblem itself it is not enterly being solved.  As a JavaScript module can export functions by arbitrary execution of code, a simple syntactic process it is not adequate. To obtain full accuracy we would need to execute the code rather than simply parse it, as \textit{dts-gen} does to an extend.
+% The \textit{Structure} subproblem itself it is not enterly being solved.  As a JavaScript module can export functions by arbitrary execution of code, a simple syntactic process it is not adequate. To obtain full accuracy we would need to execute the code rather than simply parse it, as \textit{dts-gen} does to an extend.
+
 \subsection{Evaluation of \textit{Type} Subproblem}
 For evaluating type predictions,
 we compare both the logical and the natural approach on their own,
@@ -1652,7 +1604,7 @@ We summarise below the characteristics of each package and the provided input.
 \end{itemize}
 Furthermore, we report separately in \cref{tab:typeprec1} the precision and recall for predicting the function return types (first and second column) and the types of the functions' parameters (third and fourth column).
 
-Since we consider $78$ types in total and the \textit{gold.d.ts} contains a larger number,
+Since we consider $78$ types in total and the \textit{gold.ts} contains a larger number,
 we first compute the maximum achievable precision and recall if only $78$ types can be predicted,
 even if all the type predictions were correct.
 The precision for the function return types is $0.61$ and the recall $0.59$,
@@ -1662,23 +1614,18 @@ The results presented in \cref{tab:typeprec1} are normalised based on these uppe
 
 \begin{table*}[t]
 	\centering
-	\caption{Aggregate \textit{Type} precision and recall for 58 JavaScript libraries with 1272 identifiers in total (610 $funRet$, 662 $param$).
-		We use the notation $P(\mathcal{T}^T_\text{fnRet})$ for $P(\mathcal{T}_\text{fnRet} \cap T)$, where $T$ is the number of types in our universe of types.}\label{tab:typeprec1}
+	\caption{Aggregate \textit{Type} accuracy for 9 TypeScript files with 107 identifiers in total (26 $funRet$, 78 $param$).}
+% 		We use the notation $P(\mathcal{T}^T_\text{fnRet})$ for $P(\mathcal{T}_\text{fnRet} \cap T)$, where $T$ is the number of types in our universe of types.}
+\label{tab:typeprec1}
 	\begin{tabular}{ccccccc}
 		\toprule
-		Tool                                  & $P(\mathcal{T}^T_\text{fnRet})$ & $R(\mathcal{T}^T_\text{fnRet})$ & $P(\mathcal{T}^T_\text{param})$ & $R(\mathcal{T}^T_\text{param})$ & $P(\mathcal{T}^T_\text{total})$ & $R(\mathcal{T}^T_\text{total})$ \\
+		Tool                                  & $Acc(\mathcal{T}_\text{fnRet})$ &  $Acc(\mathcal{T}_\text{param})$ &  $Acc(\mathcal{T}_\text{total})$ \\
 		\midrule
-		%   \textit{DeepTyper}\tiny{(78-types)}   & 0.20                   & 0.20                   & 0.50                  & 0.52  & 0.35                  & 0.36  \\
+		\textit{Logical}      & 0.46                                   & 0.23                                 & 0.29                                  \\
+		\textit{Natural}      & 0.27                                    & 0.60                                 & 0.52                                   \\
+		\textbf{\projectname}  & \textbf{0.62}         & \textbf{0.74}         & \textbf{0.71}
+		                                                                                                                                                     \\
 
-		%   % \multicolumn{7}{@{}c@{}}{\dashrule} \\
-		%     \textit{JSNice} \tiny{(6-types)}      & 0.15                   & 0.15                   & 0.78                 & 0.80  & 0.47                & 0.48\\
-		%     \textit{JSNice} \tiny{(78-types)}  & 0.12                   & 0.12                   & 0.62                  & 0.64 & 0.37                  & 0.38 \\
-		%  \multicolumn{7}{@{}c@{}}{\dashrule} \\
-		\textit{Logical} \tiny{($T=78$)}      & 0.42                  & 0.41                  & 0.15                  & 0.15                  & 0.29                  & 0.28                  \\
-		\textit{Natural} \tiny{($T=78$)}      & 0.48                  & 0.48                  & 0.61                  & 0.56                  & 0.55                  & 0.52                  \\
-		\textbf{\projectname} \tiny{($T=78$)} & \textbf{0.61}         & \textbf{0.59}         & \textbf{0.63}         & \textbf{0.58}
-		                                      & \textbf{0.62}         & \textbf{0.58}                                                                                                         \\
-		% limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
 		\bottomrule
 	\end{tabular}
 \end{table*}
@@ -1696,9 +1643,9 @@ but we leave this to future work.
 Furthermore, we observe for all tools that the precision and recall for both tasks are close.
 By comparing these two metrics in \cref{def:precision_recall},
 their similarity can be traced to the similarity of their denominators.
-As we discuss in \cref{ssec:structure_comparison},
-the \textit{Structure} subproblem can identify the majority (over $80\%$) of the function signatures;
-hence, the denominators are close and subsequently so are the precision and recall.
+% As we discuss in \cref{ssec:structure_comparison},
+% the \textit{Structure} subproblem can identify the majority (over $80\%$) of the function signatures;
+% hence, the denominators are close and subsequently so are the precision and recall.
 
 Finally, for \projectname we find that the combination of the output of the \textit{Logical}
 and the \textit{Natural} tool improves our precision and recall for both tasks.
@@ -1708,67 +1655,65 @@ and the \textit{Natural} tool improves our precision and recall for both tasks.
 Overall, the combination of the logical and natural constraints in \projectname
 greatly improves our type inference capabilities.
 
-\subsection{\projectname at the \textit{Type} Subproblem}
+\subsection{Comparison with LambdaNet and DeepTyper}
 \label{ssec:typesubproblem}
 
 To evaluate \projectname we compare against two state-of-the-art tools that utilise machine learning techniques,
 both aiming to give type suggestions to the programmer.
-Neither tool was designed explicitly for predicting TypeScript declaration files,
+Neither tool was designed explicitly for predicting types for TypeScript,
 so we made the necessary adjustments to meet the requirements of our setting.
-For all of our evaluations we have used the same Structure file, that is, the one produced by \textit{dts-gen}.
 The two tools that we compare against are
 \begin{itemize}[label={\tiny$\bullet$}]
-    \item TSINFER~\cite{tstools2017}: A tool
-     based on a combination of a static and dynamic analysis that uses a recorded snapshot of a concretely initialised library to 
-     generate TypeScript declaration files from JavaScript libraries.
+    % \item TSINFER~\cite{tstools2017}: A tool
+    %  based on a combination of a static and dynamic analysis that uses a recorded snapshot of a concretely initialised library to 
+    %  generate TypeScript declaration files from JavaScript libraries.
+    \item LambdaNet~\cite{wei20}: A tool based on graph neural networks which combines logical and contextual edges
+	 to predict types for TypeScript files.
 	\item DeepTyper~\cite{hellendoorn18}: A tool based on deep learning which learns types for every identifier.
 	      The network is trained using previously annotated TypeScript code.
-	\item JSNice~\cite{raychev15}: A tool based on probabilistic graphical models which analyzes relationships
-	      between program elements to infer types for JavaScript files.
 \end{itemize}
 
 % We have tried specifically to address any unfair comparison.
 Since DeepTyper has a vocabulary of 11000 types, we measure the results on our set of 78 types
 and give every other type we encounter \textit{OutOfVoc}, so that it does not contribute to the final result.
-JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on \cref{tab:typeprec2}, for $T=6$,
-which is a set of types appearing both in the JSNice implementation and ours.
-% The JSNice paper does not list the full set of types that are used (Fig.4 of the paper is illustrative and incomplete), nor does the corresponding Ph.D. thesis and code for the version of JSNice that does the type inference is not available.  Thus, we had to decide a specific number to work with. In practice, the set of types predicted by the public prototype seems to be small (cf. DeepTyper 4.3). Therefore, as we do not know the other object types Fig.4 of JSNice refers to, we have used the 5 specific types showed in the figure plus the general Object type, which we confirmed JSNice can predict. The comparison is fair because both tools have been trained on data that include these 6 types. It is true that JSNice does not predict return types but DeepTyper does; we do not view this as unfairness in the evaluation but an advantage of our method.
-The results for the types of the parameters are almost identical to the ones of the original JSNice paper.
 \cref{tab:typeprec2} summarises the results of our comparisons.
 
 The \emph{relative error reduction} is a standard way to express performance improvement in machine learning.
-In our case, it is how many fewer errors ProdTS makes as a proportion of the errors that JSNice makes.
+In our case, it is how many fewer errors \projectname{} makes as a proportion of the errors that JSNice makes.
 The JSNice $T=78$ precision of 0.37 implies an error rate 0.63,
 whereas the \projectname{} $T=78$ precision of 0.68 implies an error rate 0.32.
 So the relative reduction in error is $(0.63-0.32) / 0.63 = 49.2\%$.
 
 \begin{table*}[t]
 	\centering
-	\caption{Aggregate \textit{Type} precision and recall across all evaluated modules for DeepTyper and JSNice; as input we use 41 JavaScript libraries with 860 identifiers in total (270 funRet, 590 param).
-		The superscript $T$ has the same meaning as in \cref{tab:typeprec1}, where $T = 6$ consists of the six types predicted by JSNice.
-		Boldface indicates the best results of the full set of $T=78$ types.}\label{tab:typeprec2}
+	\caption{Aggregate \textit{Type} precision and recall across all evaluated modules for JSNice, DeepTyper and LambdaNet ; as input we use 7 TypeScript files with 107 identifiers in total (26 funRet, 78 param).}
+% 		The superscript $T$ has the same meaning as in \cref{tab:typeprec1}, where $T = 6$ consists of the six types predicted by JSNice.
+% 		Boldface indicates the best results of the full set of $T=78$ types.}
+		\label{tab:typeprec2}
 	\begin{tabular}{ccccccc}
 		\toprule
-		Tool                                  & $P(\mathcal{T}^T_\text{fnRet})$ & $R(\mathcal{T}^T_\text{fnRet})$ & $P(\mathcal{T}^T_\text{param})$ & $R(\mathcal{T}^T_\text{param})$ & $P(\mathcal{T}^T_\text{total})$ & $R(\mathcal{T}^T_\text{total})$ \\
+		Tool   &                              $Acc(\mathcal{T}_\text{total})$ \\
 		\midrule
-		TSINFER\tiny{($T=78$)}              & 0.14                  & 0.19                  & 0.01                  & 0.00                  & 0.08                  & 0.01                  \\
-		DeepTyper\tiny{($T=78$)}              & 0.20                  & 0.20                  & 0.50                  & 0.52                  & 0.35                  & 0.36                  \\
-
-		JSNice \tiny{($T=6$)}                 & 0.15                  & 0.15                  & 0.78                  & 0.80                  & 0.47                  & 0.48                  \\
-		JSNice \tiny{($T=78$)}                & 0.12                  & 0.12                  & 0.62                  & 0.64                  & 0.37                  & 0.38                  \\
-		% limGold     & 0.80                   & 0.80                   & 0.86                  & 0.86  \\
-		\textbf{\projectname} \tiny{($T=78$)} & \textbf{0.68}         & \textbf{0.68}         & \textbf{0.67}         & \textbf{0.67}
-		                                      & \textbf{0.68}         & \textbf{0.68}                                                                                                         \\
+		JSNice     & 0.45\\
+		DeepTyper  & 0.60 \\
+		LambdaNet  & 0.72 \\
+		\projectname & 0.71\\
 		\bottomrule
 	\end{tabular}
 \end{table*}
 
-\paragraph{Comparison with TSINFER}
-%Like \textit{dts-gen}, they are good at capturing the structure of the definition file,
-TSINFER addresses the same problem as we do but without
-using any form of learning. TSINFER uses
-a dynamic analysis to construct the interface that
-a type implements and often gives fresh type annotations, like \lstinline{interface_1342}, that lack meaning. As our evaluation is based on a nominal view for typings, TSINFER performs poorely under our evaluation.
+% \paragraph{Comparison with TSINFER}
+% TSINFER addresses the same problem as we do but without
+% using any form of learning. TSINFER uses
+% a dynamic analysis to construct the interface that
+% a type implements and often gives fresh type annotations, like \lstinline{interface_1342}, that lack meaning. As our evaluation is based on a nominal view for typings, TSINFER performs poorely under our evaluation.
+\paragraph{Comparison with LambdaNet}
+\ivpcomment{Charles, could you help us write this better?}
+\citet{wei20} propose a different approach to probabilistic type inference for TypeScript. LambdaNet is 
+based on graph neural networks~\citep{allamanis17a}, which learn type dependency graphs extracted by static 
+code analysis on the training data. Their type dependency graph has edges that are either logical or contextual, corresponding to what we call logical or natural constraints.
+While, they are also able to predict user-defined types using open vocabulary techniques. However, the problem they
+are targeting is different than ours, as they do not consider the problem of generating TypeScript signature files from a JavaScript file, but instead predict types for native unannotated TypeScript.
 
 \paragraph{Comparison with DeepTyper}
 DeepTyper is a deep learning framework that outputs a type vector for every identifier
@@ -1804,10 +1749,17 @@ in its spelling (\cref{ssec:natprodts}).  Second, \projectname's logical constra
 a wider, lexically independent, prediction context that notably captures
 function returns.
 
-\paragraph{Comparison with JSNice}
 
-JSNice is a tool that learns statistical correlations between program elements
-by exploiting their relationship for a certain depth. %in their implementation it is 3
+\paragraph{Comparison with JSNice}
+% JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on \cref{tab:typeprec2}, for $T=6$,
+% which is a set of types appearing both in the JSNice implementation and ours.
+ JSNice~\cite{raychev15} is a tool based on probabilistic graphical models which analyses relationships
+	      between program elements to infer types for JavaScript files.
+
+% JSNice is a tool that learns statistical correlations between program elements
+% by exploiting their relationship for a certain depth.
+%in their implementation it is 3
+
 Its purpose is for type inference (and other tasks) on JavaScript
 using statistics from dependency graphs learned on a large corpus.
 The evaluation on our data had to be performed manually because JSNice is only available via a website interface.
@@ -1822,9 +1774,11 @@ results over the 6 primitive types it targets; while, for the second, we report
 its results on \projectname's set of $T=78$.  The first task advantages JSNice;
 the second advantages \projectname.  On predicting parameter type in the first
 task, JSNice outperforms \projectname, as \cref{tab:typeprec2} shows. 
-% This may be because of the property that we
-% discussed already regarding the use of a small size vocabularies. \ivp{I don't
-% understand this sentence/observation.}
+
+
+% The JSNice paper does not list the full set of types that are used (Fig.4 of the paper is illustrative and incomplete), nor does the corresponding Ph.D. thesis and code for the version of JSNice that does the type inference is not available.  Thus, we had to decide a specific number to work with. In practice, the set of types predicted by the public prototype seems to be small (cf. DeepTyper 4.3). Therefore, as we do not know the other object types Fig.4 of JSNice refers to, we have used the 5 specific types showed in the figure plus the general Object type, which we confirmed JSNice can predict. The comparison is fair because both tools have been trained on data that include these 6 types. It is true that JSNice does not predict return types but DeepTyper does; we do not view this as unfairness in the evaluation but an advantage of our method.
+
+% The results for the types of the parameters are almost identical to the ones of the original JSNice paper.
 
 Otherwise, \projectname outperforms JSNice.  We conjecture that this is due
 to the same two reasons we believe \projectname outperforms DeepTyper:
@@ -1833,15 +1787,8 @@ variations in their names and its use of a more expansive context due to its
 logical constraints, as opposed to JSNice depth 3 traversal of program element
 relations.
 
-NL2Type, a tool by~\cite{malik19}, also uses
-a deep learning approach to the problem, and  relies on JSDoc comments as
-an additional type hint.
 %
-We could not compare directly to NL2Type because
-there are few examples with both JSDoc and available declaration
-files in the DefinitelyTyped repository.
-%
-Finally, it would be fairly simple to extend our method to include natural constraints generated by DeepTyper, NL2Type or
+Finally, it would be fairly simple to extend our method to include natural constraints generated by LambdaNet, JSNice or 
 indeed any other deep learning approach that offers similar information.
 For example, we could simply add more terms to the combined objective function,
 including an extra term for every additional source of natural constraints.
@@ -1884,24 +1831,6 @@ including an extra term for every additional source of natural constraints.
 % Do a histogram of the 78 types - if there's an inflection point, 
 % we could use that to choose how to do the breakdown of types
 % }
-
-% \subsection{Experimental Dataset}
-
-% \begin{table*}[!ht]
-%   \centering
-%   \begin{tabular}{ccccc}
-%   \toprule \\
-%   Stage & Lib & Function Ids & Function Parameters & Sites Total\\ 
-%   \midrule \\
-%     %Structure Prediction & 46 & 661 & 1749  \\
-%     Type Prediction & 48 & 867  & 1145 & 2012  \\
-%     \bottomrule
-%   \end{tabular}
-%   \caption{Number of sites for the whole dataset}
-%   \label{libs}
-% \end{table*}
-% \adgcomment{Include also the SLoc counts}
-
 
 \section{Related Work}~\label{sec:related}
 
@@ -2052,13 +1981,15 @@ DeepTyper~\citep{hellendoorn18}.
 Indeed, they serve as baselines in our evaluation, where we discuss them in
 detail (\autoref{ssec:typesubproblem}).
 
+NL2Type, a tool by~\cite{malik19}, also uses
+a deep learning approach to the problem, and  relies on JSDoc comments as
+an additional type hint.
+%
+% We could not compare directly to NL2Type because
+% there are few examples with both JSDoc and manual types available.
+
 % need to say They combine logical and natural constraints at training time, whereas \projectname combines logical and natural constraints at test time.
 
-\citet{wei20} propose a different approach to probabilistic type inference for TypeScript. LambdaNet is 
-based on graph neural networks~\citep{allamanis17a}, which learn type dependency graphs extracted by static 
-code analysis on the training data. Their type dependency graph has edges that are either logical or contextual, corresponding to what we call logical or natural constraints.
-While, they are also able to predict user-defined types using open vocabulary techniques. However, the problem they
-are targeting is different than ours, as they do not consider the problem of generating TypeScript signature files from a JavaScript file, but instead predict types for native unnotated TypeScript.
 %Like us, they do not guarantee that the solution will solve the hard constraints.
 
 %The closest related works to this end are 
@@ -2182,228 +2113,173 @@ while the LogSumExp function is defined as
 	\text{LogSumExp}(\bm{x}) = \log\left( \sum_i \exp\{x_i\} \right).
 \end{equation*}
 
-\section{Appendix: Formal Proofs}\label{app:proofs}
-\subsection{Proofs for Logical Constraints}
+% \section{Appendix: Formal Proofs}\label{app:proofs}
+% \subsection{Proofs for Logical Constraints}
 
 
-\begin{lemma} \label{lem:binary}
-    For all $E$ and $\Gamma$, $\qqpi{B(\Gamma)}{E} \in \{0,1\}$.
-\end{lemma}
-
-\begin{proof} %\label{cor:binary}
-    By structural induction on the continuous semantics.
-\end{proof}
-
-
-\begin{lemma}
-For all $E$, $E_1$, $E_2$, and $\Gamma$:
-\begin{enumerate}
-    \item $\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\qqpi{B(\Gamma)}{E} = 1)$
-    \item $\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1$
-    \item $\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} + \qqpi{B(\Gamma)}{E_2} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1$
-\end{enumerate}
-\end{lemma}
-\begin{proof}
-  These follow by cases analyses based on Lemma~\ref{lem:binary}.
-\end{proof}
-
-
-\begin{lemma} \label{lem:models}
-    For all $E$ and $\Gamma$, either $\Gamma \models E$ or $\Gamma \models{} \mathrel{not} E$.
-\end{lemma}
-
-\begin{proof}
-    By structural induction on the satisfaction relation.
-\end{proof}
-
-% \begin{cor}
-% As a corollary of Lemma 2.2, we can state that
-% $\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\Gamma \models{} E$. 
-% \end{cor}
-
-% Irene: explain why this theorem corresponds to the result in the book?
-
-
-\restate{Theorem~\ref{thm:soft2hard}} For all $E$ and $\Gamma$: $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E$.
-\begin{proof}The above theorem corresponds to a result in the book of ~\citet{hajek1998}.
-  We prove the property by \emph{structural induction}; that is,
-  we prove that $\phi(N)$ holds for all $N$, where $\phi(N)$ is as follows.
-        %\begin{quote}
-        \begin{equation*}
-            \phi(N) \triangleq
-                \forall E, \forall \Gamma :
-                size(E)=N \Rightarrow (\Gamma \models E \Leftrightarrow \qqpi{B(\Gamma)}{E} = 1).
-        \end{equation*}
-        %\end{quote}
-        
-  We proceed by course-of-values induction on $N$.
-  Consider any $E, \Gamma$ and $N = size(E)$. We proceed by a case analysis at $E$.
-  \begin{description}
-      \item[$Base\;Case$]
-                  For $N=1$, the base case is $E = (x_v \mathrel{is} l_\tau)$.
-                  For any $\Gamma$ we are to show
-                  \begin{equation*}
-                  \Gamma \models x_v \mathrel{is} l_\tau \Leftrightarrow{}\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1.
-                  \end{equation*}
-                  
-                  By definition, $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = p_{v,\tau}$
-                  where $p_{v,\tau}$ is the probability that variable $x_v$ has type $l_\tau$ according to the matrix $B(\Gamma)$. 
-                  By definition of $B(\Gamma)$ and because $B$ results to  a binary matrix,  
-                  $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1$
-                  means that the element $p_{v,\tau}$ is equal to $1$, that is 
-                  $\Gamma \models x_v \mathrel{is} l_\tau$.
-                  Also, $\Gamma \models x_v \mathrel{is} l_\tau$, implies that $\Gamma(x_v)=l_\tau$. By definition, that
-                  means  $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1$.
-      
-     \item[$Case \; E ={} \mathrel{not} E'$.]
-                  We are to show
-                  $\Gamma \models{} \mathrel{not} E' \Leftrightarrow \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1$.
-                  We have that,
-                  \begin{align*}
-%                       \Gamma \models{} \mathrel{not} E' \Leftrightarrow{} & \mathrel{not}  \Gamma \models{}  E'  \\
-                        \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1 & \Leftrightarrow{} &  \\
-                        1- \qqpi{B(\Gamma)}{E'} = 1 & \Leftrightarrow{} & \text{(Definition)}  \\
-                        \qqpi{B(\Gamma)}{E'} = 0 & \Leftrightarrow{} &  \\
-                        \mathrel{not} (\qqpi{B(\Gamma)}{E'} = 1) & \Leftrightarrow{} & \text{(Lemma~\ref{lem:binary})} \\
-                        \mathrel{not}  \Gamma \models{}  E'
-                        & \Leftrightarrow{} & \text{(Induction Hypothesis)} \\
-                         \Gamma \models{} \mathrel{not} E' & & \text{(Definition)}.
-                  \end{align*}
-          
-           \item[$Case \; E = (E_1 \mathrel{and} E_2)$.] 
-                   For $size(E_1)<N$ and $size(E_2) < N$, we are to show that
-                  $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
-                  \begin{align*}
-                      \Gamma \models (E_1 \mathrel{and} E_2)                            & \Leftrightarrow &  \\
-                      \Gamma \models E_1 \mathrel{and} \Gamma \models E_2               & \Leftrightarrow & \text{(Definition)}  \\
-                      \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 & \Leftrightarrow & \text{(Induction Hypothesis)}           \\
-                      \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1             & \Leftrightarrow &  \text{(Lemma~\ref{lem:binary})}           \\                 
-                      \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1                  &   &  \text{(Definition)}                                         \\
-                  \end{align*}
-                  which completes the proof for this case.
-
-            \item[$Case \; E = (E_1 \mathrel{or} E_2)$.]
-                  For $size(E_1) < N$ and $size(E_2) < N$, we are to show
-                  $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
-                  \begin{align*}
-                      \Gamma \models (E_1 \mathrel{or} E_2)                                                                     & \Leftrightarrow & \\
-                      \Gamma \models E_1 \mathrel{or} \Gamma \models E_2                                                        & \Leftrightarrow &\text{(Definition)} \\
-                      \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1                                          & \Leftrightarrow & \text{(Induction Hypothesis)}                                  \\
-                      (\qqpi{B(\Gamma)}{E_1} - 1) \cdot (1- \qqpi{B(\Gamma)}{E_2}) = 0                                          & \Leftrightarrow                                  \\
-                      \qqpi{B(\Gamma)}{E_1} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} + \qqpi{B(\Gamma)}{E_2} - 1 = 0 & \Leftrightarrow                         &\text{(Case Analysis \& Lemma~\ref{lem:binary})}         \\
-                      \qqpi{B(\Gamma)}{E_1 \mathrel{or} E_2} = 1                                                               &. 
-                  \end{align*}
-                  which completes the proof for this case.
-    \end{description}
-\end{proof}
-
-
-\begin{lemma}\label{lem:bounds}
-    For all $E$ and for all $P \in [0, 1]^{V \times T}$,  then $0 \leq \qqpi{P}{E} \leq 1$.
-\end{lemma}
-\begin{proof}
-    By structural induction on the expression $E$.
-\end{proof}
-
-
-% \begin{lemma} \label{thm:soft2hard_v2}
-%     For all $E$, and all type environments $\Gamma$,
-%     then if not $\Gamma \models E$, then
-%     $\qqpi{B(\Gamma)}{E} = 0$.
+% \begin{lemma} \label{lem:binary}
+%     For all $E$ and $\Gamma$, $\qqpi{B(\Gamma)}{E} \in \{0,1\}$.
 % \end{lemma}
 
-% \begin{proof}
-%     This is a corollary of Claim 2.1. If not $\Gamma \models E$,  then $\Gamma \models{} \mathrel{not} E$, by the logical satisfaction relation. Then, by Lemma~\ref{lem:binary},
-%     $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1$.
-%     By the definition of continuous semantics,
-%     $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1 - \qqpi{B(\Gamma)}{E}$.
+% \begin{proof} %\label{cor:binary}
+%     By structural induction on the continuous semantics.
 % \end{proof}
 
 
-\begin{lemma}\label{lem:positive}
-For all $E$,
-$$\max_{P \in \Pi^{V \times T}} \qqpi{P}{E} > 0.$$
-\end{lemma}
-%\cascomment{I am not assuming that $P = B(\Gamma)$ for some $\Gamma$.}
-\begin{proof}
-For all matrices $Q  \in \Pi^{V \times T}$, we have
-\begin{align}
-\textstyle \max_{P \in \Pi^{V \times T}} \qqpi{P}{E} > \qqpi{Q}{E}.
-\end{align}
-Choose $Q \in \Pi^{V \times T}$ such as $q_{v,t} = 1/T$ for all $v \in 1 \ldots V$ and $t \in 1 \ldots T$. We proceed by course-of-value induction on N.  Consider any $E, P$ and $N = size(E)$. The proof completes by course-of-values induction on $N$.
+% \begin{lemma}
+% For all $E$, $E_1$, $E_2$, and $\Gamma$:
+% \begin{enumerate}
+%     \item $\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\qqpi{B(\Gamma)}{E} = 1)$
+%     \item $\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1$
+%     \item $\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} + \qqpi{B(\Gamma)}{E_2} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1$
+% \end{enumerate}
+% \end{lemma}
+% \begin{proof}
+%   These follow by cases analyses based on Lemma~\ref{lem:binary}.
+% \end{proof}
 
-%  \begin{description}
+
+% \begin{lemma} \label{lem:models}
+%     For all $E$ and $\Gamma$, either $\Gamma \models E$ or $\Gamma \models{} \mathrel{not} E$.
+% \end{lemma}
+
+% \begin{proof}
+%     By structural induction on the satisfaction relation.
+% \end{proof}
+
+% % \begin{cor}
+% % As a corollary of Lemma 2.2, we can state that
+% % $\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\Gamma \models{} E$. 
+% % \end{cor}
+
+% % Irene: explain why this theorem corresponds to the result in the book?
+
+
+% \restate{Theorem~\ref{thm:soft2hard}} For all $E$ and $\Gamma$: $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E$.
+% \begin{proof}The above theorem corresponds to a result in the book of ~\citet{hajek1998}.
+%   We prove the property by \emph{structural induction}; that is,
+%   we prove that $\phi(N)$ holds for all $N$, where $\phi(N)$ is as follows.
+%         %\begin{quote}
+%         \begin{equation*}
+%             \phi(N) \triangleq
+%                 \forall E, \forall \Gamma :
+%                 size(E)=N \Rightarrow (\Gamma \models E \Leftrightarrow \qqpi{B(\Gamma)}{E} = 1).
+%         \end{equation*}
+%         %\end{quote}
+        
+%   We proceed by course-of-values induction on $N$.
+%   Consider any $E, \Gamma$ and $N = size(E)$. We proceed by a case analysis at $E$.
+%   \begin{description}
 %       \item[$Base\;Case$]
 %                   For $N=1$, the base case is $E = (x_v \mathrel{is} l_\tau)$.
-%                   For any $P$ we are to show
-%                   $\max_{P \in \Pi^{V \times T}} \qqpi{P}{x_v \mathrel{is} l_\tau} > 0$.
+%                   For any $\Gamma$ we are to show
+%                   \begin{equation*}
+%                   \Gamma \models x_v \mathrel{is} l_\tau \Leftrightarrow{}\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1.
+%                   \end{equation*}
                   
-%                   By assumption, $\qqpi{P}{x_v \mathrel{is} l_\tau} = q_{v,\tau} = 1/T > 0$.
+%                   By definition, $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = p_{v,\tau}$
+%                   where $p_{v,\tau}$ is the probability that variable $x_v$ has type $l_\tau$ according to the matrix $B(\Gamma)$. 
+%                   By definition of $B(\Gamma)$ and because $B$ results to  a binary matrix,  
+%                   $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1$
+%                   means that the element $p_{v,\tau}$ is equal to $1$, that is 
+%                   $\Gamma \models x_v \mathrel{is} l_\tau$.
+%                   Also, $\Gamma \models x_v \mathrel{is} l_\tau$, implies that $\Gamma(x_v)=l_\tau$. By definition, that
+%                   means  $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1$.
+      
 %      \item[$Case \; E ={} \mathrel{not} E'$.]
 %                   We are to show
-%                   $\max_{P \in \Pi^{V \times T}} \qqpi{P}{\mathrel{not} E'} > 0$.
-                   
-%                   By definition, we have that
-%                   $
-%                       \max_{P \in \Pi^{V \times T}} \qqpi{P}{\mathrel{not} E'} > 0  \Leftrightarrow{}  
-%                         \max_{P \in \Pi^{V \times T}} (1- \qqpi{P}{E'}) > 0 $.
-%                       % By the induction hypothesis
-%                       % we have that $\max_{P \in \Pi^{V \times T}} \qqpi{P}{E'} > 0$, 
-                       
-%                       By Lemma~\ref{lem:positive} we know that $ 0 \leq \qqpi{P}{E'} \leq 1$.          
-                     
+%                   $\Gamma \models{} \mathrel{not} E' \Leftrightarrow \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1$.
+%                   We have that,
+%                   \begin{align*}
+% %                       \Gamma \models{} \mathrel{not} E' \Leftrightarrow{} & \mathrel{not}  \Gamma \models{}  E'  \\
+%                         \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1 & \Leftrightarrow{} &  \\
+%                         1- \qqpi{B(\Gamma)}{E'} = 1 & \Leftrightarrow{} & \text{(Definition)}  \\
+%                         \qqpi{B(\Gamma)}{E'} = 0 & \Leftrightarrow{} &  \\
+%                         \mathrel{not} (\qqpi{B(\Gamma)}{E'} = 1) & \Leftrightarrow{} & \text{(Lemma~\ref{lem:binary})} \\
+%                         \mathrel{not}  \Gamma \models{}  E'
+%                         & \Leftrightarrow{} & \text{(Induction Hypothesis)} \\
+%                          \Gamma \models{} \mathrel{not} E' & & \text{(Definition)}.
+%                   \end{align*}
+          
 %           \item[$Case \; E = (E_1 \mathrel{and} E_2)$.] 
-%                   For $size(E_1)<N$ and $size(E_2) < N$, we are to show that~$
-%                   \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{and} E_2} > 0
-%                 $. Our induction hypothesis holds for all $M<N$. We have that
+%                   For $size(E_1)<N$ and $size(E_2) < N$, we are to show that
+%                   $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
 %                   \begin{align*}
-%                 \textstyle        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1} > 0 \mathrel{and}
-%                         \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_2} > 0   & \Rightarrow & 
-%                         \text{(Induction Hypothesis)} \\ 
-%                         max_{P \in \Pi^{V \times T}} (\qqpi{P}{E_1}\cdot\qqpi{P}{E_2}) > 0  
-%                       & \Leftrightarrow & \text{(Definition)}\\
-%                     \textstyle     \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{and} E_2} > 0.                          &  & 
+%                       \Gamma \models (E_1 \mathrel{and} E_2)                            & \Leftrightarrow &  \\
+%                       \Gamma \models E_1 \mathrel{and} \Gamma \models E_2               & \Leftrightarrow & \text{(Definition)}  \\
+%                       \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 & \Leftrightarrow & \text{(Induction Hypothesis)}           \\
+%                       \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1             & \Leftrightarrow &  \text{(Lemma~\ref{lem:binary})}           \\                 
+%                       \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1                  &   &  \text{(Definition)}                                         \\
 %                   \end{align*}
 %                   which completes the proof for this case.
 
-%             \item[$Case\;E = (E_1 \mathrel{or} E_2)$.]
-%               For $size(E_1)<N$ and $size(E_2) < N$, we are to show that~$
-%                   \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{or} E_2} > 0
-%                 $. Our induction hypothesis holds for all $M<N$. We have that
+%             \item[$Case \; E = (E_1 \mathrel{or} E_2)$.]
+%                   For $size(E_1) < N$ and $size(E_2) < N$, we are to show
+%                   $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
 %                   \begin{align*}
-%                 \textstyle        \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1} > 0 \mathrel{and}
-%                         \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_2} > 0   & \Rightarrow & 
-%                         \text{(Induction Hypothesis)} \\
-%                         max_{P \in \Pi^{V \times T}} (\qqpi{P}{E_1} + \qqpi{P}{E_2} -\qqpi{P}{E_1}\cdot\qqpi{P}{E_2}) > 0  
-%                       & \Leftrightarrow & \text{(Definition)}\\
-%                     \textstyle     \max_{P \in \Pi^{V \times T}} \qqpi{P}{E_1 \mathrel{or} E_2} > 0.                          &  & 
+%                       \Gamma \models (E_1 \mathrel{or} E_2)                                                                     & \Leftrightarrow & \\
+%                       \Gamma \models E_1 \mathrel{or} \Gamma \models E_2                                                        & \Leftrightarrow &\text{(Definition)} \\
+%                       \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1                                          & \Leftrightarrow & \text{(Induction Hypothesis)}                                  \\
+%                       (\qqpi{B(\Gamma)}{E_1} - 1) \cdot (1- \qqpi{B(\Gamma)}{E_2}) = 0                                          & \Leftrightarrow                                  \\
+%                       \qqpi{B(\Gamma)}{E_1} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} + \qqpi{B(\Gamma)}{E_2} - 1 = 0 & \Leftrightarrow                         &\text{(Case Analysis \& Lemma~\ref{lem:binary})}         \\
+%                       \qqpi{B(\Gamma)}{E_1 \mathrel{or} E_2} = 1                                                               &. 
 %                   \end{align*}
 %                   which completes the proof for this case.
-                
 %     \end{description}
-
-\end{proof}
-% A formula $E$ is a \emph{tautology} if and only if $\Gamma \models E$ for all $\Gamma$ such that $fv(E) \subseteq dom(\Gamma)$.
-
-% Statement of originality about this theorem.
-% We are unaware of a result to this effect being proved for other optimizations of logical properties.
+% \end{proof}
 
 
-\restate{Theorem~\ref{thm:argmax}} For all $\Gamma$ and all $E$,
-$\Gamma \models E$
-if and only if $B(\Gamma) \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
+% \begin{lemma}\label{lem:bounds}
+%     For all $E$ and for all $P \in [0, 1]^{V \times T}$,  then $0 \leq \qqpi{P}{E} \leq 1$.
+% \end{lemma}
+% \begin{proof}
+%     By structural induction on the expression $E$.
+% \end{proof}
 
-\begin{proof}
-Consider any $\Gamma$ and $E$.
-Either $\Gamma \models E$ or not.
 
-If $\Gamma \models E$ then the theorem follows as a simple consequence of Theorem~\ref{thm:soft2hard}.
+% % \begin{lemma} \label{thm:soft2hard_v2}
+% %     For all $E$, and all type environments $\Gamma$,
+% %     then if not $\Gamma \models E$, then
+% %     $\qqpi{B(\Gamma)}{E} = 0$.
+% % \end{lemma}
 
-Otherwise both sides of the biconditional are always false:
-$\Gamma \models E$ is false by assumption,
-and $B(\Gamma) \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$
-is false by Lemma~\ref{lem:positive}. (We can show that $\qqpi{B(\Gamma)}{E} = 0$ by considering that $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1$.) So the biconditional is trivially true.
-\end{proof}
+% % \begin{proof}
+% %     This is a corollary of Claim 2.1. If not $\Gamma \models E$,  then $\Gamma \models{} \mathrel{not} E$, by the logical satisfaction relation. Then, by Lemma~\ref{lem:binary},
+% %     $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1$.
+% %     By the definition of continuous semantics,
+% %     $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1 - \qqpi{B(\Gamma)}{E}$.
+% % \end{proof}
+
+
+% \begin{lemma}\label{lem:positive}
+% For all $E$,
+% $$\max_{P \in \Pi^{V \times T}} \qqpi{P}{E} > 0.$$
+% \end{lemma}
+% %\cascomment{I am not assuming that $P = B(\Gamma)$ for some $\Gamma$.}
+% \begin{proof}
+% For all matrices $Q  \in \Pi^{V \times T}$, we have
+% \begin{align}
+% \textstyle \max_{P \in \Pi^{V \times T}} \qqpi{P}{E} > \qqpi{Q}{E}.
+% \end{align}
+% Choose $Q \in \Pi^{V \times T}$ such as $q_{v,t} = 1/T$ for all $v \in 1 \ldots V$ and $t \in 1 \ldots T$. We proceed by course-of-value induction on N.  Consider any $E, P$ and $N = size(E)$. The proof completes by course-of-values induction on $N$.
+
+% \end{proof}
+
+% \restate{Theorem~\ref{thm:argmax}} For all $\Gamma$ and all $E$,
+% $\Gamma \models E$
+% if and only if $B(\Gamma) \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$.
+
+% \begin{proof}
+% Consider any $\Gamma$ and $E$.
+% Either $\Gamma \models E$ or not.
+
+% If $\Gamma \models E$ then the theorem follows as a simple consequence of Theorem~\ref{thm:soft2hard}.
+
+% Otherwise both sides of the biconditional are always false:
+% $\Gamma \models E$ is false by assumption,
+% and $B(\Gamma) \in \arg\max_{P \in \Pi^{V \times T}} \qqpi{P}{E}$
+% is false by Lemma~\ref{lem:positive}. (We can show that $\qqpi{B(\Gamma)}{E} = 0$ by considering that $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1$.) So the biconditional is trivially true.
+% \end{proof}
 
 
 \section{Appendix: Neural Model }\label{app:neural} 
@@ -2413,7 +2289,7 @@ In this appendix we present the implementation details of the deep neural  used 
   (embedding): Embedding(90, 128)
   (lstm): LSTM(128, 64)
   (hidden2out): Linear(in_features=64, 
-                out_features=78, bias=True)
+                out_features=100, bias=True)
   (softmax): LogSoftmax()
   (optimization fun): ADAM)
 \end{lstlisting}

@@ -1,23 +1,27 @@
-PhD award April 1; TYR April 6; OOPSLA deadline May 15, 23 pages excluding bibliography
+ OOPSLA deadline May 15, 23 pages excluding bibliography
 
+<Vincent>
+I'd say, the conceptual contribution is great; the terminology is mostly
+fine, though a tad confusing throughout. The two main things I thought could
+use some work are:
 
-Priorities:
-Upload version of paper to Arxiv by April 1:
-LambdaNet: describe what it does, and why we are doing something different.
-Plan an experiment of running LambdaNet on our problem - describe this as future work.
-Tidy the theoretical development.  The appendix ought to be readable as a self-contained document.
-If you can do those things, then let's put this on Arxiv, ahead of April 1.
-Circulate to Earl and Charles by Friday 27th, ideally.  Put on Arxiv early next week, and at same time send to Gordon.
+1) the empirical setup; quite a few things weren't very well
+defined/explained, like:
+  - How/what constraints were extracted from error messages,
+  - How many types/functions a typical library has (one figure suggested
+just 10 types, since 60K types total / 5.8K libraries)
+  - What additional "heuristics" were used to combat the low number of
+constraints per library and/or the parameter type issue
+  - Why 78 types were chosen specifically
+  - Why DeepTyper was trained with a 11K type vocabulary
+  
+2) Conceptually, it wasn't quite clear what happens in the first link
+between probabilistic and logical/formal constraints (iirc, the arrow
+between b) and c) in that big overview figure); why are there two separate
+ways in which the token-type probabilities inform the formal constraints? Is
+this first component subject to gradients as well?
 
-@book{hajek98,
-series = {Trends in logic ; v. 4},
-publisher = {Kluwer},
-isbn = {0792352386},
-year = {1998},
-title = {Metamathematics of fuzzy logic},
-language = {eng},
-address = {Dordrecht ; London},
-author = {H{\'a}jek, Petr},
-keywords = {Fuzzy logic},
-lccn = {lc 98030404},
-}
+I think the core idea of jointly optimizing a machine learner with insights
+into the constraints of its target domain is great. Probably the next step
+will be to allow the learner to actually "see" the constraints and make
+informed decisions based on those </Vincent>
