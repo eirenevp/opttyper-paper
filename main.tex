@@ -1350,7 +1350,8 @@ The following definitions formalise these metrics.
 
 For the statically typed language $H$, let an annotation slot be a point in a program text where $H$'s grammar permits the appearance of a type annotation.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $T$.  We note that $T$ does not include \texttt{any} nor OOV. 
 
-show and discuss the figure for the prediction space.
+\autoref{fig:type:prediction:space} shows the prediction space for types.
+Developer annotations are those slots 
 Define the ground truth, gold.ts, in relation to the figure.
 
 \ivpcomment{add textit for TP etc}
@@ -1363,15 +1364,16 @@ We use micro-precision~\cite{manning}, defined as
 %
 where $n=|T|$. In multi-class prediction, micro-precision coincides with accuracy, so, following related work, we use accuracy to refer to this metric in what follows.
 
-
-\subsection{Leveraging Both Logical and Natural Constraints}
-
-\begin{figure*}[!t]
+\begin{figure*}[t]
     \centering
     \def\svgwidth{0.8\linewidth}
     \input{./figs/annotations/annotations.pdf_tex}
-    \caption{Type PrdAnnotation slots' diagram.}
+    \caption{Prediction Space for Probabilistic Type Suggestion.}
+    \label{fig:type:prediction:space}
 \end{figure*}
+
+
+\subsection{Leveraging Both Logical and Natural Constraints}
 
 For evaluating type predictions,
 we compare both the logical and the natural approach on their own,
