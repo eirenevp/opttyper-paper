@@ -74,7 +74,7 @@
                         
                         
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage{graphpap,amscd,mathrsfs,graphicx,lscape,dsfont,bm,url,color}
+\usepackage{graphpap,amscd,mathrsfs,graphicx,lscape,dsfont,bm,url,color,bm}
 \usepackage{verbatim}
 \usepackage{parcolumns}
 \usepackage{mathtools, cuted}
@@ -350,7 +350,7 @@ We present a new approach to the type inference problem for dynamic languages. O
 	\projectname 
 	combines a continuous interpretation of logical constraints derived by a simple program transformation and static analysis of the JavaScript code, with natural constraints obtained from a deep learning model, which learns naming conventions for types from a large codebase. 
 	%
-	By evaluating \projectname{} on 80 \ivpcomment{change} open-source projects, we show that combining logical and natural constraints yield a large improvement in performance over either kind of information individually and produce results comparable to the state-of-the-art.
+	By evaluating \projectname{} on 80 \ivpcomment{change} predictions, we show that combining logical and natural constraints yield a large improvement in performance over either kind of information individually and produce results comparable to the state-of-the-art.
 	%
 	% By transcribing a type inference procedure into a numerical optimisation problem we initiate a novice way to balance between hard and natural constraints for suggesting types and therefore contribute towards situations where developers efficiently achieve the best of both the dynamically and statically-typed world.
 \end{abstract}
@@ -442,28 +442,37 @@ which uses probabilistic graphical models to statistically infer types of identi
 in programs written in JavaScript,
 and DeepTyper~\cite{hellendoorn18}, which targets TypeScript via deep learning techniques.
 %see \cref{sec:related} for a more elaborate comparison to related work.
-Previous approaches all use machine learning to capture the structural
-similarities between typed and untyped source code and to extract a statistical model for
-the text~\cite{allamanis17}. However, none explicitly models the underlying
-type inference rules, and, thus, their predictions ignore useful logical information. Towards this direction, a more recent tool by \citet{wei20} which  tackles the same problem as DeepTyper, learns explicitly logical relations \ivpcomment{and natural but we havent introduced the term yet} extracted by the corpus, however as these relations are learned at
-training time, there is no guarantee that the result at
-test time will respect them. For the goal of the probabilistic type inference, we find that result is expected
-to obey the type inference rules of the language and suggest
-meaningful \ivpcomment{I dont have a better term?} types to 
-the programmer.
-%This is a missed opportunity that we aim to address in this work.
- We investigate the above problem by building
-\projectname (from ``optimising for optional types''),
-a tool based on a new probabilistic type inference approach, that allows us to generate types for TypeScript files with respect to logical constraints extracted at test time.
+However, none explicitly models the underlying
+type inference rules, and, thus, their predictions ignore useful type constraints. 
+Recently, \citet{wei20} introduced LambdaNet to exploit type constraints using a deep learning
+method called a \emph{graph neural network}, in which
+the structure of the neural network's architecture reflects the structure of the type constraints.
+LambdaNet, however, does not constrain 
+\emph{the output} of the network to satisfy type these constraints;
+this must be learned automatically from data,
+and there is no guarantee that the resulting model will respect the type constraints at test time. 
+Indeed, in practice, we observe that LambdaNet
+often produces annotations that do not type check.
+The goal in our work is to combine
+the strengths of machine learning for
+type inference, which can leverage
+uncertain information such as comments
+and names, and traditional type inference,
+which leverages program semantics.
 
 \subsection{Our Contribution}
+
+The probabilistic type inference task is special in that it makes no sense to suggest types that violate type constraints.
+To respect this constraint, we propose \projectname (from ``optimising for optional types''), a novel framework for probabilistic type inference that combines hard, \textit{logical} type constraints with soft constraints drawn from structural, \textit{natural} patterns.
+Hard means that \projectname's type suggestions obey type constraints that it extracts at test time.
+
 Current type inference systems rely
 on one of two sources of information
 \begin{enumerate}[label=(\Roman*)]
 	\item \emph{Logical Constraints} on type annotations that follow from the type system.
 	      These are the  constraints used by standard deterministic approaches for static type inference.
 	\item \emph{Natural Constraints} are statistical constraints on type annotations
-	      which can be inferred from relationships between types and surface-level properties such as names and lexical context.
+	      that can be inferred from relationships between types and surface-level properties such as names and lexical context.
 	      These constraints can be learned by applying machine learning to large code bases.
 	      They are the constraints that are currently employed by probabilistic typing systems.
 \end{enumerate}
@@ -472,39 +481,39 @@ inference by combining both kinds of constraints into a single analysis, unifyin
 To do this, we define a new probabilistic type inference procedure that combines
 programming language and machine learning techniques into a single framework.
 We start with a formula that defines the logical constraints on the types of a set of identifiers in the program,
-and a machine learning model, such as a deep neural network, that makes a probabilistic prediction
-of the type of each identifier.
+and a machine learning model, such as a deep neural network, that probabilistically predicts the type of each identifier.
 
-Our method is based on two key ideas.
-First, we relax the logical formula into a continuous function by relaxing type environments
+They key idea behind our methods is a
+\emph{continuous relaxation} of
+the logical constraints \cite{hajek1998}.
+This means that  we relax the logical formula into a continuous function by relaxing type environments
 to probability matrices and defining
-a continuous semantic interpretation of logical expressions; the relaxed logical constraints
-are now compatible with the predicted probability distribution.
-This allows us to define a continuous function over the continuous version of the type environment
+a continuous semantic interpretation of logical expressions.
+The relaxation has a special property, namely,
+that when this continuous is maximized with respect
+to the relaxed type environment, then we
+can obtain a discrete type environment
+that satisfies the original constraints.
+The benefit of this relaxation is that they
+can now be combined with the probabilistic
+predictions of type assignments that are
+produced by machine learning methods.
+More specifically, this allows us to define a continuous function over the continuous version of the type environment
 that sums the logical and natural constraints.
-Second, once we have a continuous function, we can optimise it:
+And once we have a continuous function, we can optimise it:
 we set up an optimisation problem that returns the most natural type assignment for a
-program while at the same time respecting the logical constraints.
-%To the best of our knowledge, no prior work has applied machine learning to infer types
-%while simultaneously taking into account logical constraints extracted from a static type analysis.
+program while, at the same time, respecting type constraints produced by traditional type inference.
 
-
-Our contributions can be summarised as
-\begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
-	\item We introduce a principled framework to combine logical and natural constraints for type inference,
-	      based on transforming a type inference procedure into a numerical optimisation problem.
-	      %\item Use fuzzy logic in the context of programming languages.
-	\item As an instantiation of this framework, we implement \projectname, a tool to generate probabilistic types
-	       for TypeScript files.
-	   %   \projectname seeks to predict types for functions that are declared in a TypeScript declaration file.
-	\item We evaluate \projectname on a corpus of 1900 \ivpedit{change} TypeScript files and find that combining natural and logical constraints
-	      has better performance than either alone.
-	      Further, \projectname outperforms state-of-the-art systems,
-	      LambdaNet, DeepTyper and JSNice. \ivpcomment{change reults}
-	\item \projectname achieves its high performance by combining logical and natural constraints at test time; to the best of our knowledge, it is the first tool for probabilistic type inference to do so.
 	
-	\ivpcomment{Doesnot need to learn hard constraints.Natural translate existing logical constraints. Easily change the natural constraints to other }
-% 	\adg{do we have good evidence that the combination at test time is the root cause of our results?}
+Our main contributions follow:
+\begin{itemize}[label=\raisebox{0.25ex}{\tiny$\bullet$}]
+	\item We introduce a general, principled framework that uses soft logic to combine logical and natural constraints for type inference,
+	      based on transforming a type inference procedure into a numerical optimisation problem.
+	\item We instantiate this framework in \projectname, a probabilistic type inference tool for TypeScript.
+	\item We evaluate \projectname  \ivpcomment{change} on $\tilde{600}$ predictions and find that combining natural and logical constraints has better performance than either alone. Further, \projectname outperforms state-of-the-art systems,
+	      LambdaNet, DeepTyper and JSNice.
+	\item We show how \projectname achieves its high performance by combining logical and natural constraints at test time; to the best of our knowledge, it is the first tool for probabilistic type inference to do so.
+% 	\adgcomment{do we have good evidence that the combination at test time is the root cause of our results?}
 \end{itemize}
 
 % \subsection{Our Framework via an Example}
@@ -707,7 +716,7 @@ $P$ matrix of probabilities described in step~(\ref{step:optimise}).
 
 Logical constraints are extracted from our untyped input program $U$ using
 standard program analysis techniques.  Here, we rely on a \emph{Constraints
-	Generator} for this purpose.   \autoref{ssec:logprodts} describes its
+	Generator} for this purpose. ~\autoref{ssec:logprodts} describes its
 realisation.  The generator takes into account a set of rules that the type system
 enforces and produces a boolean type constraints for them.
 
@@ -745,7 +754,7 @@ such that for all formulas $E$ and environments $\Gamma$,
 $\tilde{f}_{E}(B(\Gamma)) = f_E(B(\Gamma)) := \qqpi{B(\Gamma)}{E}$.
 
 To define a relaxed semantics, we introduce a continuous semantics of $E$ based on generalizations of two-valued logical conjuctions
-to many-valued~\cite{hajek96}.
+to many-valued~\cite{hajek98}.
 Specifically, we use the product $t$-norm, because the binary operation associated with it is smooth and fits with our optimisation-based approach. We further justify this choice in \autoref{ssec:softlogic}.
 The product $t$-norm has already been used for obtaining continuous semantics in machine learning, for example by~\citet{rocktaschel15}.
 
@@ -774,12 +783,6 @@ for numerical stability, see \cref{app:appendix-logit}. We note also, that our r
 either $\qqpi{P}{E_1}$ or $\qqpi{P}{E_2}$ with high probability but 
 not always the same.
 
-% \cas{This bit is important. It's a pretty simple fact, though, does it merit a theorem?}
-% \cas{It would be better to have the 'only if' direction as well,
-% 	and I think that there is a sense in which this is indeed true,
-% 	but there are some more tricky corner cases, e.g., if E does not depend
-% 	on all of the variables in $\Gamma$.}
-\ivpcomment{probably we dont need this definition}
 We define  a logical satisfaction relation $\Gamma \models E$, as follows
           \begin{align*} 
               \Gamma \models x_v \mathrel{is} l_\tau & \Leftrightarrow \Gamma(x_v)=l_\tau                                  \\
@@ -788,21 +791,24 @@ We define  a logical satisfaction relation $\Gamma \models E$, as follows
               \Gamma \models E_1 \mathrel{or} E_2
                                                      & \Leftrightarrow \Gamma \models E_1 \mathrel{or} \Gamma \models E_2.
           \end{align*}
-Now we can show the following theorem, that give us 
-a correspondence between numerical semantics and typing environments. 
-%\begin{theorem} 
-\label{thm:soft2hard}
-
-  For all $E$ and $\Gamma$, $\qqpi{P}{E} = 1 \Leftrightarrow \Gamma \models E$.
-%\end{theorem}
-\ivpcomment{rephrase and add Hajek reference} 
+Following the Theorem 4.1.13 of~\citet{hajek98}'s book, we draw
+a correspondence between numerical semantics and typing environments, as follows
+\begin{equation}\label{eq:hard2soft}
+ \textit{For all E and } \Gamma, \qqpi{P}{E} = 1 \Leftrightarrow \Gamma \models E.     
+\end{equation}
 To motivate further this continuous semantics, recall that in our setting, we know $E$ but
-do not know $P$. We argue that the continuous semantics,
-when considered as a function of $P$, can serve as a sensible
-objective for an optimisation problem to infer $P$.
-The reason is that it relaxes
-the deterministic logical semantics of $E$, and it is maximised
-by probability matrices $P$ which correspond to satisfying type environments.
+do not know $P$. Thus, by finding a probability matrix $P$ that maximises the continuous semantics of $\qqpi{P}{E}$, we find a $P$ that satisfies $E$. One step further, by having the type assignments that satisfy $E$ we can obtain a typing environment $\Gamma$ that models $E$. This can be shown by 
+course-of-values indictation on the $size(E)$.
+
+
+% the continuous semantics,
+% when considered as a function of $P$, can serve as a sensible
+% objective for an optimisation problem to infer $P$.
+% The reason is that it relaxes
+% the deterministic logical semantics of $E$
+% to $\qqpi{P}{E}$
+% and it is maximised, that is equals to one,
+% by probability matrices $P$ which correspond to satisfying type environments. 
 
 % The following theorem formalises the idea:
 % \begin{theorem}\label{thm:argmax}
@@ -924,11 +930,12 @@ A simple way to quantify the distance is via the \emph{Euclidean norm} $|| \cdot
 Hence, we obtain the constrained optimisation problem
 \begin{equation}
 	\begin{aligned}\label{eq:opt_naive}
-		\underset{P \in \mathbb{R}^{V \times T}}{\mathrm{min}} &
+		\textstyle\underset{P \in \mathbb{R}^{V \times T}}{\mathrm{min}} & \quad
 		\sum_v || \bm{p}_v - \bm{\mu}_v ||_2^2                                                                  \\
-		\text{subject to }                                     & p_{v\tau} \in [0, 1] \qquad \forall v, \tau    \\
-		                                                       & \sum_{\tau=1}^T p_{v\tau} = 1 \qquad \forall v \\
-		                                                       & \qqpi{P}{E} = 1.
+		\text{s.t. } & \quad
+		p_{v\tau} \in [0, 1] \qquad \forall v, \tau    \\
+		                                                       & \quad \sum_{\tau=1}^T p_{v\tau} = 1 \qquad \forall v \\
+		                                                       & \quad \qqpi{P}{E} = 1.
 	\end{aligned}
 \end{equation}
 
@@ -941,7 +948,7 @@ constraints.  We do not claim any particular advantage of MSE versus CE.
 
 To solve a constrained optimisation problem like \autoref{eq:opt_naive}, an effective technique is to transform it to an unconstrained one using penalization; this is done, for example, in interior point methods.
 Here, we use an approach tailored to the specifics of our problem.
-First, we reparameterise the problem to remove the probability constraints.
+First, we reparameterise the problem to remove the probability constraints,
 The softmax function
 \begin{equation}\label{eq:softmax}
 	\sigma(\bm{x}) = \left[\frac{\exp\{x_1\}}{\sum_i \exp\{x_i\}}, \frac{\exp\{x_2\}}{\sum_i \exp\{x_i\}}, \cdots \right]^\mathsf{T}
@@ -950,53 +957,41 @@ maps real-valued vectors to probability vectors.
 Our transformed problem takes the form
 \begin{equation}
 	\begin{aligned}\label{eq:opt_no_prob}
-		\underset{Y \in \mathbb{R}^{V \times T}}{\mathrm{min}} &
+		\underset{Y \in \mathbb{R}^{V \times T}}{\mathrm{min}} & \quad
 		\sum_v || \sigma(\bm{y}_v) - \bm{\mu}_v ||_2^2                                                                         \\
-		\text{subject to }                                     & \qqpi{[\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}}{E} = 1.
+		\text{s.t. } & \quad
+		\qqpi{[\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}}{E} -1 = 0.
 	\end{aligned}
 \end{equation}
 It is easy to see that if $Y$ minimises \eqref{eq:opt_no_prob}, then
 $P = [\sigma(\bm{y}_1), \ldots, \allowbreak \sigma(\bm{y}_{V})]^\mathsf{T}$
 minimises \eqref{eq:opt_naive}.
 % 
-We remove the last constraint by introducing a Lagrange multiplier $\lambda > 0$, yielding the final form of our optimisation problem
+We remove the last constraint by introducing a Lagrange multiplier $\lambda > 0$, 
+yielding the final form of our optimisation problem
 \begin{equation}\label{eq:objective}
-	\underset{Y \in \mathbb{R}^{V \times T}}{\mathrm{min}}
+	\textstyle\mathrm{min}_{\lambda, Y \in \mathbb{R}^{V \times T } }
 	\sum_v || \sigma(\bm{y}_v)^\mathsf{T} - \bm{\mu}_v ||_2^2
-	- \lambda \qqpi{[\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}}{E}.
+	- \lambda \big(\qqpi{[\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}}{E} - 1\big).
 \end{equation}
-% \begin{equation}\label{eq:objective}
-%  \underset{P}{\mathrm{min}}
-%     \sum_v || \bm{p}_v - \bm{\mu}_v ||_2^2
-%   -\lambda \qqpi{[\bm{p}_1, \ldots, \bm{p}_{V}]}{E},
-% \end{equation}
-% \noindent
-% \begin{align}\label{eq:objective}
-%  \underset{P}{\mathrm{min}}
-%   \left( \left(\sum_v || \bm{p}_v - \bm{\mu}_v ||_2^2\right)
-%   -\lambda \qqpi{[\bm{p}_1, \ldots, \bm{p}_\mathcal{V}]}{E} \right),
-% \end{align}
-This can now be solved numerically using first-order unconstrainted optimisation methods, such as gradient descent.
-The parameter $\lambda$ trades off the importance
+This can now be solved numerically using first-order unconstrained optimisation methods for Lagrange
+multipliers~\citet{bertsekas82}. \ivpcomment{add more}
+Intuitively, the parameter $\lambda$ trades off the importance
 of the two different kinds of constraints.
 In the limiting case where $\lambda \rightarrow \infty$, the second term in the objective function \eqref{eq:objective} is dominant and we obtain the solution that best satisfies the relaxed
 logical constraints.
 If these constraints are consistent, then the obtained probability vectors correspond to one-hot vectors.
 Similarly, for $\lambda \rightarrow 0$ the first term dominates and we obtain the solution that best matches the natural constraints,
-which is naturally $M$ itself. By choosing $\lambda$ well,
-we identify a value that minimises the original problem \eqref{eq:opt_naive}.
-\cascomment{add lagrange  multipliers explanation}
+which is naturally $M$ itself. 
+% By choosing $\lambda$ well,
+% we identify a value that minimises the original problem \eqref{eq:opt_naive}.
 To obtain a final hard assignment $\Gamma,$ we first solve \eqref{eq:objective} to obtain the optimal $Y$, compute the
 associated probability vector $P = [\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}$. Then, for each identifier $x_v,$
 we select the element of the
 corresponding probability vector that is closest to one.
 
-An important theoretical question is whether the logical constraints are satisfied at the optimum
-of the combined logical and natural constraints.
-We conjecture there is a value $\lambda_0$ such that if we pick $\lambda > \lambda_0$,
-then the logical constraints are satisfied at the optimum of (\ref{eq:objective}).
-We leave this question for future work; instead, this paper presents an empirical evaluation
-of a system based on optimising objective (\ref{eq:objective}).
+Finally, we note that by adding more terms to the combined objective function, we can 
+extend the sources of information we are getting as inputs to other channels, such as dynamic analysis.
 
 % For this part the trick is that whether the logical constraints are satisfied at the optimum
 %  depends on lambda. Does that make sense?
@@ -1024,10 +1019,23 @@ of a system based on optimising objective (\ref{eq:objective}).
 
 \section{\projectname: Predict Types for TypeScript}
 \label{sec:prodts}
-
+\adgcomment{Andy, please check this par}
 To evaluate our approach in a real-world scenario, we
 implement an end-to-end application, called \projectname, which aims
-to suggest types for partially TypeScript files.
+to suggest types for partially TypeScript files. We would like to point out that the goal of the
+\projectname{}'s implementation 
+is to serve as a proof of concept for our general framework. Thus, we acknowledge that both the
+logical and natural channels are an under-approximations and can be replaced for more
+sophisticated ones. For instance, as every learning model outputs a probability vector
+over types we can extend our method to include natural constraints generated by LambdaNet, JSNice or indeed any other deep learning approach that offers similar information. On the other hand, as
+the grammar of logical constraints defined
+in~\eqref{eq:gram} allows us naturally to express inference rules, the logical constraints that 
+we take into account are being confined of 
+how many inference rules we are translated to logical expressions. Unfortunately, the TypeScript compiler does not produce logical constraints during its type inference procedure so we 
+decide to go with a pragmatic approach which only 
+harvests a subset of them. While both of our implementation choices for extracting logical
+and natural constraints we show that our results 
+are outperforms JSNice and DeepTyper, while does marginally better than LambdaNet.
 
 \subsection{Background: TypeScript's Type System}~\label{ssec:intro-typescript}
 
@@ -1074,6 +1082,59 @@ here, TypeScript does seek to infer a more specific type.
 % It is only meant to be used as a starting
 % point for writing a high-quality declaration file.
 
+\subsection{Natural Constraints for TypeScript}\label{ssec:natprodts}
+
+To learn naming conventions over types we use a Char-Level LSTM which predicts for any identifier a probability vector over all the available types. Our model is trained on
+\textit{(id, type)} pairs with the goal to learn naming conventions
+for identifiers, treated as sequences of characters.
+The main intuition behind this choice is that
+developers commonly use multiple abbreviations for the same word and
+this family of abbreviations shares a type.
+A Char-Level model is well-suited to predict the type for any identifier in
+an abbreviation families.
+%
+\paragraph{Dataset} Following the work of 
+~\citet{wei20} and~\citet{hellendoorn18},
+to train our model we use as dataset the 300 
+most starred Typescript projects from Github, 
+containing between 500 to 10,000 lines of code.
+Our dataset was randomly split by project into $80\%$ training data, $10\%$ validation data and $10\%$ test data. \cref{fig:Char-Level} shows a summary of the pipeline used to train our model, for specific implementation details of the LSTM refer to \cref{app:neural}.  
+
+\paragraph{Implementation Details}
+Regarding the implementation details of the LSTM network, for the $F$ in \eqref{eq:lstmb},
+we use a feedforward neural network
+\begin{equation}
+	F(\bm{h}) = \log\left( \sigma\left(\bm{h}A^T + b \right) \right),\label{eq:feedforward}
+\end{equation}
+where the $\log$ function is applied componentwise,
+and $A$ and $b$ are learnable weights and bias.
+The softmax function \eqref{eq:softmax} corresponds to the last layer of our neural network
+and essentially maps the values of the previous layer to $[0, 1]$,
+while the sum of all values is $1$ as expected for a probability vector as already explained.
+We work in log space to help numerical stability since computing \eqref{eq:softmax} directly can be problematic.
+As a result, $F$ outputs values in $[-\infty, 0]$.
+
+We train the model by supplying sets of variable identifiers together with their known types,
+and minimizing a loss function.
+Our loss function is the negative log likelihood function---conveniently combined with our log output---defined as
+\begin{equation}
+	L(\bm{y}) = -\sum_i log(\bm{y}_i).
+\end{equation}
+Essentially, we select, during training, the element that corresponds
+to the correct label from the output $F$
+and sum all the values of the correct labels for the entire training set.
+
+
+
+\ivpcomment{change figure}
+\begin{figure*}[!t]
+    \centering
+    \def\svgwidth{\linewidth}
+    \input{./figs/char-level/char-level.pdf_tex}
+  \caption{Pipeline of learning naming conventions with 
+  a Char-Level \textit{LSTM}, represented by a probability vector for each identifier.
+  }\label{fig:Char-Level}
+\end{figure*}
 
 \begin{table*}[t]
 	\centering
@@ -1088,9 +1149,9 @@ here, TypeScript does seek to infer a more specific type.
 		to types $X$ and $Y$.                                                                                        \\
 		Index         & Type $X$ cannot index type $Y$.                                                              \\
 		ArithLHS      & The left-hand side of an arithmetic operation must be
-		an \lstinline+enum+ type or have type \lstinline+any+ or \lstinline+number+.    \\
+		an \texttt{enum} type or have type \texttt{any}+ or \texttt{number}.    \\
 		ArithRHS      & The right-hand side of an arithmetic operation must be
-		an \lstinline+enum+ type or have type \lstinline+any+ or \lstinline+number+. \\
+		an \texttt{enum} type or have type \texttt{any} or \texttt{number}. \\
 		Return      & \\
 		\bottomrule
 	\end{tabularx}
@@ -1204,140 +1265,35 @@ interface Array<any> {
         \bottomrule
     \end{tabular}
 \end{table*}
-
-\subsection{Natural Constraints for TypeScript}\label{ssec:natprodts}
-
-We now focus our attention on extracting natural constraints.
-The TypeScript community has already
-made a huge effort to support this process by writing and maintaining the
-declaration files for over five thousand of the most popular JavaScript
-libraries. These files are available on the~\citet{definitelytyped}
-repository. The declaration files on this repository provide an excellent
-opportunity for statistical learning algorithms.
-We use a Char-Level LSTM trained on
-\textit{(id, type)} pairs to learn naming conventions
-for identifiers, treated as sequences of characters.
-The main intuition behind this choice is that
-developers commonly use multiple abbreviations for the same word and
-this family of abbreviations shares a type.
-A Char-Level LSTM is well-suited to predict the type for any identifier in
-an abbreviation families.
-%
-Our universe of types consists of the 78 types that appear at least 10,000 times in our training set. These are built-in TypeScript types and some commonly used unions of them. We note that our system cannot distinguish between a primitive and a complex type. We note that we consider only built-in types
-to ensure that we do not introduce types that are not available to the compiler. 
-%
-Handling a larger set of types
-is straightforward, but we decide to work with a small set of types for the
-shake of rapid prototyping.
-%
-We leave measuring the effect
-of varying the number of types known to \projectname to future work.
-%
-
-Regarding the implementation details of the LSTM network, for the $F$ in \eqref{eq:lstmb},
-we use a feedforward neural network
-\begin{equation}
-	F(\bm{h}) = \log\left( \sigma\left(\bm{h}A^T + b \right) \right),\label{eq:feedforward}
-\end{equation}
-where the $\log$ function is applied componentwise,
-and $A$ and $b$ are learnable weights and bias.
-The softmax function \eqref{eq:softmax} corresponds to the last layer of our neural network
-and essentially maps the values of the previous layer to $[0, 1]$,
-while the sum of all values is $1$ as expected for a probability vector as already explained.
-We work in log space to help numerical stability since computing \eqref{eq:softmax} directly can be problematic.
-As a result, $F$ outputs values in $[-\infty, 0]$.
-
-We train the model by supplying sets of variable identifiers together with their known types,
-and minimizing a loss function.
-Our loss function is the negative log likelihood function---conveniently combined with our log output---defined as
-\begin{equation}
-	L(\bm{y}) = -\sum_i log(\bm{y}_i).
-\end{equation}
-Essentially, we select, during training, the element that corresponds
-to the correct label from the output $F$
-and sum all the values of the correct labels for the entire training set.
-
-\subsection{Realisation of \projectname{}}\label{ssec:combprodts}
-
-Here, we describe the implementation of \projectname. Both the code for the deep
+\paragraph{ Continuous Relaxation and Combined Optimisation} 
+Both, solving the relaxed logical constraints alone, and combining the logical and natural constraints correspond to an optimization 
+problem as described in~\eqref{eq:logical} and
+~\eqref{eq:objective} respectively. To find the minimum of the generated function we use 
+\textsc{RMSprop}~\cite{tieleman2014};
+an alternative to stochastic gradient descent~\cite{robbins51}, with an adaptive learning rate.Both the code for the deep
 learning and the combined optimisation part is written in
-PyTorch~\cite{paszke2017}. We base most of our design choices on empirically
-observing what maximises \projectname's performance.
+PyTorch~\cite{paszke2017}.
 
-\paragraph{\textit{Natural} Constraints} We use \textsc{Adam}~\cite{kingma2014}, an extension of stochastic gradient descent~\cite{robbins51},
-as our optimisation algorithm for the natural constraints.
-%
-The main difference between \textsc{Adam} and classical stochastic gradient descent
-is the use of adaptive instead of fixed learning rates.
-%
-Although there exist other algorithms with adaptive learning rates
-like \textsc{AdaGrad}~\cite{duchi2011} and \textsc{RMSprop}~\cite{tieleman2014},
-\textsc{Adam} tends to have better convergence~\cite{ruder2016}.
-% To do so we are using a \textit{Char-Level LSTM} which predicts for any identifier a probability vector over all the available types during the training.
-We used all the 5,800 projects available from the DefinitelyTyped repository on 17th July 2019, all of these projects were popular enough as to a declaration file was written for them.
-%
-We trained our model for 1,000 epochs, for 78 different types,
-and obtained a validation accuracy of 0.79.
-\cref{fig:Char-Level} shows a summary, while for specific implementation details of the LSTM refer to \cref{app:neural}.
 
-Our dataset was randomly split by project into 80\% training data,
-10\% validation data and 10\% test data.
-%
-Splitting the available data in these three different sets is a common practice in machine learning
-to ensure that the learning model does not simply memorise the training data
-but is able to generalise to unseen inputs. 
-\ivpcomment{change figure}
-\begin{figure*}[!t]
-    \centering
-    \def\svgwidth{\linewidth}
-    \input{./figs/char-level/char-level.pdf_tex}
-%\begin{minipage}[!h]{\textwidth}
-%      %\raggedleft
-%     \begin{lstlisting}[numbers=none]
-%   LSTMClassifier(
-%   (embedding): Embedding(90, 128)
-%   (lstm): LSTM(128, 64)
-%   (hidden2out): Linear(in_features=64, out_features=78, bias=True)
-%   (softmax): LogSoftmax()
-%   (optimisation fun): ADAM)
-%\end{lstlisting}
-%  \end{minipage}
-  \caption{Pipeline of learning naming conventions with 
-  a Char-Level \textit{LSTM}, represented by a probability vector for each identifier, including function and parameter identifiers.
-  }\label{fig:Char-Level}
-\end{figure*}
-%\subsection{Combining Logical and Natural Constraints}
 
-\paragraph{\textit{Logical} Constraints} 
-Solving the relaxed logical constraints corresponds to an optimization 
-problem as described in~\eqref{eq:logical}.
-To find the minimum of the generated functions for the logical constraitns, we use another alternative to stochastic gradient descent optimisation algorithm~\cite{robbins51},
-known as \textsc{RMSprop}~\cite{tieleman2014}.
-We set the maximum number of iterations to 2,000, which suffices in practice for the loss to stabilise.
+% \subsection{Realisation of \projectname{}}\label{ssec:combprodts}
 
-% \paragraph{Combined Optimisation} 
-% We use $\lambda = 10$ in~\eqref{eq:objective} for combining the natural and logical constraints to a single optimisation problem and solve it using
-% \textsc{RMSprop}~\cite{tieleman2014} over 2,000 iterations.
-% % Adam~\cite{ruder2016} is being used to change the step of the optimizer on each iteration. 
-% \section{Evaluation of \projectname{}}\label{sec:eval}
+% We set the maximum number of iterations to 2,000, which suffices in practice for the loss to stabilise.
 
-To measure the performance of our tool \projectname we make the following assumption:
-the existing declaration files on the DefinitelyTyped repository define the \textit{gold standard}
-for our predictions.
-It is an assumption in the sense that some files may contain errors~\citep{williams17}.
-Based on it, we measure the performance of our tool as well as other related tools
-by comparing the output declaration file for a given input JavaScript library
-with the corresponding gold declaration file included in the DefinitelyTyped repository.
-Next, we define the metrics used to perform this comparison.
-Traditionally, there have been two measures when comparing a result set
-(here the output declaration file) with human judgement (the gold declaration file):
-\textit{Precision} and \textit{Recall}~\citep{russel16}.
-We use these two metrics to evaluate the output structure and types for each of the exported functions in a library.
-Here, we focus solely on functions and discard the other exported entities,
-such as variables, methods, and properties.
-The metrics presented next can easily be extended to evaluate to those exported
-entities we currently exclude.
-The following definitions formalise these metrics.
+
+% We use \textsc{Adam}~\cite{kingma2014}, an extension of stochastic gradient descent~\cite{robbins51},
+% as our optimisation algorithm for the natural constraints.
+% %
+% The main difference between \textsc{Adam} and classical stochastic gradient descent
+% is the use of adaptive instead of fixed learning rates.
+% %
+% Although there exist other algorithms with adaptive learning rates
+% like \textsc{AdaGrad}~\cite{duchi2011} and \textsc{RMSprop}~\cite{tieleman2014},
+% \textsc{Adam} tends to have better convergence~\cite{ruder2016}.
+
+% Adam~\cite{ruder2016} is being used to change the step of the optimizer on each iteration. 
+\section{Evaluation of \projectname{}}\label{sec:eval}
+Next, we define the metrics used to perform our comparison and present the results of the evaluation.
 
 % \paragraph{Experimental Setup}
 
@@ -1347,9 +1303,13 @@ The following definitions formalise these metrics.
 % It computes type annotations on average for 58 files in about 60 seconds
 % for solving logical constraints and natural constraints, and in about 65 seconds for the combined optimisation.
 
-\subsection{Type Prediction Accuracy}
+\subsection{Type Prediction Accuracy and Space}\label{sec:acc}
 
-For a statically typed language, let an annotation slot be a point in a program text where the grammar permits the appearance of a type annotation.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $T$.  We note that $T$ does not include the gradual \texttt{any} type nor OOV.
+% Dataset.Similar to Hellendoorn et al. (2018), we train and evaluate our model on popular open-source Typescript projects taken from Github. Specifically, we collect 300 Typescript projects (withthe most Github stars) that contain between500to10,000lines of code and where at least10%oftype annotations are user-defined types.  Among these 300 projects, we use60for testing,40forvalidation, and the remainder for training. Note that each project contains hundreds to thousands oftype variables to predict.Because some of the projects in our benchmark suite are only sparsely type annotated, we augmentour labeled training data by using the forward type inference functionality provided by the Typescriptcompiler.  The compiler cannot infer the type of every variable and leaves many labeled asanyduring failed inference; thus, we excludeanylabels in our data set.  Furthermore, at test time, weevaluate our technique only on annotations that are manually added by developers. This is the samemethodology used by Hellendoorn et al. (2018), and, since developers often add annotations wherecode is most unclear, this constitutes a challenging setting for type prediction.Prediction Space.As mentioned in  Section 2.1,  
+
+
+\paragraph{Type Prediction Accuracy}
+For a statically typed language, let an annotation slot be a point in a program text where the grammar permits the appearance of a type annotation.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $T$. We note that $T$ does not include the gradual \texttt{any} type or \textit{OOV}.
 
 \begin{figure*}[t]
     \centering
@@ -1360,97 +1320,52 @@ For a statically typed language, let an annotation slot be a point in a program 
 \end{figure*}
 
 \autoref{fig:type:prediction:space} shows the prediction space for types in an optional type setting.
-TypeScript itself defines Built-in types.  Library types are those types defined by the libraries a project imports and project types, sometimes called user types in the literature, are those types a project defines itself. 
+TypeScript itself defines built-in types.  Library types are those types defined by the libraries a project imports and project types, sometimes called user types in the literature, are those types a project defines itself. 
 In general, developer annotations are those slots that a developer is likely to annotate; in a training data, we under-approximate these slots by the slots that a developer did annotate. 
 The compiler inferable slots are those slots for which an optional compiler can infer a type given the developer annotations.  
 Developers annotate some slots to document and clarify the code, to aid navigation and completion, and so that the compiler can infer types for other slots.  
 Developer annotated slots are special for two reasons:  they provide a natural source of labeled training data and, since developers went to the effort of annotating them, relieving developers of the burden of doing so is clearly useful.
 
-\ivpcomment{add textit for TP, etc.}
-$TP_i$ is the number of times that a probabilistic type predictor \emph{correctly} labelled a slot with the $i^\text{th}$ type;  $FP_i$ is the number of times that the type predictor \emph{incorrectly} labelled a slot with the $i^\text{th}$ type.  Our ground truth for determining whether a prediction is correct is the set of developer annotated slots; in our test set, we call this set \texttt{gold.ts}.
-We report performance using micro-precision~\cite{manning}, defined as 
+$\mathit{TP_i}$ is the number of times that a probabilistic type predictor \emph{correctly} labelled a slot with the $i^\text{th}$ type;  $\mathit{FP_i}$ is the number of times that the type predictor \emph{incorrectly} labelled a slot with the $i^\text{th}$ type.  Our ground truth for determining whether a prediction is correct is the set of developer annotated slots; in our test set, we call this set \texttt{gold.ts}. %This is a working assumption in the sense that some files may contain errors ~\citet{williams17}.
+We report performance using micro-precision ~\cite{manning}, defined as 
 %
 \begin{align}\label{eq:acc}
-    \sum_i^n \frac{TP_i}{TP_i + FP_i},
+    \sum_i^n \frac{\mathit{TP_i}}{\mathit{TP_i} + \mathit{FP_i}},
 \end{align}
 %
 where $n=|T|$. In multi-class prediction, micro-precision coincides with accuracy.
-\ivp{I think we should show this here.}
-So, following related work~\cite{todo:lambdanet}, we use accuracy to refer to this metric in the evaluation that follows.
+\ivpcomment{I think we should show this here.}
+So, following related work~\cite{wei20}, we use accuracy to refer to this metric in the evaluation that follows.
 
+\paragraph{Type Prediction Space}
+We perform the evaluations that follow on \textit{developer annotation slots} and define our type prediction space to consist of top-100 most common library types in our training set. As~\citet{wei20} report this prediction space covers $98\%$ of the non-any annotations for the training set. These implementation decisions, along with the fact that we use the same training data (~\cref{ssec:natprodts})
+make our comparison consistent with previous works \citep{hellendoorn18, wei20} in the field.
 
-\subsection{Leveraging Both Logical and Natural Constraints}
+\subsection{Ablation Analysis:  Leveraging Both Logical and Natural Constraints}
 
-For evaluating type predictions,
-we compare both the logical and the natural approach on their own,
-and then their combination.
-Two kinds of input may be required by these packages:
-the JavaScript library file or a declaration file containing the exported functions.
-We summarise below the characteristics of each package and the provided input.
-\begin{itemize}[label={\tiny$\bullet$}]
-	\item \textit{Logical}: Using the JavaScript library and the declaration file as an input,
-	      we utilise the compiler in a pragmatic way allowing us to generate logical constraints as logical formulas
-	      and then solve them by using their continuous relaxation (\cref{ssec:logprodts}).
-	\item \textit{Natural}: We query our pre-trained Char-Level LSTM to give us predictions for every identifier
-	      found in the declaration file (\cref{ssec:natprodts}).
-	      It requires as input the declaration file only.
-	\item \projectname: The output of the optimisation problem for the corresponding combination of the logical
-	      and natural approach (\cref{ssec:combprodts}).
-	      Since this tool depends on the other too, we provide both the JavaScript library
-	      and the declaration file as input.
-\end{itemize}
-Furthermore, we report separately in \cref{tab:typeprec1} the precision and recall for predicting the function return types (first and second column) and the types of the functions' parameters (third and fourth column).
-
-Since we consider $78$ types in total and the \textit{gold.ts} contains a larger number,
-we first compute the maximum achievable precision and recall if only $78$ types can be predicted,
-even if all the type predictions were correct.
-The precision for the function return types is $0.61$ and the recall $0.59$,
-while the precision for the parameters' types is $0.63$ and the recall $0.58$.
-The combined precision and recall are $0.62$ and $0.58$, respectively.
-The results presented in \cref{tab:typeprec1} are normalised based on these upper precision and recall limits.
-
+\projectname has two phases --- logical and natural --- and combines them.  To evaluate the effect of each stage, \cref{tab:typeacc1} reports the accuracy of each stage.
+\cref{tab:typeacc1}'s columns define disjoint sets of annotation slots. 
 \begin{table*}[t]
 	\centering
-	\caption{Aggregate \textit{Type} accuracy for 9 TypeScript files with 107 identifiers in total (26 $fnRet$, 78 $param$).}
-% 		We use the notation $P(\mathcal{T}^T_\text{fnRet})$ for $P(\mathcal{T}_\text{fnRet} \cap T)$, where $T$ is the number of types in our universe of types.}
-\label{tab:typeprec1}
+	\caption{Ablation analysis of \projectname over 107 identifiers, the cells report accuracy; FN refers to return types of functions, PARAM
+	represents parameters.}
+\label{tab:typeacc1}
 	\begin{tabular}{ccccccc}
 		\toprule
-		Tool                                  & $Acc_\text{\tiny{FNRET}}$ &  $Acc_\text{\tiny{PARAM}}$ &  $Acc_\text{\tiny{TOTAL}}$ \\
+		Tool  & $\textit{FN}$ & 
+		$\textit{PARAM}$ & $\textit{TOTAL}$ \\
+		
 		\midrule
 		\textit{Logical}      & 0.46                                   & 0.23                                 & 0.29                                  \\
 		\textit{Natural}      & 0.27                                    & 0.60                                 & 0.52                                   \\
-		\textbf{\projectname}  & \textbf{0.62}         & \textbf{0.74}         & \textbf{0.71}                                        \\
-
-		\bottomrule
-	\end{tabular}
-\end{table*}
-
-
-\begin{table*}[h]
-	\centering
-	\caption{Ablation analysis for Accuracy on 596 identifiers.}
-\label{tab:typeprec1}
-	\begin{tabular}{ccccccc}
-		\toprule
-		Tool                                  & $Acc_\text{\tiny{FN}}$ & 
-		$Acc_\text{\tiny{METH}}$ &
-		$Acc_\text{\tiny{VAR}}$ & 
-		$Acc_\text{\tiny{PAR}}$ &
-		$Acc_\text{\tiny{PROP}}$ & $Acc_\text{\tiny{TOTAL}}$ \\
-		\midrule
-		\textit{Logical}      & 0.65  &  0.74                               & 0.13  & 0.30                              & 0.45   & 0.54                              \\
-		\textit{Natural}   
-		 & 0.40  &  0.82                               & 0.38  & 0.67                              & 0.79   & 0.68                              \\
-		\textbf{\projectname}  & \textbf{0.79}         &\textbf{0.69}    &\textbf{0.30}  
-		&\textbf{0.70} &\textbf{0.78}         & \textbf{0.75}\\
+		\projectname  & 0.62         & 0.74         & 0.71\\
 		\bottomrule
 	\end{tabular}
 \end{table*}
 
 
 Regarding the \textit{Logical} approach, the results are significantly better for function return types
-than parameters' types.
+than parameter types.
 This happens because the TypeScript compiler generates much richer constraints for all---exported or not---return
 types of functions.
 For the parameters' types, the compiler disregards any information
@@ -1460,58 +1375,48 @@ to generate non-trivial constraints.
 A more systematic approach could improve the results regarding the parameters' type inference,
 but we leave this to future work.
 
-Furthermore, we observe for all tools that the precision and recall for both tasks are close.
-By comparing these two metrics in \cref{def:precision_recall},
-their similarity can be traced to the similarity of their denominators.
-% As we discuss in \cref{ssec:structure_comparison},
-% the \textit{Structure} subproblem can identify the majority (over $80\%$) of the function signatures;
-% hence, the denominators are close and subsequently so are the precision and recall.
-
-Finally, for \projectname we find that the combination of the output of the \textit{Logical}
-and the \textit{Natural} tool improves our precision and recall for both tasks.
-% The comparatively poor results of the \textit{Logical} tool
-% for parameters' types positively contribute to the optimizer's results.
-% Building on the predictions of the neural network, some of the logical constraints contribute improved predictions.
 Overall, the combination of the logical and natural constraints in \projectname
 greatly improves our type inference capabilities.
+
+
+Regarding the static analysis, the results are significantly better for function return types rather than parameters' types.
+This happens because the TypeScript compiler generates much richer constraints for all---exported or not---return types of functions.
+For the parameters' types, the compiler disregards any information and infers all types as \texttt{any}; a situation that produces no useful logical constraints.
+To mitigate this issue, we define some simple heuristics that allow the augmented static analysis to generate some non-trivial constraints.
+A more principled approach could greatly improve the results regarding the parameters' type inference, albeit outside the scope of this work.
+
+
+Finally, for \projectname{} we notice that the combination of the output of the augmented static analysis and the Char-Level LSTM improves our precision and recall for both tasks.
+A certain level of robustness can be also identified, because the low results of the augmented static analysis for parameters' types positively contributes to the optimizer results. 
+This means that on top of the predictions of the neural network, some constraints of the augmented static analysis tip the balance towards more reasonable predictions.
+
+Overall, the combination of the logical and natural (LSTM) constraints in \projectname greatly improves our type inference capabilities.
 
 \subsection{Comparison with LambdaNet and DeepTyper}
 \label{ssec:typesubproblem}
 
-To evaluate \projectname we compare against two state-of-the-art tools that utilise machine learning techniques,
-both aiming to give type suggestions to the programmer.
-Neither tool was designed explicitly for predicting types for TypeScript,
-so we made the necessary adjustments to meet the requirements of our setting.
-The two tools that we compare against are
-\begin{itemize}[label={\tiny$\bullet$}]
-    % \item TSINFER~\cite{tstools2017}: A tool
-    %  based on a combination of a static and dynamic analysis that uses a recorded snapshot of a concretely initialised library to 
-    %  generate TypeScript declaration files from JavaScript libraries.
-    \item LambdaNet~\cite{wei20}: A tool based on graph neural networks which combines logical and contextual edges
-	 to predict types for TypeScript files.
-	\item DeepTyper~\cite{hellendoorn18}: A tool based on deep learning which learns types for every identifier.
-	      The network is trained using previously annotated TypeScript code.
-\end{itemize}
+To evaluate \projectname we compare with 
+against DeepTyper~\cite{hellendoorn18} and
+LambdaNet~\cite{wei20}. Both tools utilise machine learning techniques to give type suggestions for TypeScript on the \emph{developer annotations slots}, as described in ~\cref{fig:type:prediction:space}.
 
 % We have tried specifically to address any unfair comparison.
+
+so we made the necessary adjustments to meet the requirements of our setting.
 Since DeepTyper has a vocabulary of 11000 types, we measure the results on our set of 78 types
 and give every other type we encounter \textit{OOV}, so that it does not contribute to the final result.
-\cref{tab:typeprec2} summarises the results of our comparisons.
+\cref{tab:typeacc2} summarises the results of our comparisons.
 
-The \emph{relative error reduction} is a standard way to express performance improvement in machine learning.
-In our case, it is how many fewer errors \projectname{} makes as a proportion of the errors that JSNice makes.
-The JSNice $T=78$ precision of 0.37 implies an error rate 0.63,
-whereas the \projectname{} $T=78$ precision of 0.68 implies an error rate 0.32.
-So the relative reduction in error is $(0.63-0.32) / 0.63 = 49.2\%$.
+% The \emph{relative error reduction} is a standard way to express performance improvement in machine learning.
+% In our case, it is how many fewer errors \projectname{} makes as a proportion of the errors that JSNice makes.
+% The JSNice $T=78$ precision of 0.37 implies an error rate 0.63,
+% whereas the \projectname{} $T=78$ precision of 0.68 implies an error rate 0.32.
+% So the relative reduction in error is $(0.63-0.32) / 0.63 = 49.2\%$.
 
 
 \begin{table*}[t]
 	\centering
 	\caption{Accuracy for DeepTyper, LambdaNet and OptTyper; on 598 annotations slots.}
-	
-% 		The superscript $T$ has the same meaning as in \cref{tab:typeprec1}, where $T = 6$ consists of the six types predicted by JSNice.
-% 		Boldface indicates the best results of the full set of $T=78$ types.}
-		\label{tab:typeprec2}
+		\label{tab:typeacc2}
 	\begin{tabular}{ccccccc}
 		\toprule
 		Tool   &                              $Acc$ \\
@@ -1522,32 +1427,13 @@ So the relative reduction in error is $(0.63-0.32) / 0.63 = 49.2\%$.
 		\bottomrule
 	\end{tabular}
 \end{table*}
-% \paragraph{Comparison with TSINFER}
-% TSINFER addresses the same problem as we do but without
-% using any form of learning. TSINFER uses
-% a dynamic analysis to construct the interface that
-% a type implements and often gives fresh type annotations, like \lstinline{interface_1342}, that lack meaning. As our evaluation is based on a nominal view for typings, TSINFER performs poorely under our evaluation.
-
 
 \paragraph{Comparison with LambdaNet}
-\ivpcomment{Charles, could you help us write this better?}
 
-\citet{wei20} propose a different approach to probabilistic type inference for TypeScript. LambdaNet is 
-based on graph neural networks~\citep{allamanis17a}, which learn type dependency graphs extracted by static 
-code analysis on the training data. Their type dependency graph has edges that are either logical or contextual, corresponding to what we call logical or natural constraints.
-While, they are also able to predict user-defined types using open vocabulary techniques. However, the problem they
-are targeting is different than ours, as they do not consider the problem of generating TypeScript signature files from a JavaScript file, but instead predict types for native unannotated TypeScript.
 
 \paragraph{Comparison with DeepTyper}
-DeepTyper is a deep learning framework that outputs a type vector for every identifier
-based on information from the source-code context.
-It utilises information in the vicinity of the identifier to predict the type.
-In contrast, our LSTM is trained on identifiers and types;
-we focus on obtaining information based on the identifier alone and not its context.
-
-% \adg{Irene, roughly how often does DeepTyper return any?  Saying just "often" is not very informative.}
-For the results shown in~\cref{tab:typeprec2},
-DeepTyper often returns \lstinline{any} as the most relevant suggestion for the type of an identifier.
+For the results shown in~\cref{tab:typeacc2},
+DeepTyper often returns \texttt{any} as the most relevant suggestion for the type of an identifier.
 In this case, to keep the comparison meaningful, we select the second best candidate.
 
 Even though our LSTM is trained only on identifiers and types---while
@@ -1576,52 +1462,32 @@ function returns.
 \subsection{Comparison with JSNice}
 \begin{table*}[t]
 	\centering
-	\caption{Accuracy for JSNice and OptTyper; on 107 annotations slots (26 funRet, 78 param).}
-		\label{tab:typeprec2}
+	\caption{Accuracy for JSNice and OptTyper; on 107 annotations slots.}
+		\label{tab:typeacc3}
 	\begin{tabular}{ccccccc}
 		\toprule
-		Tool   &                              $Acc(\mathcal{T}_\text{total})$ \\
+		Tool   & $Acc$ \\
 		\midrule
 		JSNice     & 0.45\\
 		\projectname & 0.71\\
 		\bottomrule
 	\end{tabular}
 \end{table*}
-% JSNice's vocabulary is smaller than ours that's why we have two rows for JSNice on \cref{tab:typeprec2}, for $T=6$,
-% which is a set of types appearing both in the JSNice implementation and ours.
- JSNice~\cite{raychev15} is a tool based on probabilistic graphical models which analyses relationships
-	      between program elements to infer types for JavaScript files.
-
-% JSNice is a tool that learns statistical correlations between program elements
-% by exploiting their relationship for a certain depth.
-%in their implementation it is 3
-
-Its purpose is for type inference (and other tasks) on JavaScript
-using statistics from dependency graphs learned on a large corpus.
-The evaluation on our data had to be performed manually because JSNice is only available via a website interface.
-
-JSNice targets a type lattice that contains the JavaScript primitive types plus some additional types under Object, 
-but as the exact details are not available we compare ourselves against these 6 known types.
-JSNice exploits the relation paths between types up to depth 3, thus it may not
-capture some typing relevant element dependencies. 
-
-% The JSNice paper does not list the full set of types that are used (Fig.4 of the paper is illustrative and incomplete), nor does the corresponding Ph.D. thesis and code for the version of JSNice that does the type inference is not available.  Thus, we had to decide a specific number to work with. In practice, the set of types predicted by the public prototype seems to be small (cf. DeepTyper 4.3). Therefore, as we do not know the other object types Fig.4 of JSNice refers to, we have used the 5 specific types showed in the figure plus the general Object type, which we confirmed JSNice can predict. The comparison is fair because both tools have been trained on data that include these 6 types. It is true that JSNice does not predict return types but DeepTyper does; we do not view this as unfairness in the evaluation but an advantage of our method.
-
-% The results for the types of the parameters are almost identical to the ones of the original JSNice paper.
+Only portions of the JSNice~\cite{raychev15} system have been made open source, and the full system has not been released by the authors. The portion of the implementation that the authors have made public is not sufficient to retrain the JSNice models. Indeed, as far as we are aware, even a list of which types that JSNice is capable of predicting has not been made public. So, instead we follow the evaluation of \citet{wei20} and perform a manual
+evaluation
 
 \projectname outperforms JSNice.  We conjecture that this is due
 to the same two reasons we believe \projectname outperforms DeepTyper:
 \projectname's grouping together of names that share a type despite minor
 variations in their names and its use of a more expansive context due to its
 logical constraints, as opposed to JSNice  traversal traversal depth of program element
-relations.
+relations. Additionally. JSNice exploits the relation paths between types up to a certain depth, thus it may not
+capture some typing relevant element dependencies. 
 
-%
-Finally, it would be fairly simple to extend our method to include natural constraints generated by LambdaNet, JSNice or 
-indeed any other deep learning approach that offers similar information.
-For example, we could simply add more terms to the combined objective function,
-including an extra term for every additional source of natural constraints.
 
+
+% JSNice~\cite{raychev15} is a tool based on probabilistic graphical models which analyses relationships
+% between program elements to infer types for JavaScript files.
 
 % \cas{I agree it would be fairly simple to extend the method to handle DeepTyper or NL2Type constraints; we could simply add more terms to combined objective function, one for each kind of LSTM that we want to add. I'd view the character-level LSTM that we use as a representative kind of natural constraint, but not necessarily the best, and certainly not the only one. We should mention that in the paper..
 % 	Finally, it seems like there is quite some opportunity for a hybrid here; in fact, a fairly simple extension to e.g. DeepTyper (or NL2Type) could allow your "natural" component to factor in a much broader context and likely work much better correspondingly. Happy to chat about that sometime
@@ -1647,25 +1513,12 @@ including an extra term for every additional source of natural constraints.
 % with DeepTyper's perfomance for parameters, we believe that this happens for three
 % reasons:
 
-% \adgcomment{
-% We need to measure against:
-% \begin{itemize}
-%     \item Moller
-%     \item DeepTyper
-%     \item nl2type -
-%     \item JSNice (for fairness, it would need to be a separate table)
-% \end{itemize}
-% Show the GOLD@5 numbers as well as the GOLD@1 numbers
-% (see DeepTyper paper)
-% Do a histogram of the 78 types - if there's an inflection point, 
-% we could use that to choose how to do the breakdown of types
-% }
 
 \section{Related Work}~\label{sec:related}
 
 \projectname is a new form of probabilistic type inference that optimises over
 both logical and natural constraints.  Related spans classical, deterministic
-type inference and earlier machine learning approaches.
+type inference, soft logic for the relaxation of the constraints and earlier machine learning approaches.
 
 \subsection{Classical Type Inference}
 
@@ -1727,57 +1580,27 @@ Haskell based on Liquid Types via SMT and predicate
 abstraction.
 DependentJS~\citep{dependentJS} incorporates dependent types into JavaScript.
 
-% The expressive type systems of functional languages
-% made the task of adding refinement types easier to achieve.
-% For instance,
-% these languages take as primitive the useful idea of data tagged with data
-% constructors by providing kinds, and algebraic types as
-% built-in notion.
 %
-% Although modern scripting languages have popularised the use
-% of higher-order constructs, attempts to apply refinement typing to scripts
-% have mostly proven to be impractical .
+\subsection{Soft Logic}\label{ssec:softlogic}
+Recently, there is a resurgence of interest for soft logic in the context of machine learning. By soft logic we mean a many-valued logic, where the truth values lie on the unit interval $[0,1]$. The 
+reason for this resurgence is twofold: First,
+soft logic allows the modeling of multiple notions
+of similarity. Second, and more relevant for our
+interests, the resulting compound formulas are 
+amenable to continuous optimisation approaches. Thus, they provide a framework to exploit the relational structure of different problems~\cite{kimmig12}. 
 
-% However, as each programming language has developed its own characteristics, all of the
-% above solutions are entailed to a specific language.
+In the context of fuzzy logic, the three most
+important extensions are: G{\"o}del logic, {\L}ukasiewicz logic, and product logic~\cite{hajek98}, with the latter two attracting more interest. For example, the {\L}ukasiewicz logic is used in \citet{bach17} due 
+to its convient relationship to their relaxed MAX 
+SAT problem formulation. In our case, the relationships expressed by the logical constraints are non-convex and we focus on smooth optimisation
+formulations; the product logic is more
+suitable since the other two are non-smooth and 
+would require relaxations. For 
+deep learning, this logic is also important as it 
+allows to perform back-propagation~\cite{evans18}.
 
-% \subsection{Machine Learning for Type Inference}\label{ml4t}
-% The increasing usage of
-% probabilistic models for code has enabled us to view the problem of type
-% inference as a structured prediction in machine learning and
-% consequently allow us to reuse available learning and inference
-% algorithms to predict types.
-% In particular, JSNice learns statistical correlations
-% between program elements by exploiting their relationships shallowly
-% while their type lattice contains only five primitive types. The other two tools, NL2Type and
-% DeepTyper use a deep learning approach to the problem, which allows them to take into account
-% richer sources of information and more context. Both of the approaches leverage natural language 
-% information, such as function and parameter names to learn which types occur naturally in certain 
-% contexts and provide type suggestions. NL2Type \cite{malik19}   considers also JSDoc comments as an additional type hint, 
-% while DeepTyper exploits an automatically aligned corpus of TypeScript tokens which offers them a richer type vocabulary. 
-% All of these tools are using various
-% sources of knowledge that are typically ignored by type inference algorithms, but at the
-% same time discard certain information arising from classical type inference procedures.
+\subsection{Machine Learning Over Source Code}\label{sec:ml:over:source}
 
-% Developers want to re-use code, and machine
-% learning could provide the perfect framework to enable that.
-
-% that is that the answer to the quest of
-% reducing the typing annotation cost in the less strict type systems could come
-% from the synergy of programming languages and machine learning.
-
-% However, richer type annotation holds the promise of a more
-% precise, modular and extensible analysis, and as the need of building programs that conform the
-% specifications emerges we should therefore search for novel and universally applicable solution
-
-% However none of them takes into
-% account explicitly the rules of the underlying type inference procedure
-% the result does not always type check. Additionally, the J In contrast, 
-% Our proposed model goes beyond their previous work in that we combine static
-% type constraints, naming information and potentially dynamic information to
-% predict finer-grained type constraints.
-
-\subsection{Machine Learning Over Source Code}
 Although the interdisciplinary field between machine learning and programming
 languages is still young, complete reviews of this area are
 already available.
@@ -1803,44 +1626,40 @@ the desired statistical graphical model.
 types of identifiers in programs written in Python. Their tool trains the
 classification model for each type in the domain and uses a different
 approach to build the graphical model as it allows to leverage type hints
-derived from data flow, attribute accesses, and naming conventions for types.
-%
-Two earlier approaches for probabilistic typing are JSNice~\citep{raychev15} and
-DeepTyper~\citep{hellendoorn18}.
-Indeed, they serve as baselines in our evaluation, where we discuss them in
-detail (\autoref{ssec:typesubproblem}).
-
-NL2Type, a tool by~\cite{malik19}, also uses
+derived from data flow, attribute accesses, and naming conventions for types. NL2Type, a tool by~\cite{malik19}, also uses
 a deep learning approach to the problem, and  relies on JSDoc comments as
 an additional type hint.
-%
-% We could not compare directly to NL2Type because
-% there are few examples with both JSDoc and manual types available.
 
-% need to say They combine logical and natural constraints at training time, whereas \projectname combines logical and natural constraints at test time.
+JSNice~\citep{raychev15} was first probabilistic type inference technique;  it targets JavaScript.  They use a conditional random field (CRF) \ivp{define this and cite Charles' 100k citation paper.}.  In addition to types, JsNice also predict names.
+Their CRF encodes variable relations, but not type constraints.
+DeepTyper was first deep probabilistic type inference approach; it targets TypeScript~\citet{hellendoorn18}.  It is a bidirectional neural network that leverages local lexical information to make type predictions. It forces multiple appearances of a token to have the same type, but otherwise ignores type constraints.  \projectname differs both JSNice and DeepTyper in two ways:  It incorporates type constraints and it reformulates probabilistic type inference as an optimisation problem.
 
-%Like us, they do not guarantee that the solution will solve the hard constraints.
 
-%The closest related works to this end are 
-%discussed in~\cref{sec:related}. We can view the problem of matching an identifier to a type as a form supervised text classification problem~\cite{aggarwal12}.
 
-\subsection{Soft Logic}\label{ssec:softlogic}
-Recently, there is a resurgence of interest for soft logic in the context of machine learning. By soft logic we mean a many-valued logic, where the truth values lie on the unit interval $[0,1]$. The 
-reason for this resurgence is twofold: First,
-soft logic allows the modeling of multiple notions
-of similarity. Second, and more relevant for our
-interests, the resulting compound formulas are 
-amenable to continuous optimisation approaches. Thus, they provide a framework to exploit the relational structure of different problems~\cite{kimmig12}. 
+A tool based on deep learning which learns types for every identifier.
+The network is trained using previously annotated TypeScript code.
+	      
+DeepTyper is a deep learning framework that outputs a type vector for every identifier
+based on information from the source-code context.
+It utilises information in the vicinity of the identifier to predict the type.
+In contrast, our LSTM is trained on identifiers and types;
+we focus on obtaining information based on the identifier alone and not its context.
 
-In the context of fuzzy logic, the three most
-important extensions are: G{\"o}del logic, {\L}ukasiewicz logic, and product logic~\cite{hajek1998}, with the latter two attracting more interest. For example, the {\L}ukasiewicz logic is used in \citet{bach17} due 
-to its convient relationship to their relaxed MAX 
-SAT problem formulation. In our case, the relationships expressed by the logical constraints are non-convex and we focus on smooth optimisation
-formulations; the product logic is more
-suitable since the other two are non-smooth and 
-would require relaxations. For 
-deep learning, this logic is also important as it 
-allows to perform back-propagation~\cite{evans18}.
+
+A tool based on graph neural networks which combines logical and contextual edges
+	 to predict types for TypeScript files.
+Graph neural networks (GNN)~\citep{allamanis17a} \ivp{general def}
+LambdaNet~\citet{wei20} was the first to apply GNN to the probabilistic type inference task for TypeScript.
+LambdaNet's GNN learns type dependency graphs extracted by static 
+code analysis from the training data.
+Their GNN is the first to incorporate logical constraints.
+ Their type dependency graph has edges that are either logical or contextual, corresponding to what we call logical or natural constraints.
+They are also able to predict user-defined types, unseen during training, using open vocabulary techniques.
+what it fails to do:  it learns logical, so no guarantee 
+\projectname:  optimisation and hard, guaranteed constraints:  we extract these constraints at test time.
+
+Our evaluation uses all three of these preceding approaches as baselines (\autoref{ssec:typesubproblem}).
+
 
 % Translations are completely standard when one  incorporates logic into optimization, 
 
