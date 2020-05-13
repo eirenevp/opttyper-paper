@@ -1348,10 +1348,18 @@ The following definitions formalise these metrics.
 
 \subsection{Type Prediction Accuracy}
 
-For the statically typed language $H$, let an annotation slot be a point in a program text where $H$'s grammar permits the appearance of a type annotation.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $T$.  We note that $T$ does not include \texttt{any} nor OOV. 
+For the statically typed language $H$, let an annotation slot be a point in a program text where $H$'s grammar permits the appearance of a type annotation.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $T$.  We note that $T$ does not include \texttt{any} nor OOV.
 
-\autoref{fig:type:prediction:space} shows the prediction space for types.
-Developer annotations are those slots 
+\begin{figure*}[t]
+    \centering
+    \def\svgwidth{0.8\linewidth}
+    \input{./figs/annotations/annotations.pdf_tex}
+    \caption{The prediction space for probabilistic type suggestion for an optionally typed language.}
+    \label{fig:type:prediction:space}
+\end{figure*}
+
+\autoref{fig:type:prediction:space} shows the prediction space for types in an optional type setting.
+In general, developer annotations are those slots that a developer is likely to annotate; in a training data, we under-approximate these slots by the slots that a developer did annotate. The compiler inferable slots are those slots for which the compiler can infer a type evelopers annotate s
 Define the ground truth, gold.ts, in relation to the figure.
 
 \ivpcomment{add textit for TP etc}
@@ -1364,13 +1372,7 @@ We use micro-precision~\cite{manning}, defined as
 %
 where $n=|T|$. In multi-class prediction, micro-precision coincides with accuracy, so, following related work, we use accuracy to refer to this metric in what follows.
 
-\begin{figure*}[t]
-    \centering
-    \def\svgwidth{0.8\linewidth}
-    \input{./figs/annotations/annotations.pdf_tex}
-    \caption{Prediction Space for Probabilistic Type Suggestion.}
-    \label{fig:type:prediction:space}
-\end{figure*}
+
 
 
 \subsection{Leveraging Both Logical and Natural Constraints}
