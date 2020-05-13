@@ -1,6 +1,6 @@
 %% Creator: Inkscape 1.0 (6e3e5246a0, 2020-05-07), www.inkscape.org
 %% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
-%% Accompanies image file 'char-level.pdf' (pdf, eps, ps)
+%% Accompanies image file 'annotations.pdf' (pdf, eps, ps)
 %%
 %% To include the image in your LaTeX document, write
 %%   \input{<filename>.pdf_tex}
@@ -38,7 +38,7 @@
   \newcommand*\fsize{\dimexpr\f@size pt\relax}%
   \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
   \ifx\svgwidth\undefined%
-    \setlength{\unitlength}{544.25197607bp}%
+    \setlength{\unitlength}{324.5443796bp}%
     \ifx\svgscale\undefined%
       \relax%
     \else%
@@ -50,19 +50,15 @@
   \global\let\svgwidth\undefined%
   \global\let\svgscale\undefined%
   \makeatother%
-  \begin{picture}(1,0.25976556)%
+  \begin{picture}(1,0.48188902)%
     \lineheight{1}%
     \setlength\tabcolsep{0pt}%
-    \put(0,0){\includegraphics[width=\unitlength,page=1]{./figs/char-level/char-level.pdf}}%
-    \put(0.04616929,0.19372236){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}TypeScript\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=2]{./figs/char-level/char-level.pdf}}%
-    \put(0.37392467,0.04861796){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\# of pairs\\\textasciitilde 45,000\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=3]{./figs/char-level/char-level.pdf}}%
-    \put(0.63009995,0.20153502){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Char-Level\\LSTM\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=4]{./figs/char-level/char-level.pdf}}%
-    \put(0.10832077,0.04861828){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Github repos\\\textasciitilde 300\end{tabular}}}}%
-    \put(0.3739261,0.20153502){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}(id, type)\\pairs\end{tabular}}}}%
-    \put(0.63752566,0.04861828){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}64 epochs\\Val. acc.: 0.81\end{tabular}}}}%
-    \put(0.88698706,0.20153502){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Naming\\Convensions\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{./figs/annotations/annotations.pdf}}%
+    \put(0.35370191,0.43536759){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\Large All annotation slots\end{tabular}}}}%
+    \put(0.87900689,0.44926898){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\Large Lib.\\ \Large Types\end{tabular}}}}%
+    \put(0.88372768,0.06911492){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\Large Proj.\\ \Large Types\end{tabular}}}}%
+    \put(0.05265783,0.07212798){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\Large Built-in\\ \Large Types\end{tabular}}}}%
+    \put(0.37649169,0.36001574){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\large Compiler inferable\end{tabular}}}}%
+    \put(0.35429251,0.27697514){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Developer's annotations\end{tabular}}}}%
   \end{picture}%
 \endgroup%

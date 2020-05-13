@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (6e3e5246a0, 2020-05-07)"
+   sodipodi:docname="annotations.svg"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 160.00001 80.000062"
+   height="156.39438pt"
+   width="312.78854pt">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     scale-x="1.45"
+     units="pt"
+     inkscape:window-maximized="1"
+     inkscape:window-y="27"
+     inkscape:window-x="43"
+     inkscape:window-height="1016"
+     inkscape:window-width="1877"
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     showguides="false"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="143.47235"
+     inkscape:cx="326.41913"
+     inkscape:zoom="1.605078"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <rect
+       ry="3.9200225"
+       rx="4.1796927"
+       y="0"
+       x="0"
+       height="80"
+       width="160"
+       id="rect10"
+       style="fill:#ececec;stroke-width:0.298257" />
+    <rect
+       ry="4.4258504"
+       rx="4.5589538"
+       y="15"
+       x="30"
+       height="50"
+       width="100"
+       id="rect12"
+       style="fill:#cccccc;stroke-width:0.330984" />
+    <rect
+       ry="6.2168689"
+       rx="9.5998802"
+       y="24.375"
+       x="48.75"
+       height="31.25"
+       width="62.5"
+       id="rect14"
+       style="fill:#999999;stroke-width:0.569238" />
+    <path
+       id="path20"
+       d="m 80.243277,40.000021 0.01325,39.999958"
+       style="fill:none;stroke:#000000;stroke-width:0.486553;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.496559px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 159.99998,40.24828 2.1103784e-5,40.251726"
+       id="path20-3" />
+    <text
+       transform="scale(0.99827956,1.0017234)"
+       id="text39"
+       y="9.3772926"
+       x="55.280426"
+       style="font-style:normal;font-weight:normal;font-size:5.11528px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.262008"
+       xml:space="preserve"><tspan
+         style="font-size:5.11528px;text-align:center;text-anchor:middle;stroke-width:0.262008"
+         y="9.3772926"
+         x="55.280426"
+         id="tspan37"
+         sodipodi:role="line">All annotation slots</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:5.11528px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.262008"
+       x="140.61963"
+       y="7.1266856"
+       id="text39-6"
+       transform="scale(0.99827956,1.0017234)"><tspan
+         sodipodi:role="line"
+         id="tspan37-7"
+         x="140.61963"
+         y="7.1266856"
+         style="font-size:5.11528px;text-align:center;text-anchor:middle;stroke-width:0.262008">Lib.</tspan><tspan
+         id="tspan886"
+         sodipodi:role="line"
+         x="140.61963"
+         y="13.520786"
+         style="font-size:5.11528px;text-align:center;text-anchor:middle;stroke-width:0.262008">Types</tspan></text>
+    <text
+       transform="scale(0.99827956,1.0017234)"
+       id="text39-6-5"
+       y="68.672859"
+       x="141.38655"
+       style="font-style:normal;font-weight:normal;font-size:5.11528px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.262008"
+       xml:space="preserve"><tspan
+         style="font-size:5.11528px;text-align:center;text-anchor:middle;stroke-width:0.262008"
+         y="68.672859"
+         x="141.38655"
+         id="tspan37-7-3"
+         sodipodi:role="line">Proj.</tspan><tspan
+         style="font-size:5.11528px;text-align:center;text-anchor:middle;stroke-width:0.262008"
+         y="75.066956"
+         x="141.38655"
+         sodipodi:role="line"
+         id="tspan886-5">Types</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:5.11528px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.262008"
+       x="6.3738623"
+       y="68.185051"
+       id="text39-6-5-6"
+       transform="scale(0.99827956,1.0017234)"><tspan
+         sodipodi:role="line"
+         id="tspan37-7-3-2"
+         x="6.3738623"
+         y="68.185051"
+         style="font-size:5.11528px;text-align:center;text-anchor:middle;stroke-width:0.262008">Built-in</tspan><tspan
+         id="tspan886-5-9"
+         sodipodi:role="line"
+         x="6.3738623"
+         y="74.579147"
+         style="font-size:5.11528px;text-align:center;text-anchor:middle;stroke-width:0.262008">Types</tspan></text>
+    <text
+       transform="scale(0.99827956,1.0017234)"
+       id="text39-6-5-6-1"
+       y="21.576605"
+       x="58.982773"
+       style="font-style:normal;font-weight:normal;font-size:5.11528px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.262008"
+       xml:space="preserve"><tspan
+         style="font-size:5.11528px;text-align:center;text-anchor:middle;stroke-width:0.262008"
+         y="21.576605"
+         x="58.982773"
+         sodipodi:role="line"
+         id="tspan886-5-9-7">Compiler inferable</tspan></text>
+    <text
+       id="text981"
+       y="31.32802"
+       x="71.310623"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.264583"
+         y="31.32802"
+         x="71.310623"
+         id="tspan979"
+         sodipodi:role="line"></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:5.11528px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.262008"
+       x="55.376373"
+       y="35.02071"
+       id="text39-6-5-6-1-0"
+       transform="scale(0.99827956,1.0017234)"><tspan
+         id="tspan886-5-9-7-9"
+         sodipodi:role="line"
+         x="55.376373"
+         y="35.02071"
+         style="font-size:5.11528px;text-align:center;text-anchor:middle;stroke-width:0.262008">Developer's annotations</tspan></text>
+  </g>
+</svg>
