@@ -1353,15 +1353,15 @@ For the statically typed language $H$, let an annotation slot be a point in a pr
 show and discuss the figure for the prediction space.
 Define the ground truth, gold.ts, in relation to the figure.
 
-\ivpcomment{Define n, TP and FP here, before the equation.}
-$TP_i$ the number of times that the predictor correctly labelled a slot with the $i^\text{th}$ type;  $FP_i$ is the ...
+\ivpcomment{add textit for TP etc}
+$TP_i$ the number of times that a probabilistic type predictor \emph{correctly} labelled a slot with the $i^\text{th}$ type;  $FP_i$ is the number of times that the type predictor \emph{incorrectly} labelled a slot with the $i^\text{th}$ type.
 We use micro-precision~\cite{manning}, defined as 
 %
 \begin{align}\label{eq:acc}
-    \sum_i^n \frac{TP_i}{TP_i} + FP_i.
+    \sum_i^n \frac{TP_i}{TP_i} + FP_i,
 \end{align}
 %
-In multi-class prediction, micro-precision coincides with accuracy, so, following related work, we use accuracy to refer to this metric in what follows.
+where $n=|T|$. In multi-class prediction, micro-precision coincides with accuracy, so, following related work, we use accuracy to refer to this metric in what follows.
 
 
 \subsection{Leveraging Both Logical and Natural Constraints}
@@ -1370,7 +1370,7 @@ In multi-class prediction, micro-precision coincides with accuracy, so, followin
     \centering
     \def\svgwidth{0.8\linewidth}
     \input{./figs/annotations/annotations.pdf_tex}
-    \caption{Annotation slots' diagram.}
+    \caption{Type PrdAnnotation slots' diagram.}
 \end{figure*}
 
 For evaluating type predictions,

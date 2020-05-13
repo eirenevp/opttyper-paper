@@ -54,11 +54,11 @@
     \lineheight{1}%
     \setlength\tabcolsep{0pt}%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{./figs/annotations/annotations.pdf}}%
-    \put(0.35370191,0.43536759){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\Large All annotation slots\end{tabular}}}}%
-    \put(0.87900689,0.44926898){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\Large Lib.\\ \Large Types\end{tabular}}}}%
-    \put(0.88372768,0.06911492){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\Large Proj.\\ \Large Types\end{tabular}}}}%
+    \put(0.35370191,0.43536759){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\Large All Annotation Slots\end{tabular}}}}%
+    \put(0.87900689,0.44926898){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\Large Library\\ \Large Types\end{tabular}}}}%
+    \put(0.88372768,0.06911492){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\Large Project\\ \Large Types\end{tabular}}}}%
     \put(0.05265783,0.07212798){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\Large Built-in\\ \Large Types\end{tabular}}}}%
-    \put(0.37649169,0.36001574){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\large Compiler inferable\end{tabular}}}}%
-    \put(0.35429251,0.27697514){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Developer's annotations\end{tabular}}}}%
+    \put(0.37649169,0.36001574){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\large Compiler Inferable\end{tabular}}}}%
+    \put(0.35429251,0.27697514){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Developer Annotations\end{tabular}}}}%
   \end{picture}%
 \endgroup%
