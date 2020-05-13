@@ -445,7 +445,7 @@ and DeepTyper~\cite{hellendoorn18}, which targets TypeScript via deep learning t
 Previous approaches all use machine learning to capture the structural
 similarities between typed and untyped source code and to extract a statistical model for
 the text~\cite{allamanis17}. However, none explicitly models the underlying
-type inference rules, and thus their predictions ignore useful logical information. Towards this direction, a more recent tool by \citet{wei20} which  tackles the same problem as DeepTyper, learns explicitly logical relations \ivpcomment{and natural but we havent introduced the term yet} extracted by the corpus, however as these relations are learned at
+type inference rules, and, thus, their predictions ignore useful logical information. Towards this direction, a more recent tool by \citet{wei20} which  tackles the same problem as DeepTyper, learns explicitly logical relations \ivpcomment{and natural but we havent introduced the term yet} extracted by the corpus, however as these relations are learned at
 training time, there is no guarantee that the result at
 test time will respect them. For the goal of the probabilistic type inference, we find that result is expected
 to obey the type inference rules of the language and suggest
@@ -1024,9 +1024,10 @@ of a system based on optimising objective (\ref{eq:objective}).
 
 \section{\projectname: Predict Types for TypeScript}
 \label{sec:prodts}
+
 To evaluate our approach in a real-world scenario, we
 implement an end-to-end application, called \projectname, which aims
-to infer types for untyped TypeScript files.
+to suggest types for partially TypeScript files.
 
 \subsection{Background: TypeScript's Type System}~\label{ssec:intro-typescript}
 
@@ -1047,7 +1048,7 @@ unsound~\citep{understandtypescript}.  It is an optional type system, whose
 annotations can be omitted and have no effect on runtime.  TypeScript erases 
 them when transpiling to JavaScript~\citep{understandtypescript}.
 TypeScript's type system defaults to assigning its \texttt{any} type to
-unannotated identifiers, like parameters.  Function returns are an exception;
+unannotated identifiers.  Function returns are an exception;
 here, TypeScript does seek to infer a more specific type.
 
 % TypeScript applications and libraries commonly take advantage of JavaScript's flourishing ecosystem
@@ -1348,7 +1349,7 @@ The following definitions formalise these metrics.
 
 \subsection{Type Prediction Accuracy}
 
-For the statically typed language $H$, let an annotation slot be a point in a program text where $H$'s grammar permits the appearance of a type annotation.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $T$.  We note that $T$ does not include \texttt{any} nor OOV.
+For a statically typed language, let an annotation slot be a point in a program text where the grammar permits the appearance of a type annotation.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $T$.  We note that $T$ does not include the gradual \texttt{any} type nor OOV.
 
 \begin{figure*}[t]
     \centering
@@ -1359,20 +1360,23 @@ For the statically typed language $H$, let an annotation slot be a point in a pr
 \end{figure*}
 
 \autoref{fig:type:prediction:space} shows the prediction space for types in an optional type setting.
-In general, developer annotations are those slots that a developer is likely to annotate; in a training data, we under-approximate these slots by the slots that a developer did annotate. The compiler inferable slots are those slots for which the compiler can infer a type evelopers annotate s
-Define the ground truth, gold.ts, in relation to the figure.
+TypeScript itself defines Built-in types.  Library types are those types defined by the libraries a project imports and project types, sometimes called user types in the literature, are those types a project defines itself. 
+In general, developer annotations are those slots that a developer is likely to annotate; in a training data, we under-approximate these slots by the slots that a developer did annotate. 
+The compiler inferable slots are those slots for which an optional compiler can infer a type given the developer annotations.  
+Developers annotate some slots to document and clarify the code, to aid navigation and completion, and so that the compiler can infer types for other slots.  
+Developer annotated slots are special for two reasons:  they provide a natural source of labeled training data and, since developers went to the effort of annotating them, relieving developers of the burden of doing so is clearly useful.
 
-\ivpcomment{add textit for TP etc}
-$TP_i$ the number of times that a probabilistic type predictor \emph{correctly} labelled a slot with the $i^\text{th}$ type;  $FP_i$ is the number of times that the type predictor \emph{incorrectly} labelled a slot with the $i^\text{th}$ type.
-We use micro-precision~\cite{manning}, defined as 
+\ivpcomment{add textit for TP, etc.}
+$TP_i$ is the number of times that a probabilistic type predictor \emph{correctly} labelled a slot with the $i^\text{th}$ type;  $FP_i$ is the number of times that the type predictor \emph{incorrectly} labelled a slot with the $i^\text{th}$ type.  Our ground truth for determining whether a prediction is correct is the set of developer annotated slots; in our test set, we call this set \texttt{gold.ts}.
+We report performance using micro-precision~\cite{manning}, defined as 
 %
 \begin{align}\label{eq:acc}
-    \sum_i^n \frac{TP_i}{TP_i} + FP_i,
+    \sum_i^n \frac{TP_i}{TP_i + FP_i},
 \end{align}
 %
-where $n=|T|$. In multi-class prediction, micro-precision coincides with accuracy, so, following related work, we use accuracy to refer to this metric in what follows.
-
-
+where $n=|T|$. In multi-class prediction, micro-precision coincides with accuracy.
+\ivp{I think we should show this here.}
+So, following related work~\cite{todo:lambdanet}, we use accuracy to refer to this metric in the evaluation that follows.
 
 
 \subsection{Leveraging Both Logical and Natural Constraints}
