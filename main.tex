@@ -510,7 +510,7 @@ Our main contributions follow:
 	\item We introduce a general, principled framework that uses soft logic to combine logical and natural constraints for type inference,
 	      based on transforming a type inference procedure into a numerical optimisation problem.
 	\item We instantiate this framework in \projectname, a probabilistic type inference tool for TypeScript.
-	\item We evaluate \projectname  \ivpcomment{change} on $\tilde{600}$ predictions and find that combining natural and logical constraints has better performance than either alone. Further, \projectname outperforms state-of-the-art systems,
+	\item We evaluate \projectname  \ivpcomment{change} on $600$ predictions and find that combining natural and logical constraints has better performance than either alone. Further, \projectname outperforms state-of-the-art systems,
 	      LambdaNet, DeepTyper and JSNice.
 	\item We show how \projectname achieves its high performance by combining logical and natural constraints at test time; to the best of our knowledge, it is the first tool for probabilistic type inference to do so.
 % 	\adgcomment{do we have good evidence that the combination at test time is the root cause of our results?}
@@ -547,10 +547,10 @@ predicting types in TypeScript.
 		%
 		To begin, in Box (a), we propose fresh type annotations  \textcolor{mygreen}{\texttt{START}} and \textcolor{mygreen}{\texttt{END}} (uppercasing the identifier) for each parameter and \textcolor{mygreen}{\texttt{ADDNUM}} for the return type.
 		%
-		We insert these annotations into the definition of the function.
+		We insert these annotations into the function's definition.
 		%
 		Our \emph{logical constraints} on these types represent knowledge obtained
-		by a symbolic analysis of the code in the body of the function.
+		by a symbolic analysis of the code in the function's body.
 		%
 		In our example, the use of a binary operation implies that the two parameter types are equal.
 		%
@@ -627,16 +627,17 @@ that requires type annotations on identifiers.
 %
 Given a program $U$ plus a typing environment $\Gamma$ let $\Gamma \vdash U$ mean that the program $U$ is well-typed according to the (deterministic) type system, given types for identifiers provided by $\Gamma$.
 %
-A typing environment $\Gamma$ is a finite function
+Formally, a typing environment $\Gamma$ is a finite function
 with domain $\{ x_v \mid v \in 1 \ldots V\}$, where $x_v$  is an identifier, and range $\{ l_\tau \mid \tau \in 1 \dots T \}$, where each $l_\tau$ is a literal type.
 Given an untyped program $U$,
-let \emph{probabilistic type inference} consist of these steps
+let \emph{probabilistic type inference} consist of these steps:
 \begin{enumerate}
 	\item We choose a finite universe consisting of $T$ distinct literal types $\{ l_\tau \mid \tau \in 1 \dots T \}$.
 	\item We compute a set $\{ x_v \mid v \in 1 \ldots V\}$ of a number $V$ of distinct identifiers in $U$ that need to be assigned types.
 	\item \label{step:constraints} We extract a set of constraints from $U$.
 	\item \label{step:optimise} By optimising these constraints, we construct a matrix $P$ with $V$ rows and $T$ columns,
-	      such that each row is a probability vector (over the $T$ literal types).
+	      such that each row is a probability vector
+	      (a discrete distribution over the $T$ literal types).
 	\item For each identifier $x_v$, we set type $t_v$ to the literal type $l_\tau$ which we compute from the $v$th probability vector (the one for identifier $x_v$).  In this work, we pick the column $\tau$ that has the maximum probability in $x_v$'s probability vector.
 	\item The outcome is the environment $\Gamma = \{ x_v : t_v \mid v \in 1 \ldots V\}$.
 \end{enumerate}
@@ -662,9 +663,9 @@ For this reason, a \emph{natural constraint}
 encodes less-certain information about $\Gamma$,
 for example, based on comments or names.
 Just as we can conceptualise the logical
-constraints as a function to $\{0, 1\}$,
+constraints as a function to the set of boolean values $\{0, 1\}$,
 we can conceptualise the natural constraints as functions
-that map $\Gamma$ to $[0, 1]$, which can be interpreted
+that map $\Gamma$ to the set of probabilities $[0, 1]$, which can be interpreted
 as a prediction of the probability that $\Gamma$ would
 be successful. To combine these two constraints, we relax the boolean operations to continuous operators on $[0, 1]$.
 Since we can conceptualise $E$ as a function
@@ -677,7 +678,7 @@ we formalise type inference as a problem in
 numerical optimisation, with the goal to find a relaxed type assignment
 that satisfies as much as possible both sorts of constraints.
 The result of this optimisation procedure is the
-$P$ matrix of probabilities described in step~(\ref{step:optimise}).
+matrix $P$ of probabilities described in step~(\ref{step:optimise}).
 % We explain the above formalization in more detail in the remainder of this section.
 
 \subsection{Logical Constraints in Continuous Space}\label{ssec:logcon}
@@ -718,11 +719,11 @@ Logical constraints are extracted from our untyped input program $U$ using
 standard program analysis techniques.  Here, we rely on a \emph{Constraints
 	Generator} for this purpose. ~\autoref{ssec:logprodts} describes its
 realisation.  The generator takes into account a set of rules that the type system
-enforces and produces a boolean type constraints for them.
+enforces and produces a boolean type constraint for them.
 
 In this work, we consider the following logical constraints.
 \begin{definition}[\emph{Grammar of Logical Constraints}]\label{def:log-gram}
-	A logical constraint is an expression $E$ of the following form
+	A logical constraint is an expression $E$ of the following form:
 	\begin{align*}
 		E & ::= x_v \mathrel{is} l_\tau \\ \numberthis\label{eq:gram}
 		  & \mid{} \mathrel{not} E      \\
@@ -732,29 +733,23 @@ In this work, we consider the following logical constraints.
 	Let $\mathcal{E}$ be the set of all logical constraints.
 \end{definition}
 % CS: Commenting out notation that is already defined in the setup now.
+\adgcomment{please proof read until the end of the subsection}
 \paragraph{Continuous Relaxation}
 We explain how to specify a \emph{continuous relaxation} of the discrete logical semantics.
 A formula $E$ can be viewed as a boolean function $f_E: \{0, 1\}^{V \times T} \rightarrow \{0, 1\}$
 that maps binary matrices to $\{0, 1\}$.
 To see this, we can convert an environment
-$\Gamma$ into a $V \times T$ binary matrix $B$ by setting $b_{v,\tau} = 1$ if
+$\Gamma$ into a $V \times T$ binary matrix $B(\Gamma)$ by setting $b_{v,\tau} = 1$ if
 $(x_v, l_\tau) \in \Gamma,$ and 0 otherwise.
-Let $B(\Gamma)$ be the binary
-matrix corresponding to $\Gamma$.
 Also, define $\Pi^{V \times T}$ to be the set
 of all \emph{probability matrices} of size $V \times T$,
 that is, matrices of the form $P = \begin{bmatrix} \bm{p}_1 & \ldots & \bm{p}_{V} \end{bmatrix}^\mathsf{T}$,
 where each $\bm{p}_v = \begin{bmatrix} p_{v,1} & \ldots & p_{v,{T}} \end{bmatrix}^\mathsf{T}$
 is a vector that defines a probability distribution over concrete types.
-Finally, a \emph{relaxed semantics} is a continuous function
-that always agrees with the logical semantics, that is,
-a relaxed semantics is a function
-$\tilde{f}_{E} : \Pi^{V \times T}  \rightarrow [0, 1]$
-such that for all formulas $E$ and environments $\Gamma$,
-$\tilde{f}_{E}(B(\Gamma)) = f_E(B(\Gamma)) := \qqpi{B(\Gamma)}{E}$.
 
 To define a relaxed semantics, we introduce a continuous semantics of $E$ based on generalizations of two-valued logical conjuctions
 to many-valued~\cite{hajek98}.
+\adg{we should explain what the product $t$-norm is}
 Specifically, we use the product $t$-norm, because the binary operation associated with it is smooth and fits with our optimisation-based approach. We further justify this choice in \autoref{ssec:softlogic}.
 The product $t$-norm has already been used for obtaining continuous semantics in machine learning, for example by~\citet{rocktaschel15}.
 
@@ -779,9 +774,14 @@ defined as
 \end{align*}
 %The $\mathrel{is}$ relation describes that the probability that the type variable $x_v$ is the literal type $l_\tau$. 
 In the actual implementation, we use logits instead of probabilities
-for numerical stability, see \cref{app:appendix-logit}. We note also, that our relaxation for the $\mathrel{or}$ operator, depends on the random initialization of the optimiser, and thus the final answer will be 
-either $\qqpi{P}{E_1}$ or $\qqpi{P}{E_2}$ with high probability but 
-not always the same.
+for numerical stability, see \cref{app:appendix-logit}. Finally, a \emph{relaxed semantics} is a continuous function
+that always agrees with the logical semantics, that is,
+a relaxed semantics is a function
+$\tilde{f}_{E} : \Pi^{V \times T}  \rightarrow [0, 1]$
+such that for all formulas $E$ and environments $\Gamma$,
+$\tilde{f}_{E}(B(\Gamma)) = f_E(B(\Gamma)) := \qqpi{B(\Gamma)}{E}$.
+\ivpcomment{From Charles: We don't need all of the description above given what we say in the rest of the section, e.g, we don't need to define $f_E$ 
+as taking a matrix as input, we can just say that it takes $\Gamma$, I think.}
 
 We define  a logical satisfaction relation $\Gamma \models E$, as follows
           \begin{align*} 
@@ -791,15 +791,25 @@ We define  a logical satisfaction relation $\Gamma \models E$, as follows
               \Gamma \models E_1 \mathrel{or} E_2
                                                      & \Leftrightarrow \Gamma \models E_1 \mathrel{or} \Gamma \models E_2.
           \end{align*}
-Following the Theorem 4.1.13 of~\citet{hajek98}'s book, we draw
-a correspondence between numerical semantics and typing environments, as follows
-\begin{equation}\label{eq:hard2soft}
- \textit{For all E and } \Gamma, \qqpi{P}{E} = 1 \Leftrightarrow \Gamma \models E.     
-\end{equation}
-To motivate further this continuous semantics, recall that in our setting, we know $E$ but
-do not know $P$. Thus, by finding a probability matrix $P$ that maximises the continuous semantics of $\qqpi{P}{E}$, we find a $P$ that satisfies $E$. One step further, by having the type assignments that satisfy $E$ we can obtain a typing environment $\Gamma$ that models $E$. This can be shown by 
-course-of-values indictation on the $size(E)$.
 
+
+The key property of the continuous semantics is that there is a 
+a correspondence between numerical semantics and typing environments.
+Theorem 4.1.13 of~\citet{hajek98} book and shows that in the product logic a formula $E$ is provable if and only if  $\qqpi{}{E} = 1$. Extending this theorem to our setting we have that 
+\begin{theorem}\label{eq:soft2hard}
+For all E and $\Gamma$, we have that $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E.$     
+\end{theorem}
+This can be shown by structural induction
+on $size(E)$, for a complete proof see~\cref{app:proofs}. Recall that in our setting, we know $E$ but
+do not know $\Gamma$. To address that 
+and because the continuous semantics of $E$ is a function of $B(\Gamma)$, we consider $\qqpi{B(\Gamma)}{E}$ as an objective for an optimization problem to infer a $B(\Gamma)$. By finding a probability matrix $\Gamma$ that maximises the continuous semantics of $E$. Thus, in that way we have a typing environment $\Gamma$ that models $E$. 
+
+% find a $\Gamma$ that satisfies the deterministic logical semantics $E$. One step further, by having the type assignments that satisfy $E$ we can obtain 
+% Recall that in our setting, we know $E$ but
+% do not know $\Gamma$. This is because it relaxes
+% the deterministic logical semantics of $E$, and it is maximized
+% by probability matrices $P$ which correspond to satisfying type environments. This is stated
+% more formally in the following theorem.
 
 % the continuous semantics,
 % when considered as a function of $P$, can serve as a sensible
@@ -975,7 +985,7 @@ yielding the final form of our optimisation problem
 	- \lambda \big(\qqpi{[\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}}{E} - 1\big).
 \end{equation}
 This can now be solved numerically using first-order unconstrained optimisation methods for Lagrange
-multipliers~\citet{bertsekas82}. \ivpcomment{add more}
+multipliers~\citep{bertsekas82}. \ivpcomment{add more}
 Intuitively, the parameter $\lambda$ trades off the importance
 of the two different kinds of constraints.
 In the limiting case where $\lambda \rightarrow \infty$, the second term in the objective function \eqref{eq:objective} is dominant and we obtain the solution that best satisfies the relaxed
@@ -1019,23 +1029,22 @@ extend the sources of information we are getting as inputs to other channels, su
 
 \section{\projectname: Predict Types for TypeScript}
 \label{sec:prodts}
-\adgcomment{Andy, please check this par}
 To evaluate our approach in a real-world scenario, we
 implement an end-to-end application, called \projectname, which aims
-to suggest types for partially TypeScript files. We would like to point out that the goal of the
+to suggest types for partially TypeScript files. The goal of the
 \projectname{}'s implementation 
 is to serve as a proof of concept for our general framework. Thus, we acknowledge that both the
 logical and natural channels are an under-approximations and can be replaced for more
 sophisticated ones. For instance, as every learning model outputs a probability vector
-over types we can extend our method to include natural constraints generated by LambdaNet, JSNice or indeed any other deep learning approach that offers similar information. On the other hand, as
+over types, we can extend our method to include natural constraints generated by LambdaNet, JSNice or indeed any other deep learning approach that offers as an output type probabilities vectors. 
+For logical constraints, while
 the grammar of logical constraints defined
-in~\eqref{eq:gram} allows us naturally to express inference rules, the logical constraints that 
-we take into account are being confined of 
-how many inference rules we are translated to logical expressions. Unfortunately, the TypeScript compiler does not produce logical constraints during its type inference procedure so we 
-decide to go with a pragmatic approach which only 
-harvests a subset of them. While both of our implementation choices for extracting logical
-and natural constraints we show that our results 
-are outperforms JSNice and DeepTyper, while does marginally better than LambdaNet.
+in~\eqref{eq:gram} allows us naturally to express inference rules, the type constraints that \projectname handles in practice is confined to  
+those inference rules we translate into logical expressions.
+Unfortunately, the TypeScript compiler's type inference does not output logical constraints, so we 
+have taken the pragmatic approach of only 
+harvesting a subset of them. 
+Even under the constraints of these two implementation choices for extracting natural and logical constraints, we show that \projectname outperforms JSNice and DeepTyper; its result are also marginally better than those of LambdaNet.
 
 \subsection{Background: TypeScript's Type System}~\label{ssec:intro-typescript}
 
@@ -1100,6 +1109,10 @@ most starred Typescript projects from Github,
 containing between 500 to 10,000 lines of code.
 Our dataset was randomly split by project into $80\%$ training data, $10\%$ validation data and $10\%$ test data. \cref{fig:Char-Level} shows a summary of the pipeline used to train our model, for specific implementation details of the LSTM refer to \cref{app:neural}.  
 
+\paragraph{Type Vocabulary}
+We define our type vocabulary to consist of top-100 most common default library types in our training set. As~\citet{wei20} report this prediction space covers $98\%$ of the non-any annotations for the training set. We choose to consider only built-in types 
+to ensure that we do not introduce types that are not available to the compiler. Handling a larger set of types is straightforward, but we decide instead to work with the same set of built types that \citet{hellendoorn18, wei20} use, in order to be consistent in our comparisons.
+
 \paragraph{Implementation Details}
 Regarding the implementation details of the LSTM network, for the $F$ in \eqref{eq:lstmb},
 we use a feedforward neural network
@@ -1148,6 +1161,7 @@ and sum all the values of the correct labels for the entire training set.
 		Binop         & Operator $\oplus$ cannot be applied
 		to types $X$ and $Y$.                                                                                        \\
 		Index         & Type $X$ cannot index type $Y$.                                                              \\
+		Assign         & Type $X$ is not assignable to type $Y$.                                                              \\
 		ArithLHS      & The left-hand side of an arithmetic operation must be
 		an \texttt{enum} type or have type \texttt{any}+ or \texttt{number}.    \\
 		ArithRHS      & The right-hand side of an arithmetic operation must be
@@ -1187,10 +1201,10 @@ of only around 10 constraints per library.
 The first row of \cref{tab:constraints}
 refers to identifying properties or methods that a type should implement
 and using them to generate a type constraint.
-The file \lstinline{lib.d.ts} includes interfaces for the built-in types of the language.
+The file \lstinline{lib.d.ts} includes interfaces for the default library types of the language.
 These interfaces contain the typed signatures of each property and method
 that a built-in type implements. We use these interfaces to construct a set of
-possible built-in types that we could assign to our injected type and therefore a proper
+possible default library types that we could assign to our injected type and therefore a proper
 type constraint. For a concrete example of this procedure, 
 see~\cref{fig:jscode-base64,fig:log-base64a}.
 
@@ -1273,7 +1287,7 @@ problem as described in~\eqref{eq:logical} and
 an alternative to stochastic gradient descent~\cite{robbins51}, with an adaptive learning rate.Both the code for the deep
 learning and the combined optimisation part is written in
 PyTorch~\cite{paszke2017}.
-
+\ivpcomment{handling subtypind}
 
 
 % \subsection{Realisation of \projectname{}}\label{ssec:combprodts}
@@ -1303,13 +1317,11 @@ Next, we define the metrics used to perform our comparison and present the resul
 % It computes type annotations on average for 58 files in about 60 seconds
 % for solving logical constraints and natural constraints, and in about 65 seconds for the combined optimisation.
 
-\subsection{Type Prediction Accuracy and Space}\label{sec:acc}
+\subsection{Type Prediction Accuracy}\label{sec:acc}
 
 % Dataset.Similar to Hellendoorn et al. (2018), we train and evaluate our model on popular open-source Typescript projects taken from Github. Specifically, we collect 300 Typescript projects (withthe most Github stars) that contain between500to10,000lines of code and where at least10%oftype annotations are user-defined types.  Among these 300 projects, we use60for testing,40forvalidation, and the remainder for training. Note that each project contains hundreds to thousands oftype variables to predict.Because some of the projects in our benchmark suite are only sparsely type annotated, we augmentour labeled training data by using the forward type inference functionality provided by the Typescriptcompiler.  The compiler cannot infer the type of every variable and leaves many labeled asanyduring failed inference; thus, we excludeanylabels in our data set.  Furthermore, at test time, weevaluate our technique only on annotations that are manually added by developers. This is the samemethodology used by Hellendoorn et al. (2018), and, since developers often add annotations wherecode is most unclear, this constitutes a challenging setting for type prediction.Prediction Space.As mentioned in  Section 2.1,  
 
-
-\paragraph{Type Prediction Accuracy}
-For a statically typed language, let an annotation slot be a point in a program text where the grammar permits the appearance of a type annotation.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $T$. We note that $T$ does not include the gradual \texttt{any} type or \textit{OOV}.
+For a statically typed language, let a declaration slot be a point in a program text where the grammar permits annotating an identifier with its type, including parameters within a function declaration; there is one such point for each fully qualified name in the program.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $\mathcal{T} = \{ l_\tau \mid \tau \in 1 \dots T \}$. We note that $\mathcal{T}$ does not include the gradual \texttt{any} type or \textit{OOV}.
 
 \begin{figure*}[t]
     \centering
@@ -1326,20 +1338,20 @@ The compiler inferable slots are those slots for which an optional compiler can 
 Developers annotate some slots to document and clarify the code, to aid navigation and completion, and so that the compiler can infer types for other slots.  
 Developer annotated slots are special for two reasons:  they provide a natural source of labeled training data and, since developers went to the effort of annotating them, relieving developers of the burden of doing so is clearly useful.
 
-$\mathit{TP_i}$ is the number of times that a probabilistic type predictor \emph{correctly} labelled a slot with the $i^\text{th}$ type;  $\mathit{FP_i}$ is the number of times that the type predictor \emph{incorrectly} labelled a slot with the $i^\text{th}$ type.  Our ground truth for determining whether a prediction is correct is the set of developer annotated slots; in our test set, we call this set \texttt{gold.ts}. %This is a working assumption in the sense that some files may contain errors ~\citet{williams17}.
+$\mathit{TP_i}$ is the number of times that a probabilistic type predictor \emph{correctly} labelled a slot with the $i^\text{th}$ type in $\mathcal{T}$;  $\mathit{FP_i}$ is the number of times that the type predictor \emph{incorrectly} labelled a slot with the $i^\text{th}$ type.  Our ground truth for determining whether a prediction is correct is the set of developer annotated slots; in our test set, we call this set \texttt{gold.ts}. 
+This is a working assumption in the sense that some files may contain errors~\citet{williams17}.
 We report performance using micro-precision ~\cite{manning}, defined as 
 %
 \begin{align}\label{eq:acc}
-    \sum_i^n \frac{\mathit{TP_i}}{\mathit{TP_i} + \mathit{FP_i}},
+    \sum_i^T \frac{\mathit{TP_i}}{\mathit{TP_i} + \mathit{FP_i}},
 \end{align}
 %
-where $n=|T|$. In multi-class prediction, micro-precision coincides with accuracy.
+where $T=|\mathcal{T}|$. In multi-class prediction, micro-precision coincides with accuracy.  To see, consider a multi-class confusion matrix.  The correct predictions are along its diagonal; the incorrect ones fall into all the other cells.  A correct prediction is both a TP positive, because the predictor choose the correct class, and a true negative, because the predictor did not incorrectly choose any other class.  
 \ivpcomment{I think we should show this here.}
 So, following related work~\cite{wei20}, we use accuracy to refer to this metric in the evaluation that follows.
 
-\paragraph{Type Prediction Space}
-We perform the evaluations that follow on \textit{developer annotation slots} and define our type prediction space to consist of top-100 most common library types in our training set. As~\citet{wei20} report this prediction space covers $98\%$ of the non-any annotations for the training set. These implementation decisions, along with the fact that we use the same training data (~\cref{ssec:natprodts})
-make our comparison consistent with previous works \citep{hellendoorn18, wei20} in the field.
+To be consistent with previous work \citep{hellendoorn18,wei20} we perform the evaluations that follow on \textit{developer annotation slots}, while as we described
+~\cref{ssec:natprodts} we use the same training data.
 
 \subsection{Ablation Analysis:  Leveraging Both Logical and Natural Constraints}
 
@@ -1347,7 +1359,7 @@ make our comparison consistent with previous works \citep{hellendoorn18, wei20} 
 \cref{tab:typeacc1}'s columns define disjoint sets of annotation slots. 
 \begin{table*}[t]
 	\centering
-	\caption{Ablation analysis of \projectname over 107 identifiers, the cells report accuracy; FN refers to return types of functions, PARAM
+	\caption{Ablation analysis of \projectname, the cells report accuracy; FN refers to return types of functions, PARAM
 	represents parameters.}
 \label{tab:typeacc1}
 	\begin{tabular}{ccccccc}
@@ -1356,9 +1368,9 @@ make our comparison consistent with previous works \citep{hellendoorn18, wei20} 
 		$\textit{PARAM}$ & $\textit{TOTAL}$ \\
 		
 		\midrule
-		\textit{Logical}      & 0.46                                   & 0.23                                 & 0.29                                  \\
-		\textit{Natural}      & 0.27                                    & 0.60                                 & 0.52                                   \\
-		\projectname  & 0.62         & 0.74         & 0.71\\
+		\textit{Logical}      & 0.56                                   & 0.23                                 & 0.29                                  \\
+		\textit{Natural}      & 0.27                                    & 0.62                                 & 0.52                                   \\
+		\projectname  & 0.66         & 0.75         & 0.74\\
 		\bottomrule
 	\end{tabular}
 \end{table*}
@@ -1366,100 +1378,74 @@ make our comparison consistent with previous works \citep{hellendoorn18, wei20} 
 
 Regarding the \textit{Logical} approach, the results are significantly better for function return types
 than parameter types.
-This happens because the TypeScript compiler generates much richer constraints for all---exported or not---return
+This happens because the TypeScript compiler generates much richer constraints for return
 types of functions.
 For the parameters' types, the compiler disregards any information
 and infers all types as \texttt{any}; a situation that produces no useful logical constraints.
 To mitigate this issue, we define some simple heuristics that allow the \textit{Logical} tool
-to generate non-trivial constraints.
-A more systematic approach could improve the results regarding the parameters' type inference,
-but we leave this to future work.
+to generate non-trivial constraints.  
 
-Overall, the combination of the logical and natural constraints in \projectname
-greatly improves our type inference capabilities.
+For the \textit{Natural} phase, the results swap, the prediction accuracy for the parameters' is double than the one for the return types. Our assumption is that
+this is a result of largely using the same parameters ids over different projects, for example \texttt{path}, than using the same function ids.
 
-
-Regarding the static analysis, the results are significantly better for function return types rather than parameters' types.
-This happens because the TypeScript compiler generates much richer constraints for all---exported or not---return types of functions.
-For the parameters' types, the compiler disregards any information and infers all types as \texttt{any}; a situation that produces no useful logical constraints.
-To mitigate this issue, we define some simple heuristics that allow the augmented static analysis to generate some non-trivial constraints.
-A more principled approach could greatly improve the results regarding the parameters' type inference, albeit outside the scope of this work.
-
-
-Finally, for \projectname{} we notice that the combination of the output of the augmented static analysis and the Char-Level LSTM improves our precision and recall for both tasks.
-A certain level of robustness can be also identified, because the low results of the augmented static analysis for parameters' types positively contributes to the optimizer results. 
-This means that on top of the predictions of the neural network, some constraints of the augmented static analysis tip the balance towards more reasonable predictions.
-
-Overall, the combination of the logical and natural (LSTM) constraints in \projectname greatly improves our type inference capabilities.
+Overall, \cref{tab:typeacc1} show that the \textit{Logical} and \textit{Natural} phases complements each other and thus their combination in \projectname greatly improves our type inference capabilities.
 
 \subsection{Comparison with LambdaNet and DeepTyper}
 \label{ssec:typesubproblem}
 
 To evaluate \projectname we compare with 
 against DeepTyper~\cite{hellendoorn18} and
-LambdaNet~\cite{wei20}. Both tools utilise machine learning techniques to give type suggestions for TypeScript on the \emph{developer annotations slots}, as described in ~\cref{fig:type:prediction:space}.
-
-% We have tried specifically to address any unfair comparison.
-
-so we made the necessary adjustments to meet the requirements of our setting.
-Since DeepTyper has a vocabulary of 11000 types, we measure the results on our set of 78 types
-and give every other type we encounter \textit{OOV}, so that it does not contribute to the final result.
-\cref{tab:typeacc2} summarises the results of our comparisons.
-
-% The \emph{relative error reduction} is a standard way to express performance improvement in machine learning.
-% In our case, it is how many fewer errors \projectname{} makes as a proportion of the errors that JSNice makes.
-% The JSNice $T=78$ precision of 0.37 implies an error rate 0.63,
-% whereas the \projectname{} $T=78$ precision of 0.68 implies an error rate 0.32.
-% So the relative reduction in error is $(0.63-0.32) / 0.63 = 49.2\%$.
-
+LambdaNet~\cite{wei20}, on \textit{developer annotations slots}, excluding \texttt{any} and \textit{OOV}. Both tools utilise machine learning techniques to give type suggestions for TypeScript on the \emph{developer annotations slots}, as described in ~\cref{fig:type:prediction:space}.
 
 \begin{table*}[t]
 	\centering
-	\caption{Accuracy for DeepTyper, LambdaNet and OptTyper; on 598 annotations slots.}
+	\caption{Accuracy for DeepTyper, LambdaNet and OptTyper; on $600$ annotations slots.}
 		\label{tab:typeacc2}
 	\begin{tabular}{ccccccc}
 		\toprule
 		Tool   &                              $Acc$ \\
 		\midrule
-		DeepTyper  & 0.68 \\
-		LambdaNet  & 0.73 \\
-		\projectname & 0.75\\
+		DeepTyper  & 0.63 \\
+		LambdaNet  & 0.72 \\
+		\projectname & 0.74\\
 		\bottomrule
 	\end{tabular}
 \end{table*}
 
-\paragraph{Comparison with LambdaNet}
-
-
 \paragraph{Comparison with DeepTyper}
-For the results shown in~\cref{tab:typeacc2},
-DeepTyper often returns \texttt{any} as the most relevant suggestion for the type of an identifier.
-In this case, to keep the comparison meaningful, we select the second best candidate.
+There are two main differences between DeepTyper 
+and OptTyper that we need to address. Firstly, DeepTyper considers a much larger prediction space of $T=1100$ types, including many project types. Thus, to measure the accuracy, we restrict the prediction space to 100 library types (a subset of DeepTyper's vocabulary), exactly those \citet{wei20} chose when comparing DeepTyper to LambdaNet.
+Secondly, DeepTyper predicts a type, sometimes different, for each occurrence of an identifier, while we predict types only for declaration slots. To address this, we compare \projectname{} with a DeepTyper's variant proposed
+by \cite{wei20} which makes a single prediction for each id, by averaging over the RRN internal states
+for a particular id before the actual prediction.
 
-Even though our LSTM is trained only on identifiers and types---while
-DeepTyper utilises more context---predictions for both tools are comparable for parameters' types.
-For function return types, our Char-Level LSTM clearly outperforms DeepTyper.
-This shows that taking into account information in the vicinity can be problematic;
-function definitions may be placed relatively far away from their calls
-and hence the context is not very informative.
+\cref{tab:typeacc2} summarises the results of our comparisons. We conjecture that \projectname outperforms DeepTyper for two reasons. First, \projectname's logical constraints define
+a wider, lexically independent, prediction context than DeepTyper. This results indicates that taking into account information in the vicinity as DeepTyper does can be problematic; for instance,
+function definitions may be placed relatively far away from their calls and hence the context, that DeepTyper learns, is not very informative. Second, \projectname's Char-Level model captures the type of a variable, despite variations 
+in its spelling (\cref{ssec:natprodts}) is proven as a a surprisingly efficient way to learn information about types as \cref{tab:typeacc1} suggest for the \textit{Natural} phase.   
 
-Finally, it is worth pointing out that DeepTyper has a type vocabulary of size $T = 11000$,
-much larger than our vocabulary of size $T=78$,
-because it includes user-defined types.
-If DeepTyper were trained on a smaller size vocabulary the results---at least for the predicted
-types of parameters---might improve.
-Further, perhaps taking into account user-defined types needs extra consideration;
-simply learning user-defined identifier and type pairs, as DeepTyper does, might
-be inadequate and may even worsen its performance.
 
-We conjecture that \projectname outperforms DeepTyper for two reasons.  First, 
-\projectname's Char-Level LSTM captures the type of a variable, despite variations 
-in its spelling (\cref{ssec:natprodts}).  Second, \projectname's logical constraints define
-a wider, lexically independent, prediction context that notably captures
-function returns.
-
+\paragraph{Comparison with LambdaNet}
+The comparison with LambdaNet is straightforward
+for the following reasons. They provide a pretrained model trained on the same dataset and for the same set of types as ours. Also the available implementation  allows the user to make prediction only for these 100 types. In contrast, with
+the other two tools that we are comparing with 
+our accuracy is on par with LambdaNet's accuracy,\cref{tab:typeacc2}.
+That is one more signal that taking into account explicitly logical relationships, even only during training,
+greatly improves the performance of a probabilistic
+type inference tool. Our main difference, is that
+we do not try to learn the logical constraints but rather we generate and impose them during test time, that allows to make predictions that guarantee the
+hard constraints hold. Furthermore, we argue that our grammar of logical constraints ~\eqref{eq:logical}
+offers a more intuitive way to express rich type inference rules, as for example we see in SAT solvers.
+\adgcomment{Andy do you have a particular example? citation?}
 
 \subsection{Comparison with JSNice}
+JSNice~\citet{raychev15} is a tool based on probabilistic graphical models to infer types (and deobfuscate names) for JavaScript files. As, only portions of the JSNice~\cite{raychev15} system have been made open source, and the full system has not been released by the authors. The portion of the implementation that the authors have made public is not sufficient to retrain the JSNice models. 
+%Indeed, as far as we are aware, even a list of which types that JSNice is capable of predicting has not been made public. 
+Instead we follow the approach of \citep{wei20} and perform a manual
+evaluation over a smaller dataset. As JSNice targets JavaScript it cannot predict class or interfaces predictions so we compare only for accuracy on top-level functions return types and parameters randomly sampled from our test set. Our prediction
+space for this comparison is restricted to
+JavaScript primitive types.
+
 \begin{table*}[t]
 	\centering
 	\caption{Accuracy for JSNice and OptTyper; on 107 annotations slots.}
@@ -1473,17 +1459,13 @@ function returns.
 		\bottomrule
 	\end{tabular}
 \end{table*}
-Only portions of the JSNice~\cite{raychev15} system have been made open source, and the full system has not been released by the authors. The portion of the implementation that the authors have made public is not sufficient to retrain the JSNice models. Indeed, as far as we are aware, even a list of which types that JSNice is capable of predicting has not been made public. So, instead we follow the evaluation of \citet{wei20} and perform a manual
-evaluation
-
-\projectname outperforms JSNice.  We conjecture that this is due
-to the same two reasons we believe \projectname outperforms DeepTyper:
-\projectname's grouping together of names that share a type despite minor
-variations in their names and its use of a more expansive context due to its
-logical constraints, as opposed to JSNice  traversal traversal depth of program element
-relations. Additionally. JSNice exploits the relation paths between types up to a certain depth, thus it may not
+As shown in \cref{tab:typeacc3} \projectname outperforms JSNice. We conjecture that this is due
+to the fact that JSNice exploits the relation paths between types up to a shallow depth, and thus it may not
 capture some typing relevant element dependencies. 
-
+In contrast, our logical constraints can leverage
+information of a more expansive context. Additionally,
+\projectname's grouping together of names that share a type despite minor variations in their names could
+be proven useful for learning techniques.
 
 
 % JSNice~\cite{raychev15} is a tool based on probabilistic graphical models which analyses relationships
@@ -1580,7 +1562,8 @@ Haskell based on Liquid Types via SMT and predicate
 abstraction.
 DependentJS~\citep{dependentJS} incorporates dependent types into JavaScript.
 
-%
+% 
+\adgcomment{pleass proof read to the end of the ssec}
 \subsection{Soft Logic}\label{ssec:softlogic}
 Recently, there is a resurgence of interest for soft logic in the context of machine learning. By soft logic we mean a many-valued logic, where the truth values lie on the unit interval $[0,1]$. The 
 reason for this resurgence is twofold: First,
@@ -1591,7 +1574,7 @@ amenable to continuous optimisation approaches. Thus, they provide a framework t
 
 In the context of fuzzy logic, the three most
 important extensions are: G{\"o}del logic, {\L}ukasiewicz logic, and product logic~\cite{hajek98}, with the latter two attracting more interest. For example, the {\L}ukasiewicz logic is used in \citet{bach17} due 
-to its convient relationship to their relaxed MAX 
+to its convenient relationship to their relaxed MAX 
 SAT problem formulation. In our case, the relationships expressed by the logical constraints are non-convex and we focus on smooth optimisation
 formulations; the product logic is more
 suitable since the other two are non-smooth and 
@@ -1630,10 +1613,11 @@ derived from data flow, attribute accesses, and naming conventions for types. NL
 a deep learning approach to the problem, and  relies on JSDoc comments as
 an additional type hint.
 
-JSNice~\citep{raychev15} was first probabilistic type inference technique;  it targets JavaScript.  They use a conditional random field (CRF) \ivp{define this and cite Charles' 100k citation paper.}.  In addition to types, JsNice also predict names.
-Their CRF encodes variable relations, but not type constraints.
-DeepTyper was first deep probabilistic type inference approach; it targets TypeScript~\citet{hellendoorn18}.  It is a bidirectional neural network that leverages local lexical information to make type predictions. It forces multiple appearances of a token to have the same type, but otherwise ignores type constraints.  \projectname differs both JSNice and DeepTyper in two ways:  It incorporates type constraints and it reformulates probabilistic type inference as an optimisation problem.
+JSNice~\citep{raychev15} was first probabilistic type inference technique;  it targets JavaScript.  They use a conditional random field (CRF)~\cite{sutton12}
 
+\ivp{define this.}.  In addition to types, JsNice also predict names.
+Their CRF encodes variable relations, but not type constraints.
+DeepTyper was first deep probabilistic type inference approach; it targets TypeScript~\cite{hellendoorn18}.  It is a bidirectional neural network that leverages local lexical information to make type predictions. It forces multiple appearances of a token to have the same type, but otherwise ignores type constraints.  \projectname differs both JSNice and DeepTyper in two ways:  It incorporates type constraints and it reformulates probabilistic type inference as an optimisation problem.
 
 
 A tool based on deep learning which learns types for every identifier.
@@ -1644,6 +1628,12 @@ based on information from the source-code context.
 It utilises information in the vicinity of the identifier to predict the type.
 In contrast, our LSTM is trained on identifiers and types;
 we focus on obtaining information based on the identifier alone and not its context.
+Finally, it is worth pointing out 
+If DeepTyper were trained on a smaller size vocabulary the results---at least for the predicted
+types of parameters---might improve.
+Further, perhaps taking into account user-defined types needs extra consideration;
+simply learning user-defined identifier and type pairs, as DeepTyper does, might
+be inadequate and may even worsen its performance.
 
 
 A tool based on graph neural networks which combines logical and contextual edges
@@ -1761,120 +1751,120 @@ while the LogSumExp function is defined as
 	\text{LogSumExp}(\bm{x}) = \log\left( \sum_i \exp\{x_i\} \right).
 \end{equation*}
 
-% \section{Appendix: Formal Proofs}\label{app:proofs}
-% \subsection{Proofs for Logical Constraints}
+\section{Appendix: Formal Proofs}\label{app:proofs}
+\subsection{Proofs for Logical Constraints}
 
 
-% \begin{lemma} \label{lem:binary}
-%     For all $E$ and $\Gamma$, $\qqpi{B(\Gamma)}{E} \in \{0,1\}$.
-% \end{lemma}
+\begin{lemma} \label{lem:binary}
+    For all $E$ and $\Gamma$, $\qqpi{B(\Gamma)}{E} \in \{0,1\}$.
+\end{lemma}
 
-% \begin{proof} %\label{cor:binary}
-%     By structural induction on the continuous semantics.
-% \end{proof}
-
-
-% \begin{lemma}
-% For all $E$, $E_1$, $E_2$, and $\Gamma$:
-% \begin{enumerate}
-%     \item $\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\qqpi{B(\Gamma)}{E} = 1)$
-%     \item $\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1$
-%     \item $\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} + \qqpi{B(\Gamma)}{E_2} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1$
-% \end{enumerate}
-% \end{lemma}
-% \begin{proof}
-%   These follow by cases analyses based on Lemma~\ref{lem:binary}.
-% \end{proof}
+\begin{proof} %\label{cor:binary}
+    By structural induction on the continuous semantics.
+\end{proof}
 
 
-% \begin{lemma} \label{lem:models}
-%     For all $E$ and $\Gamma$, either $\Gamma \models E$ or $\Gamma \models{} \mathrel{not} E$.
-% \end{lemma}
-
-% \begin{proof}
-%     By structural induction on the satisfaction relation.
-% \end{proof}
-
-% % \begin{cor}
-% % As a corollary of Lemma 2.2, we can state that
-% % $\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\Gamma \models{} E$. 
-% % \end{cor}
-
-% % Irene: explain why this theorem corresponds to the result in the book?
+\begin{lemma}
+For all $E$, $E_1$, $E_2$, and $\Gamma$:
+\begin{enumerate}
+    \item $\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\qqpi{B(\Gamma)}{E} = 1)$
+    \item $\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1$
+    \item $\qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1 \Leftrightarrow{}  \qqpi{B(\Gamma)}{E_1} + \qqpi{B(\Gamma)}{E_2} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1$
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+  These follow by cases analyses based on Lemma~\ref{lem:binary}.
+\end{proof}
 
 
-% \restate{Theorem~\ref{thm:soft2hard}} For all $E$ and $\Gamma$: $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E$.
-% \begin{proof}The above theorem corresponds to a result in the book of ~\citet{hajek1998}.
-%   We prove the property by \emph{structural induction}; that is,
-%   we prove that $\phi(N)$ holds for all $N$, where $\phi(N)$ is as follows.
-%         %\begin{quote}
-%         \begin{equation*}
-%             \phi(N) \triangleq
-%                 \forall E, \forall \Gamma :
-%                 size(E)=N \Rightarrow (\Gamma \models E \Leftrightarrow \qqpi{B(\Gamma)}{E} = 1).
-%         \end{equation*}
-%         %\end{quote}
+\begin{lemma} \label{lem:models}
+    For all $E$ and $\Gamma$, either $\Gamma \models E$ or $\Gamma \models{} \mathrel{not} E$.
+\end{lemma}
+
+\begin{proof}
+    By structural induction on the satisfaction relation.
+\end{proof}
+
+% \begin{cor}
+% As a corollary of Lemma 2.2, we can state that
+% $\qqpi{B(\Gamma)}{E} = 0 \Leftrightarrow{} not (\Gamma \models{} E$. 
+% \end{cor}
+
+% Irene: explain why this theorem corresponds to the result in the book?
+
+
+\restate{Theorem~\ref{thm:soft2hard}} For all $E$ and $\Gamma$: $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E$.
+\begin{proof}The above theorem corresponds to a result in the book of ~\citet{hajek1998}.
+  We prove the property by \emph{structural induction}; that is,
+  we prove that $\phi(N)$ holds for all $N$, where $\phi(N)$ is as follows.
+        %\begin{quote}
+        \begin{equation*}
+            \phi(N) \triangleq
+                \forall E, \forall \Gamma :
+                size(E)=N \Rightarrow (\Gamma \models E \Leftrightarrow \qqpi{B(\Gamma)}{E} = 1).
+        \end{equation*}
+        %\end{quote}
         
-%   We proceed by course-of-values induction on $N$.
-%   Consider any $E, \Gamma$ and $N = size(E)$. We proceed by a case analysis at $E$.
-%   \begin{description}
-%       \item[$Base\;Case$]
-%                   For $N=1$, the base case is $E = (x_v \mathrel{is} l_\tau)$.
-%                   For any $\Gamma$ we are to show
-%                   \begin{equation*}
-%                   \Gamma \models x_v \mathrel{is} l_\tau \Leftrightarrow{}\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1.
-%                   \end{equation*}
+  We proceed by course-of-values induction on $N$.
+  Consider any $E, \Gamma$ and $N = size(E)$. We proceed by a case analysis at $E$.
+  \begin{description}
+      \item[$Base\;Case$]
+                  For $N=1$, the base case is $E = (x_v \mathrel{is} l_\tau)$.
+                  For any $\Gamma$ we are to show
+                  \begin{equation*}
+                  \Gamma \models x_v \mathrel{is} l_\tau \Leftrightarrow{}\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1.
+                  \end{equation*}
                   
-%                   By definition, $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = p_{v,\tau}$
-%                   where $p_{v,\tau}$ is the probability that variable $x_v$ has type $l_\tau$ according to the matrix $B(\Gamma)$. 
-%                   By definition of $B(\Gamma)$ and because $B$ results to  a binary matrix,  
-%                   $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1$
-%                   means that the element $p_{v,\tau}$ is equal to $1$, that is 
-%                   $\Gamma \models x_v \mathrel{is} l_\tau$.
-%                   Also, $\Gamma \models x_v \mathrel{is} l_\tau$, implies that $\Gamma(x_v)=l_\tau$. By definition, that
-%                   means  $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1$.
+                  By definition, $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = p_{v,\tau}$
+                  where $p_{v,\tau}$ is the probability that variable $x_v$ has type $l_\tau$ according to the matrix $B(\Gamma)$. 
+                  By definition of $B(\Gamma)$ and because $B$ results to  a binary matrix,  
+                  $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1$
+                  means that the element $p_{v,\tau}$ is equal to $1$, that is 
+                  $\Gamma \models x_v \mathrel{is} l_\tau$.
+                  Also, $\Gamma \models x_v \mathrel{is} l_\tau$, implies that $\Gamma(x_v)=l_\tau$. By definition, that
+                  means  $\qqpi{B(\Gamma)}{x_v \mathrel{is} l_\tau} = 1$.
       
-%      \item[$Case \; E ={} \mathrel{not} E'$.]
-%                   We are to show
-%                   $\Gamma \models{} \mathrel{not} E' \Leftrightarrow \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1$.
-%                   We have that,
-%                   \begin{align*}
-% %                       \Gamma \models{} \mathrel{not} E' \Leftrightarrow{} & \mathrel{not}  \Gamma \models{}  E'  \\
-%                         \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1 & \Leftrightarrow{} &  \\
-%                         1- \qqpi{B(\Gamma)}{E'} = 1 & \Leftrightarrow{} & \text{(Definition)}  \\
-%                         \qqpi{B(\Gamma)}{E'} = 0 & \Leftrightarrow{} &  \\
-%                         \mathrel{not} (\qqpi{B(\Gamma)}{E'} = 1) & \Leftrightarrow{} & \text{(Lemma~\ref{lem:binary})} \\
-%                         \mathrel{not}  \Gamma \models{}  E'
-%                         & \Leftrightarrow{} & \text{(Induction Hypothesis)} \\
-%                          \Gamma \models{} \mathrel{not} E' & & \text{(Definition)}.
-%                   \end{align*}
+     \item[$Case \; E ={} \mathrel{not} E'$.]
+                  We are to show
+                  $\Gamma \models{} \mathrel{not} E' \Leftrightarrow \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1$.
+                  We have that,
+                  \begin{align*}
+%                       \Gamma \models{} \mathrel{not} E' \Leftrightarrow{} & \mathrel{not}  \Gamma \models{}  E'  \\
+                        \qqpi{B(\Gamma)}{\mathrel{not} E'} = 1 & \Leftrightarrow{} &  \\
+                        1- \qqpi{B(\Gamma)}{E'} = 1 & \Leftrightarrow{} & \text{(Definition)}  \\
+                        \qqpi{B(\Gamma)}{E'} = 0 & \Leftrightarrow{} &  \\
+                        \mathrel{not} (\qqpi{B(\Gamma)}{E'} = 1) & \Leftrightarrow{} & \text{(Lemma~\ref{lem:binary})} \\
+                        \mathrel{not}  \Gamma \models{}  E'
+                        & \Leftrightarrow{} & \text{(Induction Hypothesis)} \\
+                         \Gamma \models{} \mathrel{not} E' & & \text{(Definition)}.
+                  \end{align*}
           
-%           \item[$Case \; E = (E_1 \mathrel{and} E_2)$.] 
-%                   For $size(E_1)<N$ and $size(E_2) < N$, we are to show that
-%                   $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
-%                   \begin{align*}
-%                       \Gamma \models (E_1 \mathrel{and} E_2)                            & \Leftrightarrow &  \\
-%                       \Gamma \models E_1 \mathrel{and} \Gamma \models E_2               & \Leftrightarrow & \text{(Definition)}  \\
-%                       \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 & \Leftrightarrow & \text{(Induction Hypothesis)}           \\
-%                       \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1             & \Leftrightarrow &  \text{(Lemma~\ref{lem:binary})}           \\                 
-%                       \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1                  &   &  \text{(Definition)}                                         \\
-%                   \end{align*}
-%                   which completes the proof for this case.
+          \item[$Case \; E = (E_1 \mathrel{and} E_2)$.] 
+                  For $size(E_1)<N$ and $size(E_2) < N$, we are to show that
+                  $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
+                  \begin{align*}
+                      \Gamma \models (E_1 \mathrel{and} E_2)                            & \Leftrightarrow &  \\
+                      \Gamma \models E_1 \mathrel{and} \Gamma \models E_2               & \Leftrightarrow & \text{(Definition)}  \\
+                      \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{and} \qqpi{B(\Gamma)}{E_2} = 1 & \Leftrightarrow & \text{(Induction Hypothesis)}           \\
+                      \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} = 1             & \Leftrightarrow &  \text{(Lemma~\ref{lem:binary})}           \\                 
+                      \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1                  &   &  \text{(Definition)}                                         \\
+                  \end{align*}
+                  which completes the proof for this case.
 
-%             \item[$Case \; E = (E_1 \mathrel{or} E_2)$.]
-%                   For $size(E_1) < N$ and $size(E_2) < N$, we are to show
-%                   $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
-%                   \begin{align*}
-%                       \Gamma \models (E_1 \mathrel{or} E_2)                                                                     & \Leftrightarrow & \\
-%                       \Gamma \models E_1 \mathrel{or} \Gamma \models E_2                                                        & \Leftrightarrow &\text{(Definition)} \\
-%                       \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1                                          & \Leftrightarrow & \text{(Induction Hypothesis)}                                  \\
-%                       (\qqpi{B(\Gamma)}{E_1} - 1) \cdot (1- \qqpi{B(\Gamma)}{E_2}) = 0                                          & \Leftrightarrow                                  \\
-%                       \qqpi{B(\Gamma)}{E_1} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} + \qqpi{B(\Gamma)}{E_2} - 1 = 0 & \Leftrightarrow                         &\text{(Case Analysis \& Lemma~\ref{lem:binary})}         \\
-%                       \qqpi{B(\Gamma)}{E_1 \mathrel{or} E_2} = 1                                                               &. 
-%                   \end{align*}
-%                   which completes the proof for this case.
-%     \end{description}
-% \end{proof}
+            \item[$Case \; E = (E_1 \mathrel{or} E_2)$.]
+                  For $size(E_1) < N$ and $size(E_2) < N$, we are to show
+                  $\Gamma \models (E_1 \mathrel{and} E_2) \Leftrightarrow \qqpi{B(\Gamma)}{(E_1 \mathrel{and} E_2)} = 1$. Our induction hypothesis is that $\phi(M)$ holds for all $M<N$. We have that
+                  \begin{align*}
+                      \Gamma \models (E_1 \mathrel{or} E_2)                                                                     & \Leftrightarrow & \\
+                      \Gamma \models E_1 \mathrel{or} \Gamma \models E_2                                                        & \Leftrightarrow &\text{(Definition)} \\
+                      \qqpi{B(\Gamma)}{E_1} = 1 \mathrel{or} \qqpi{B(\Gamma)}{E_2} = 1                                          & \Leftrightarrow & \text{(Induction Hypothesis)}                                  \\
+                      (\qqpi{B(\Gamma)}{E_1} - 1) \cdot (1- \qqpi{B(\Gamma)}{E_2}) = 0                                          & \Leftrightarrow                                  \\
+                      \qqpi{B(\Gamma)}{E_1} - \qqpi{B(\Gamma)}{E_1} \cdot \qqpi{B(\Gamma)}{E_2} + \qqpi{B(\Gamma)}{E_2} - 1 = 0 & \Leftrightarrow                         &\text{(Case Analysis \& Lemma~\ref{lem:binary})}         \\
+                      \qqpi{B(\Gamma)}{E_1 \mathrel{or} E_2} = 1                                                               &. 
+                  \end{align*}
+                  which completes the proof for this case.
+    \end{description}
+\end{proof}
 
 
 % \begin{lemma}\label{lem:bounds}
@@ -1885,18 +1875,18 @@ while the LogSumExp function is defined as
 % \end{proof}
 
 
-% % \begin{lemma} \label{thm:soft2hard_v2}
-% %     For all $E$, and all type environments $\Gamma$,
-% %     then if not $\Gamma \models E$, then
-% %     $\qqpi{B(\Gamma)}{E} = 0$.
-% % \end{lemma}
+% \begin{lemma} \label{thm:soft2hard_v2}
+%     For all $E$, and all type environments $\Gamma$,
+%     then if not $\Gamma \models E$, then
+%     $\qqpi{B(\Gamma)}{E} = 0$.
+% \end{lemma}
 
-% % \begin{proof}
-% %     This is a corollary of Claim 2.1. If not $\Gamma \models E$,  then $\Gamma \models{} \mathrel{not} E$, by the logical satisfaction relation. Then, by Lemma~\ref{lem:binary},
-% %     $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1$.
-% %     By the definition of continuous semantics,
-% %     $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1 - \qqpi{B(\Gamma)}{E}$.
-% % \end{proof}
+% \begin{proof}
+%     This is a corollary of Claim 2.1. If not $\Gamma \models E$,  then $\Gamma \models{} \mathrel{not} E$, by the logical satisfaction relation. Then, by Lemma~\ref{lem:binary},
+%     $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1$.
+%     By the definition of continuous semantics,
+%     $\qqpi{B(\Gamma)}{\mathrel{not} E} = 1 - \qqpi{B(\Gamma)}{E}$.
+% \end{proof}
 
 
 % \begin{lemma}\label{lem:positive}
