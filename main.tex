@@ -802,8 +802,8 @@ $\tilde{f}_{E} : \Pi^{V \times T}  \rightarrow [0, 1]$
 such that for all formulas $E$ and environments $\Gamma$,
 $\tilde{f}_{E}(B(\Gamma)) = f_E(B(\Gamma)) := \qqpi{B(\Gamma)}{E}$.
 \ivpcomment{From Charles: We don't need all of the description above given what we say in the rest of the section, e.g, we don't need to define $f_E$ 
-as taking a matrix as input, we can just say that it takes $\Gamma$, I think. [AG] Agreed!}
-
+as taking a matrix as input, we can just say that it takes $\Gamma$, I think. [AG] Agreed! [IVP] I dont see it :( }
+\ivpcomment{If we remove B then how is gamma going to have correct dimensions as an input of f? Where should we remove it from?}
 \adgcomment{I need to check the statement in the Hajek book}
 The key property of the continuous semantics is that there is a 
 a correspondence between the numerical semantics and typing environments.
@@ -970,14 +970,12 @@ MSE is a proper scoring rule~\cite{gneiting07}, meaning that smaller values
 correspond to better matching of our optimisation variables with the logical
 constraints.  We do not claim any particular advantage of MSE versus CE.
 
-To solve a constrained optimisation problem like \autoref{eq:opt_naive}, an effective technique is to transform it to an unconstrained one using penalization; this is done, for example, in interior point methods.
-Here, we use an approach tailored to the specifics of our problem.
-First, we reparameterise the problem to remove the probability constraints,
-The softmax function
+Instead of solving optimisation problem \eqref{eq:opt_naive}, we proceed to make some remarks that exploit its structure.
+First, we reparameterise the problem to remove the probability constraints, by using the softmax function
 \begin{equation}\label{eq:softmax}
-	\sigma(\bm{x}) = \left[\frac{\exp\{x_1\}}{\sum_i \exp\{x_i\}}, \frac{\exp\{x_2\}}{\sum_i \exp\{x_i\}}, \cdots \right]^\mathsf{T}
+	\sigma(\bm{x}) = \left[\frac{\exp\{x_1\}}{\sum_i \exp\{x_i\}}, \frac{\exp\{x_2\}}{\sum_i \exp\{x_i\}}, \cdots \right]^\mathsf{T},
 \end{equation}
-maps real-valued vectors to probability vectors.
+which maps real-valued vectors to probability vectors.
 Our transformed problem takes the form
 \begin{equation}
 	\begin{aligned}\label{eq:opt_no_prob}
@@ -991,28 +989,22 @@ It is easy to see that if $Y$ minimises \eqref{eq:opt_no_prob}, then
 $P = [\sigma(\bm{y}_1), \ldots, \allowbreak \sigma(\bm{y}_{V})]^\mathsf{T}$
 minimises \eqref{eq:opt_naive}.
 % 
-We remove the last constraint by introducing a Lagrange multiplier $\lambda > 0$, 
+We remove the last constraint by introducing a Lagrange multiplier $\lambda \in \mathbb{R}$, 
 yielding the final form of our optimisation problem
 \begin{equation}\label{eq:objective}
-	\textstyle\mathrm{min}_{\lambda, Y \in \mathbb{R}^{V \times T } }
+	\min_{Y, \lambda}
 	\sum_v || \sigma(\bm{y}_v)^\mathsf{T} - \bm{\mu}_v ||_2^2
 	- \lambda \big(\qqpi{[\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}}{E} - 1\big).
 \end{equation}
-This can now be solved numerically using first-order unconstrained optimisation methods for Lagrange
-multipliers~\citep{bertsekas82}. \ivpcomment{add more}
-Intuitively, the parameter $\lambda$ trades off the importance
-of the two different kinds of constraints.
-In the limiting case where $\lambda \rightarrow \infty$, the second term in the objective function \eqref{eq:objective} is dominant and we obtain the solution that best satisfies the relaxed
-logical constraints.
-If these constraints are consistent, then the obtained probability vectors correspond to one-hot vectors.
-Similarly, for $\lambda \rightarrow 0$ the first term dominates and we obtain the solution that best matches the natural constraints,
-which is naturally $M$ itself. 
-% By choosing $\lambda$ well,
-% we identify a value that minimises the original problem \eqref{eq:opt_naive}.
-To obtain a final hard assignment $\Gamma,$ we first solve \eqref{eq:objective} to obtain the optimal $Y$, compute the
-associated probability vector $P = [\sigma(\bm{y}_1), \ldots, \sigma(\bm{y}_{V})]^\mathsf{T}$. Then, for each identifier $x_v,$
-we select the element of the
-corresponding probability vector that is closest to one.
+This corresponds to the Lagrange multiplier method~\citep{bertsekas82}.
+According to the first-order necessary conditions, at a saddle point of the objective function of~\eqref{eq:objective} the following conditions should be satisfied
+\begin{subequations}
+\begin{align}
+    \nabla_Y L(Y, \lambda) & = 0\\
+    \nabla_\lambda L(Y, \lambda) & = 0,
+\end{align}
+\end{subequations}
+where $L(Y, \lambda)$ equals the objective of~\eqref{eq:objective}.
 
 Finally, we note that by adding more terms to the combined objective function, we can 
 extend the sources of information we are getting as inputs to other channels, such as dynamic analysis.
@@ -1053,9 +1045,10 @@ sophisticated ones. For instance, as every learning model outputs a probability 
 over types, we can extend our method to include natural constraints generated by LambdaNet, JSNice or indeed any other deep learning approach that offers as an output type probabilities vectors. 
 For logical constraints, while
 the grammar of logical constraints defined
-in equation~\eqref{eq:gram} allows us naturally to express inference rules, the type constraints that \projectname handles in practice are confined to  
-those inference rules we translate into logical expressions. 
-\ivpcomment{ In line with that constraint-based type systems~\citep{odersky99,pottier05}.}
+in equation~\eqref{eq:gram} allows us naturally to express inference rules, for instance in HM(X) family of constraint-based type
+system~\citep{odersky99,pottier05}.
+The type constraints that \projectname handles in practice are confined to  
+those inference rules we translate into logical expressions.
 Unfortunately, the TypeScript compiler's type inference does not output logical constraints, so we 
 have taken the pragmatic approach of only 
 harvesting a subset of them. 
@@ -1125,7 +1118,7 @@ most starred Typescript projects from Github,
 containing between 500 to 10,000 lines of code.
 Our dataset was randomly split by project into $80\%$ training data, $10\%$ validation data and $10\%$ test data. \cref{fig:Char-Level} shows a summary of the pipeline used to train our model, for specific implementation details of the LSTM refer to \cref{app:neural}.  
 %
-\paragraph{Type Vocabulary}
+\paragraph{Prediction Space}
 We define our type vocabulary to consist of top-100 most common default library types in our training set. As~\citet{wei20} report this prediction space covers $98\%$ of the non-any annotations for the training set. We choose to consider only built-in types 
 to ensure that we do not introduce types that are not available to the compiler. Handling a larger set of types is straightforward, but we decide instead to work with the same set of built types that \citet{hellendoorn18, wei20} use, in order to be consistent in our comparisons.
 %
@@ -1179,7 +1172,7 @@ and sum all the values of the correct labels for the entire training set.
 		an \texttt{enum} type or have type \texttt{any}+ or \texttt{number}.    \\
 		ArithRHS      & The right-hand side of an arithmetic operation must be
 		an \texttt{enum} type or have type \texttt{any} or \texttt{number}. \\
-		Return      & \\
+		Return      & \ivpcomment{Fill me out} \\
 		\bottomrule
 	\end{tabularx}
 \end{table*}
@@ -1341,11 +1334,11 @@ For a statically typed language, let a declaration slot be a point in a program 
     \centering
     \def\svgwidth{0.8\linewidth}
     \input{./figs/annotations/annotations.pdf_tex}
-    \caption{The prediction space for probabilistic type suggestion for an optionally typed language.}
+    \caption{The query space for probabilistic type suggestion for an optionally typed language.}
     \label{fig:type:prediction:space}
 \end{figure*}
 
-\autoref{fig:type:prediction:space} shows the prediction space for types in an optional type setting.
+\autoref{fig:type:prediction:query} shows the query space for types in an optional type setting.
 TypeScript itself defines built-in types.  Library types are those types defined by the libraries a project imports and project types, sometimes called user types in the literature, are those types a project defines itself. 
 In general, developer annotations are those slots that a developer is likely to annotate; in a training data, we under-approximate these slots by the slots that a developer did annotate. 
 The compiler inferable slots are those slots for which an optional compiler can infer a type given the developer annotations.  
@@ -1403,7 +1396,7 @@ Overall, \cref{tab:typeacc1} show that the \textit{Logical} and \textit{Natural}
 
 To evaluate \projectname we compare with 
 against DeepTyper~\cite{hellendoorn18} and
-LambdaNet~\cite{wei20}, on \textit{developer annotations slots}, excluding \lstinline{any} and \textit{OOV}. Both tools utilise machine learning techniques to give type suggestions for TypeScript on the \emph{developer annotations slots}, as described in ~\cref{fig:type:prediction:space}.
+LambdaNet~\cite{wei20}, on \textit{developer annotations slots}, excluding \texttt{any} and \textit{OOV}. Both tools utilise machine learning techniques to give type suggestions for TypeScript on the \emph{developer annotations slots}, as described in ~\cref{fig:type:prediction:query}.
 
 \begin{table*}[t]
 	\centering
@@ -1438,7 +1431,7 @@ The comparison with LambdaNet is straightforward
 for the following reasons. 
 They provide a pretrained model trained on the same dataset and for the same set of types as ours. 
 \cref{tab:typeacc2} shows that  
-our accuracy is on par with LambdaNet's accuracy.
+our accuracy is on par with LambdaNet's.
 That is one more signal that taking into account explicitly logical relationships, even only during training,
 greatly improves the performance of a probabilistic
 type inference tool. Our main difference, is that
