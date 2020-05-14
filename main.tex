@@ -723,7 +723,7 @@ enforces and produces a boolean type constraint for them.
 
 In this work, we consider the following logical constraints.
 \begin{definition}[\emph{Grammar of Logical Constraints}]\label{def:log-gram}
-	A logical constraint is an expression $E$ of the following form:
+	A \emph{logical constraint} is an expression $E$ of the following form:
 	\begin{align*}
 		E & ::= x_v \mathrel{is} l_\tau \\ \numberthis\label{eq:gram}
 		  & \mid{} \mathrel{not} E      \\
@@ -732,8 +732,19 @@ In this work, we consider the following logical constraints.
 	\end{align*}
 	Let $\mathcal{E}$ be the set of all logical constraints.
 \end{definition}
+\adgcomment{notice I used mbox to typeset not/and/or at the ordinary mathematics level, as distinct from mathrel for the object language}
+The standard \emph{logical satisfaction} relation $\Gamma \models E$, is defined by induction on the structure of $E$, as follows:
+          \begin{align*} 
+              \Gamma \models x_v \mathrel{is} l_\tau & \Leftrightarrow \Gamma(x_v)=l_\tau                                  \\
+              \Gamma \models{} \mathrel{not} E       & \Leftrightarrow{} \mbox{not $\Gamma \models E$}                    \\ \numberthis \label{eq:logsat}
+              \Gamma \models E_1 \mathrel{and} E_2   & \Leftrightarrow
+              \mbox{$\Gamma \models E_1$ and $\Gamma \models E_2$} \\
+              \Gamma \models E_1 \mathrel{or} E_2
+                                                     & \Leftrightarrow
+        \mbox{$\Gamma \models E_1$ or $\Gamma \models E_2$.}
+          \end{align*}
+
 % CS: Commenting out notation that is already defined in the setup now.
-\adgcomment{please proof read until the end of the subsection}
 \paragraph{Continuous Relaxation}
 We explain how to specify a \emph{continuous relaxation} of the discrete logical semantics.
 A formula $E$ can be viewed as a boolean function $f_E: \{0, 1\}^{V \times T} \rightarrow \{0, 1\}$
@@ -773,8 +784,9 @@ defined as
 	\qqpi{P}{E_1} + \qqpi{P}{E_2} - \qqpi{P}{E_1}\cdot\qqpi{P}{E_2}.
 \end{align*}
 %The $\mathrel{is}$ relation describes that the probability that the type variable $x_v$ is the literal type $l_\tau$. 
-In the actual implementation, we use logits instead of probabilities
-for numerical stability, see \cref{app:appendix-logit}. Finally, a \emph{relaxed semantics} is a continuous function
+(In the actual implementation, we use logits instead of probabilities
+for numerical stability, see \cref{app:appendix-logit}.)
+Finally, a \emph{relaxed semantics} is a continuous function
 that always agrees with the logical semantics, that is,
 a relaxed semantics is a function
 $\tilde{f}_{E} : \Pi^{V \times T}  \rightarrow [0, 1]$
@@ -782,16 +794,6 @@ such that for all formulas $E$ and environments $\Gamma$,
 $\tilde{f}_{E}(B(\Gamma)) = f_E(B(\Gamma)) := \qqpi{B(\Gamma)}{E}$.
 \ivpcomment{From Charles: We don't need all of the description above given what we say in the rest of the section, e.g, we don't need to define $f_E$ 
 as taking a matrix as input, we can just say that it takes $\Gamma$, I think.}
-
-We define  a logical satisfaction relation $\Gamma \models E$, as follows
-          \begin{align*} 
-              \Gamma \models x_v \mathrel{is} l_\tau & \Leftrightarrow \Gamma(x_v)=l_\tau                                  \\
-              \Gamma \models{} \mathrel{not} E       & \Leftrightarrow{} \mathrel{not} \Gamma \models E                    \\ \numberthis \label{eq:logsat}
-              \Gamma \models E_1 \mathrel{and} E_2   & \Leftrightarrow \Gamma \models E_1 \mathrel{and} \Gamma \models E_2 \\
-              \Gamma \models E_1 \mathrel{or} E_2
-                                                     & \Leftrightarrow \Gamma \models E_1 \mathrel{or} \Gamma \models E_2.
-          \end{align*}
-
 
 The key property of the continuous semantics is that there is a 
 a correspondence between numerical semantics and typing environments.
@@ -1355,11 +1357,10 @@ To be consistent with previous work \citep{hellendoorn18,wei20} we perform the e
 
 \subsection{Ablation Analysis:  Leveraging Both Logical and Natural Constraints}
 
-\projectname has two phases --- logical and natural --- and combines them.  To evaluate the effect of each stage, \cref{tab:typeacc1} reports the accuracy of each stage.
-\cref{tab:typeacc1}'s columns define disjoint sets of annotation slots. 
+
 \begin{table*}[t]
 	\centering
-	\caption{Ablation analysis of \projectname, the cells report accuracy; FN refers to return types of functions, PARAM
+	\caption{Ablation analysis of \projectname, the cells report accuracy; FN refers to return types of functions and PARAM
 	represents parameters.}
 \label{tab:typeacc1}
 	\begin{tabular}{ccccccc}
@@ -1375,19 +1376,16 @@ To be consistent with previous work \citep{hellendoorn18,wei20} we perform the e
 	\end{tabular}
 \end{table*}
 
-
+\projectname has two phases --- logical and natural --- and combines them.  To evaluate the effect of each stage, \cref{tab:typeacc1} reports the accuracy of each stage.
+\cref{tab:typeacc1}'s columns define disjoint sets of declaration slots.
 Regarding the \textit{Logical} approach, the results are significantly better for function return types
 than parameter types.
-This happens because the TypeScript compiler generates much richer constraints for return
-types of functions.
-For the parameters' types, the compiler disregards any information
-and infers all types as \texttt{any}; a situation that produces no useful logical constraints.
-To mitigate this issue, we define some simple heuristics that allow the \textit{Logical} tool
-to generate non-trivial constraints.  
-
+This happens because the \projectname harvests a richer set of constraints for return types.
+For parameter types, the compiler always 
+infers its gradual \lstinline{any}, essentially making no inference at all. Therefore, it produces no useful logical constraints for parameters.
+To mitigate this issue, we define some simple heuristics (\cref{ssec:logprodts}) that extract constraints for the \textit{Logical} stage to consider.  
 For the \textit{Natural} phase, the results swap, the prediction accuracy for the parameters' is double than the one for the return types. Our assumption is that
-this is a result of largely using the same parameters ids over different projects, for example \texttt{path}, than using the same function ids.
-
+this is a result of largely using the same parameters ids over different projects, for example \lstinline{path}, than using the same function ids.
 Overall, \cref{tab:typeacc1} show that the \textit{Logical} and \textit{Natural} phases complements each other and thus their combination in \projectname greatly improves our type inference capabilities.
 
 \subsection{Comparison with LambdaNet and DeepTyper}
@@ -1395,7 +1393,7 @@ Overall, \cref{tab:typeacc1} show that the \textit{Logical} and \textit{Natural}
 
 To evaluate \projectname we compare with 
 against DeepTyper~\cite{hellendoorn18} and
-LambdaNet~\cite{wei20}, on \textit{developer annotations slots}, excluding \texttt{any} and \textit{OOV}. Both tools utilise machine learning techniques to give type suggestions for TypeScript on the \emph{developer annotations slots}, as described in ~\cref{fig:type:prediction:space}.
+LambdaNet~\cite{wei20}, on \textit{developer annotations slots}, excluding \lstinline{any} and \textit{OOV}. Both tools utilise machine learning techniques to give type suggestions for TypeScript on the \emph{developer annotations slots}, as described in ~\cref{fig:type:prediction:space}.
 
 \begin{table*}[t]
 	\centering
@@ -1414,10 +1412,10 @@ LambdaNet~\cite{wei20}, on \textit{developer annotations slots}, excluding \text
 
 \paragraph{Comparison with DeepTyper}
 There are two main differences between DeepTyper 
-and OptTyper that we need to address. Firstly, DeepTyper considers a much larger prediction space of $T=1100$ types, including many project types. Thus, to measure the accuracy, we restrict the prediction space to 100 library types (a subset of DeepTyper's vocabulary), exactly those \citet{wei20} chose when comparing DeepTyper to LambdaNet.
-Secondly, DeepTyper predicts a type, sometimes different, for each occurrence of an identifier, while we predict types only for declaration slots. To address this, we compare \projectname{} with a DeepTyper's variant proposed
-by \cite{wei20} which makes a single prediction for each id, by averaging over the RRN internal states
-for a particular id before the actual prediction.
+and OptTyper that we need to address. Firstly, DeepTyper considers a much larger prediction space of $T=1100$ types, including many project types. Thus, to measure the accuracy, we restrict the prediction space to 100 library types (a subset of DeepTyper's vocabulary, exactly those \citet{wei20} chose when comparing DeepTyper to LambdaNet.
+Secondly, DeepTyper predicts a type, sometimes different, for each occurrence of an identifier, while we predict types only for declaration slots. To address this, we compare \projectname{} with a DeepTyper variant proposed by \cite{wei20}.
+This variant makes a single prediction for each identifier, by averaging over the RRN internal states for a particular identifier before the actual prediction.
+The DeepTyper results we report are for this variant, retrained over the vocabulary of 100 library types specified above, using top1 accuracy.
 
 \cref{tab:typeacc2} summarises the results of our comparisons. We conjecture that \projectname outperforms DeepTyper for two reasons. First, \projectname's logical constraints define
 a wider, lexically independent, prediction context than DeepTyper. This results indicates that taking into account information in the vicinity as DeepTyper does can be problematic; for instance,
