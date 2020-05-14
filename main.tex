@@ -485,7 +485,7 @@ and a machine learning model, such as a deep neural network, that probabilistica
 
 They key idea behind our methods is a
 \emph{continuous relaxation} of
-the logical constraints \cite{hajek1998}.
+the logical constraints \cite{hajek98}.
 This means that  we relax the logical formula into a continuous function by relaxing type environments
 to probability matrices and defining
 a continuous semantic interpretation of logical expressions.
@@ -733,7 +733,12 @@ In this work, we consider the following logical constraints.
 	Let $\mathcal{E}$ be the set of all logical constraints.
 \end{definition}
 \adgcomment{notice I used mbox to typeset not/and/or at the ordinary mathematics level, as distinct from mathrel for the object language}
-The standard \emph{logical satisfaction} relation $\Gamma \models E$, is defined by induction on the structure of $E$, as follows:
+
+Recall that a typing environment $\Gamma$ is a finite function
+with domain $\{ x_v \mid v \in 1 \ldots V\}$, and range $\{ l_\tau \mid \tau \in 1 \dots T \}$.
+The standard \emph{logical satisfaction} relation $\Gamma \models E$, is defined by induction on the structure of $E$, as follows.
+
+
           \begin{align*} 
               \Gamma \models x_v \mathrel{is} l_\tau & \Leftrightarrow \Gamma(x_v)=l_\tau                                  \\
               \Gamma \models{} \mathrel{not} E       & \Leftrightarrow{} \mbox{not $\Gamma \models E$}                    \\ \numberthis \label{eq:logsat}
@@ -749,16 +754,19 @@ The standard \emph{logical satisfaction} relation $\Gamma \models E$, is defined
 We explain how to specify a \emph{continuous relaxation} of the discrete logical semantics.
 A formula $E$ can be viewed as a boolean function $f_E: \{0, 1\}^{V \times T} \rightarrow \{0, 1\}$
 that maps binary matrices to $\{0, 1\}$.
-To see this, we can convert an environment
-$\Gamma$ into a $V \times T$ binary matrix $B(\Gamma)$ by setting $b_{v,\tau} = 1$ if
-$(x_v, l_\tau) \in \Gamma,$ and 0 otherwise.
-Also, define $\Pi^{V \times T}$ to be the set
+
+To see this, start with two auxiliary definitions:
+\begin{itemize}
+    \item We define $\Pi^{V \times T}$ to be the set
 of all \emph{probability matrices} of size $V \times T$,
 that is, matrices of the form $P = \begin{bmatrix} \bm{p}_1 & \ldots & \bm{p}_{V} \end{bmatrix}^\mathsf{T}$,
 where each $\bm{p}_v = \begin{bmatrix} p_{v,1} & \ldots & p_{v,{T}} \end{bmatrix}^\mathsf{T}$
 is a vector that defines a probability distribution over concrete types.
+    \item We convert an environment $\Gamma$ into a $V \times T$ binary matrix $B(\Gamma)$ by setting $b_{v,\tau} = 1$ if $(x_v, l_\tau) \in \Gamma,$ and 0 otherwise.
+    Each binary matrix is also a probability matrix: $B(\Gamma) \in \Pi^{V \times T}$.
+\end{itemize}
 
-To define a relaxed semantics, we introduce a continuous semantics of $E$ based on generalizations of two-valued logical conjuctions
+To define a relaxed semantics, we introduce a continuous semantics of $E$ based on generalizations of two-valued logical conjunctions
 to many-valued~\cite{hajek98}.
 \adg{we should explain what the product $t$-norm is}
 Specifically, we use the product $t$-norm, because the binary operation associated with it is smooth and fits with our optimisation-based approach. We further justify this choice in \autoref{ssec:softlogic}.
@@ -771,8 +779,8 @@ The product $t$-norm has already been used for obtaining continuous semantics in
 % sent to Y1 when Y1 > Y2. Similarly, with Lukasiewicz’s t-norm, there is no gradient
 % information sent to either Y1 or Y2 when Y1 + Y2 < 1.
 
-The continuous semantics $\qqpi{P}{E}$ is a function $\Pi^{V \times T} \times \mathcal{E} \rightarrow [0, 1]$,
-defined as
+The \emph{continuous semantics} $\qqpi{P}{E}$ is a function $\Pi^{V \times T} \times \mathcal{E} \rightarrow [0, 1]$,
+defined by induction on the structure of $E$, as follows.
 %an expression~$E$ as a probability~$\qqpi{P}{E} \in [0,1]$ as  follows.
 %we are in log-space
 %\ivp{Mention explicitly that this formulation maps scalar from [0,1] to [0,1], that is probability vectors do not require some extra form of scaling}
@@ -786,6 +794,7 @@ defined as
 %The $\mathrel{is}$ relation describes that the probability that the type variable $x_v$ is the literal type $l_\tau$. 
 (In the actual implementation, we use logits instead of probabilities
 for numerical stability, see \cref{app:appendix-logit}.)
+
 Finally, a \emph{relaxed semantics} is a continuous function
 that always agrees with the logical semantics, that is,
 a relaxed semantics is a function
@@ -793,18 +802,21 @@ $\tilde{f}_{E} : \Pi^{V \times T}  \rightarrow [0, 1]$
 such that for all formulas $E$ and environments $\Gamma$,
 $\tilde{f}_{E}(B(\Gamma)) = f_E(B(\Gamma)) := \qqpi{B(\Gamma)}{E}$.
 \ivpcomment{From Charles: We don't need all of the description above given what we say in the rest of the section, e.g, we don't need to define $f_E$ 
-as taking a matrix as input, we can just say that it takes $\Gamma$, I think.}
+as taking a matrix as input, we can just say that it takes $\Gamma$, I think. [AG] Agreed!}
 
+\adgcomment{I need to check the statement in the Hajek book}
 The key property of the continuous semantics is that there is a 
-a correspondence between numerical semantics and typing environments.
-Theorem 4.1.13 of~\citet{hajek98} book and shows that in the product logic a formula $E$ is provable if and only if  $\qqpi{}{E} = 1$. Extending this theorem to our setting we have that 
+a correspondence between the numerical semantics and typing environments.
+Theorem 4.1.13 of the textbook by \citet{hajek98} and shows that in the product logic a formula $E$ is provable if and only if the continuous semantics of $E$ is $1$.
+Extending this theorem to our setting we have that: 
 \begin{theorem}\label{eq:soft2hard}
 For all E and $\Gamma$, we have that $\qqpi{B(\Gamma)}{E} = 1 \Leftrightarrow \Gamma \models E.$     
 \end{theorem}
-This can be shown by structural induction
-on $size(E)$, for a complete proof see~\cref{app:proofs}. Recall that in our setting, we know $E$ but
+This can be shown by induction on the structure of $E$;
+for a complete proof see~\cref{app:proofs}.
+Recall that in our setting, we know $E$ but
 do not know $\Gamma$. To address that 
-and because the continuous semantics of $E$ is a function of $B(\Gamma)$, we consider $\qqpi{B(\Gamma)}{E}$ as an objective for an optimization problem to infer a $B(\Gamma)$. By finding a probability matrix $\Gamma$ that maximises the continuous semantics of $E$. Thus, in that way we have a typing environment $\Gamma$ that models $E$. 
+and because the continuous semantics of $E$ is a function of $B(\Gamma)$, we consider $\qqpi{B(\Gamma)}{E}$ as an objective for an optimization problem to infer a $B(\Gamma)$. By finding a probability matrix $\Gamma$ that maximises the continuous semantics of $E$. Thus, in that way we have a typing environment $\Gamma$ that models $E$. \adgcomment{Revisit these sentences}
 
 % find a $\Gamma$ that satisfies the deterministic logical semantics $E$. One step further, by having the type assignments that satisfy $E$ we can obtain 
 % Recall that in our setting, we know $E$ but
@@ -1028,7 +1040,7 @@ extend the sources of information we are getting as inputs to other channels, su
 % and the best satisfying one.
 % If lambda is big enough, the gap in the logical constraints is bigger
 % than the gap in the natural constraints, so the overall optimum will satisfy the logical constraints
-
+\adgcomment{please proof read this and the specially the parts for constrainted base}
 \section{\projectname: Predict Types for TypeScript}
 \label{sec:prodts}
 To evaluate our approach in a real-world scenario, we
@@ -1041,8 +1053,9 @@ sophisticated ones. For instance, as every learning model outputs a probability 
 over types, we can extend our method to include natural constraints generated by LambdaNet, JSNice or indeed any other deep learning approach that offers as an output type probabilities vectors. 
 For logical constraints, while
 the grammar of logical constraints defined
-in~\eqref{eq:gram} allows us naturally to express inference rules, the type constraints that \projectname handles in practice is confined to  
-those inference rules we translate into logical expressions.
+in equation~\eqref{eq:gram} allows us naturally to express inference rules, the type constraints that \projectname handles in practice are confined to  
+those inference rules we translate into logical expressions. 
+\ivpcomment{ In line with that constraint-based type systems~\citep{odersky99,pottier05}.}
 Unfortunately, the TypeScript compiler's type inference does not output logical constraints, so we 
 have taken the pragmatic approach of only 
 harvesting a subset of them. 
@@ -1103,6 +1116,7 @@ developers commonly use multiple abbreviations for the same word and
 this family of abbreviations shares a type.
 A Char-Level model is well-suited to predict the type for any identifier in
 an abbreviation families.
+
 %
 \paragraph{Dataset} Following the work of 
 ~\citet{wei20} and~\citet{hellendoorn18},
@@ -1110,11 +1124,11 @@ to train our model we use as dataset the 300
 most starred Typescript projects from Github, 
 containing between 500 to 10,000 lines of code.
 Our dataset was randomly split by project into $80\%$ training data, $10\%$ validation data and $10\%$ test data. \cref{fig:Char-Level} shows a summary of the pipeline used to train our model, for specific implementation details of the LSTM refer to \cref{app:neural}.  
-
+%
 \paragraph{Type Vocabulary}
 We define our type vocabulary to consist of top-100 most common default library types in our training set. As~\citet{wei20} report this prediction space covers $98\%$ of the non-any annotations for the training set. We choose to consider only built-in types 
 to ensure that we do not introduce types that are not available to the compiler. Handling a larger set of types is straightforward, but we decide instead to work with the same set of built types that \citet{hellendoorn18, wei20} use, in order to be consistent in our comparisons.
-
+%
 \paragraph{Implementation Details}
 Regarding the implementation details of the LSTM network, for the $F$ in \eqref{eq:lstmb},
 we use a feedforward neural network
@@ -1323,7 +1337,8 @@ Next, we define the metrics used to perform our comparison and present the resul
 
 % Dataset.Similar to Hellendoorn et al. (2018), we train and evaluate our model on popular open-source Typescript projects taken from Github. Specifically, we collect 300 Typescript projects (withthe most Github stars) that contain between500to10,000lines of code and where at least10%oftype annotations are user-defined types.  Among these 300 projects, we use60for testing,40forvalidation, and the remainder for training. Note that each project contains hundreds to thousands oftype variables to predict.Because some of the projects in our benchmark suite are only sparsely type annotated, we augmentour labeled training data by using the forward type inference functionality provided by the Typescriptcompiler.  The compiler cannot infer the type of every variable and leaves many labeled asanyduring failed inference; thus, we excludeanylabels in our data set.  Furthermore, at test time, weevaluate our technique only on annotations that are manually added by developers. This is the samemethodology used by Hellendoorn et al. (2018), and, since developers often add annotations wherecode is most unclear, this constitutes a challenging setting for type prediction.Prediction Space.As mentioned in  Section 2.1,  
 
-For a statically typed language, let a declaration slot be a point in a program text where the grammar permits annotating an identifier with its type, including parameters within a function declaration; there is one such point for each fully qualified name in the program.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $\mathcal{T} = \{ l_\tau \mid \tau \in 1 \dots T \}$. We note that $\mathcal{T}$ does not include the gradual \texttt{any} type or \textit{OOV}.
+For a statically typed language, let a declaration slot be a point in a program text where the grammar permits annotating an identifier with its type, including parameters within a function declaration; there is one such point for each fully qualified name in the program.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $\mathcal{T} = \{ l_\tau \mid \tau \in 1 \dots T \}$. We note that $\mathcal{T}$ does not include the gradual \texttt{any} type or \textit{OOV}.  Concretely,
+\autoref{ssec:natprodts} defines $\mathcal{T}$.
 
 \begin{figure*}[t]
     \centering
@@ -1342,21 +1357,19 @@ Developer annotated slots are special for two reasons:  they provide a natural s
 
 $\mathit{TP_i}$ is the number of times that a probabilistic type predictor \emph{correctly} labelled a slot with the $i^\text{th}$ type in $\mathcal{T}$;  $\mathit{FP_i}$ is the number of times that the type predictor \emph{incorrectly} labelled a slot with the $i^\text{th}$ type.  Our ground truth for determining whether a prediction is correct is the set of developer annotated slots; in our test set, we call this set \texttt{gold.ts}. 
 This is a working assumption in the sense that some files may contain errors~\citet{williams17}.
-We report performance using micro-precision ~\cite{manning}, defined as 
+
+We report performance using micro-precision~\cite{manning}, defined as 
 %
 \begin{align}\label{eq:acc}
     \sum_i^T \frac{\mathit{TP_i}}{\mathit{TP_i} + \mathit{FP_i}},
 \end{align}
 %
-where $T=|\mathcal{T}|$. In multi-class prediction, micro-precision coincides with accuracy.  To see, consider a multi-class confusion matrix.  The correct predictions are along its diagonal; the incorrect ones fall into all the other cells.  A correct prediction is both a TP positive, because the predictor choose the correct class, and a true negative, because the predictor did not incorrectly choose any other class.  
-\ivpcomment{I think we should show this here.}
-So, following related work~\cite{wei20}, we use accuracy to refer to this metric in the evaluation that follows.
-
-To be consistent with previous work \citep{hellendoorn18,wei20} we perform the evaluations that follow on \textit{developer annotation slots}, while as we described
+where $T=|\mathcal{T}|$. In multi-class prediction, micro-precision coincides with accuracy.  To see, consider a multi-class confusion matrix.  The correct predictions are along its diagonal; the incorrect ones fall into all the other cells.  A correct prediction is both a TP positive, because the predictor choose the correct class, and a true negative, because the predictor did not incorrectly choose any other class.  An incorrect prediction is both a FP and a FN, by the same reasoning.  Under these conditions, accuracy reduces to \autoref{eq:acc}.
+So, following related work~\cite{wei20}, we use accuracy to refer to this metric in the evaluation that follows.  To be consistent with previous work~\citep{hellendoorn18,wei20}, we perform the evaluations that follow on \textit{developer annotation slots}, while as we described
 ~\cref{ssec:natprodts} we use the same training data.
 
-\subsection{Ablation Analysis:  Leveraging Both Logical and Natural Constraints}
 
+\subsection{Ablation Analysis:  Leveraging Both Logical and Natural Constraints}
 
 \begin{table*}[t]
 	\centering
@@ -1425,16 +1438,17 @@ in its spelling (\cref{ssec:natprodts}) is proven as a a surprisingly efficient 
 
 \paragraph{Comparison with LambdaNet}
 The comparison with LambdaNet is straightforward
-for the following reasons. They provide a pretrained model trained on the same dataset and for the same set of types as ours. Also the available implementation  allows the user to make prediction only for these 100 types. In contrast, with
-the other two tools that we are comparing with 
-our accuracy is on par with LambdaNet's accuracy,\cref{tab:typeacc2}.
+for the following reasons. 
+They provide a pretrained model trained on the same dataset and for the same set of types as ours. 
+\cref{tab:typeacc2} shows that  
+our accuracy is on par with LambdaNet's accuracy.
 That is one more signal that taking into account explicitly logical relationships, even only during training,
 greatly improves the performance of a probabilistic
 type inference tool. Our main difference, is that
-we do not try to learn the logical constraints but rather we generate and impose them during test time, that allows to make predictions that guarantee the
+we do not try to learn the logical constraints but rather we generate and impose them during test time, that allows to make predictions that guarantee that the
 hard constraints hold. Furthermore, we argue that our grammar of logical constraints ~\eqref{eq:logical}
-offers a more intuitive way to express rich type inference rules, as for example we see in SAT solvers.
-\adgcomment{Andy do you have a particular example? citation?}
+offers a more intuitive way to express rich type inference rules, such as 
+constraint-based type systems~\citep{odersky99,pottier05}.
 
 \subsection{Comparison with JSNice}
 JSNice~\citet{raychev15} is a tool based on probabilistic graphical models to infer types (and deobfuscate names) for JavaScript files. As, only portions of the JSNice~\cite{raychev15} system have been made open source, and the full system has not been released by the authors. The portion of the implementation that the authors have made public is not sufficient to retrain the JSNice models. 
