@@ -63,7 +63,7 @@
     \put(0.10832077,0.04861828){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Github repos\\\textasciitilde 300\end{tabular}}}}%
     \put(0.3739261,0.20153502){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}(id, type)\\pairs\end{tabular}}}}%
     \put(0.63752566,0.04861828){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}64 epochs\\Val. acc.: 0.81\end{tabular}}}}%
-    \put(0.8897431,0.20153502){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Naming\\Convensions\end{tabular}}}}%
+    \put(0.8897431,0.20153502){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Naming\\Conventions\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=5]{./figs/char-level/char-level.pdf}}%
   \end{picture}%
 \endgroup%
