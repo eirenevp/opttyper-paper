@@ -386,7 +386,7 @@ linewidth=\linewidth
 %% commands, abstract environment, Computing Classification System
 %% environment and commands, and keywords command.
 
-\section{Introduction}~\label{}
+\section{Introduction}
 
 Statically-typed programming languages aim to enforce correctness and safety properties
 on programs by guaranteeing constraints on program behaviour.
@@ -412,7 +412,7 @@ and optional type systems~\citep{bracha2004pluggable}.  Like classical type syst
 require annotations to provide benefits.  Hence, reducing the annotation type tax
 for dynamic languages remains an open research topic.
 
-\subsection{Probabilistic Type Inference}~\label{}
+\subsection{Probabilistic Type Inference}
 
 Probabilistic type inference
 has recently been proposed as an attempt to reduce the burden
@@ -464,7 +464,7 @@ logical relationships (\cref{fig:LambdaNet}).
 % cut, as stated almost identically in next section
 %The goal in our work is to combine the strengths of machine learning for type inference, which can leverage uncertain information such as comments and names, and traditional type inference, which leverages program semantics.
 
-\subsection{Our Contribution}~\label{}
+\subsection{Our Contribution}
 
 In our view, probabilistic type inference should be considered as a constrained problem, as it makes no sense to suggest types that violate type constraints. To respect this principle, we propose \projectname (from ``optimising for optional types''), a novel framework for probabilistic type inference that couples hard, \textit{logical} type constraints with soft constraints drawn from structural, \textit{natural} patterns into a single optimisation problem. While, in theory, there is the option of filtering out the incorrect predictions, our framework goes beyond that; our composite optimisation serves as a communication channel between the two different sources of information. 
 
@@ -519,7 +519,7 @@ Our main contributions follow:
 % \subsection{Our Framework via an Example}
 % Before formalizing our framework, we pictorially illustrate our approach in \cref{fig:fullexample}.
 
-\section{General Framework for Probabilistic Type Inference}~\label{sec:framework}
+\section{General Framework for Probabilistic Type Inference}\label{sec:framework}
 
 \begin{figure}[!t]
     \centering
@@ -621,7 +621,7 @@ predicting types in TypeScript.
 % combine in an optimisation problem.
 % The next few subsections formalize this approach.
 
-\subsection{An Outline of Probabilistic Type Inference}~\label{}
+\subsection{An Outline of Probabilistic Type Inference}
 
 We consider a dynamic language of untyped programs that is equipped with an existing deterministic type system,
 that requires type annotations on identifiers.
@@ -682,7 +682,7 @@ The result of this optimisation procedure is the
 matrix $P$ of probabilities described in step~(\ref{step:optimise}).
 % We explain the above formalization in more detail in the remainder of this section.
 
-\subsection{Logical Constraints in Continuous Space}~\label{ssec:logcon}
+\subsection{Logical Constraints in Continuous Space}\label{ssec:logcon}
 
 % The first source of information concerns classical and deterministic sources of
 % information about types, which we abstract as logical formulas on type parameters.
@@ -893,7 +893,7 @@ then the theorem tells us that we have a typing environment $\Gamma$ that models
 % \end{theorem}
 % For proofs see~\cref{app:proofs}.
 
-\subsection{Natural Constraints via Machine Learning}~\label{ssec:natcon}
+\subsection{Natural Constraints via Machine Learning}\label{ssec:natcon}
 
 A complementary source of information about types arises from statistical dependencies
 in the source code of the program.  For example, names of variables provide
@@ -979,11 +979,9 @@ We provide more details regarding the particular structure of our neural network
 This network structure is, by now, a fairly standard architectural motif in deep learning.
 More sophisticated networks could certainly be employed, but are left to future work.
 
-\subsection{Combining Logical and Natural Constraints to Form an Optimisation Problem}~\label{ssec:optimisation}
-
+\subsection{Combining Logical and Natural Constraints to Form an Optimisation Problem}\label{ssec:optimisation}
 %\ivp{Explain why we need this part: NNs cannot handle hard constraints so this
 %is our way to enforce them}
-
 Logical constraints pose challenges to the probabilistic world of
 machine learning.  Neural networks cannot handle hard constraints explicitly and 
 thus it is not straightforward how to incorporate the logical rules that they must follow.
@@ -1086,7 +1084,7 @@ extend the sources of information we are getting as inputs to other channels, su
 % If lambda is big enough, the gap in the logical constraints is bigger
 % than the gap in the natural constraints, so the overall optimum will satisfy the logical constraints
 
-\section{\projectname: Predicting Types for TypeScript}~\label{sec:prodts}
+\section{\projectname: Predicting Types for TypeScript}\label{sec:prodts}
 
 To evaluate our approach in a real-world scenario, we
 implement an end-to-end application, called \projectname, which aims
@@ -1116,7 +1114,7 @@ Even under the constraints of these two implementation choices for extracting lo
     \caption{A snippet from base64-js lib showing the extraction of two logical constraints (lines 3,5).}\label{fig:jscode-base64}
 \end{figure*}
 
-\subsection{Background: TypeScript's Type System}~\label{ssec:intro-typescript}
+\subsection{Background: TypeScript's Type System}\label{ssec:intro-typescript}
 
 TypeScript~\citep{typescript} is a typed superset of
 JavaScript designed for developing large-scale, stable applications.
@@ -1160,8 +1158,7 @@ We note, that TypeScript's type system defaults to assigning its \texttt{\small{
 % dynamic information it eventually emits many \texttt{\small{any}} types that the developer must refine manually.
 % It is only meant to be used as a starting
 % point for writing a high-quality declaration file.
-\subsection{Logical Constraints for TypeScript}~\label{ssec:logprodts}
-
+\subsection{Logical Constraints for TypeScript}\label{ssec:logprodts}
 To generate the logical constraints of \cref{ssec:logcon}, we exploit the information from \lstinline+tsc+, the TypeScript compiler~\cite{typescript}. 
 As \lstinline+tsc+ does not, generate a logical formulas 
 for its type inference procedure we devise the following technique that allows us to generate some logical constraints based on \lstinline+tsc+'s information. To do so, we harvest type constraints from type hints that \lstinline+tsc+ may generate
@@ -1211,7 +1208,7 @@ an alternative to stochastic gradient descent~\cite{robbins51}, with an adaptive
 learning and the combined optimisation part is written in
 PyTorch~\cite{paszke2017}.
 
-\subsection{Natural Constraints for TypeScript}~\label{ssec:natprodts}
+\subsection{Natural Constraints for TypeScript}\label{ssec:natprodts}
 
 To learn naming conventions over types we use a Char-Level LSTM which predicts for any identifier a probability vector over all the available types. Our model is trained on
 \textit{(id, type)} pairs with the goal to learn naming conventions
@@ -1288,7 +1285,7 @@ and sum all the values of the correct labels for the entire training set.
 
 % Adam~\cite{ruder2016} is being used to change the step of the optimizer on each iteration.
 
-\section{Evaluation of \projectname{}}~\label{sec:eval}
+\section{Evaluation of \projectname{}}\label{sec:eval}
 
 This section opens with \autoref{sec:acc}, which defines the prediction and query spaces, explains the experimental setup and establishes the performance measure we use throughout the section.
 \projectname is built to combine and exploit both logical and natural constraints, so \autoref{ssec:ablation} quantifies their separate contributions and demonstrates their synergy.
@@ -1303,7 +1300,7 @@ It closes by comparing \projectname with JSNice, the pioneering work in probabil
 % It computes type annotations on average for 58 files in about 60 seconds
 % for solving logical constraints and natural constraints, and in about 65 seconds for the combined optimisation.
 
-\subsection{Type Prediction Accuracy}~\label{sec:acc}
+\subsection{Type Prediction Accuracy}\label{sec:acc}
 
 For a statically typed language, let a declaration slot be a point in a program text where the grammar permits annotating an identifier with its type, including parameters within a function declaration; there is one such point for each identifier in the program.  Predicting types is a multi-class prediction task: at each annotation slot, we ask the predictor to propose a type from our type vocabulary, $\mathcal{T} = \{ l_\tau \mid \tau \in 1 \dots T \}$. We note that $\mathcal{T}$ does not include the gradual \texttt{\small{any}} type or Out-Of-Vocabulary \textit{OOV} token.  Concretely,
 \autoref{ssec:natprodts} defines $\mathcal{T}$.
@@ -1336,7 +1333,7 @@ So, following related work~\cite{wei20}, we use accuracy to refer to this metric
 ~\cref{ssec:natprodts} we use the same training data.
 
 
-\subsection{Ablation Analysis:  Leveraging Both Logical and Natural Constraints}~\label{ssec:ablation}
+\subsection{Ablation Analysis:  Leveraging Both Logical and Natural Constraints}\label{ssec:ablation}
 
 \begin{table*}[t]
 	\centering
@@ -1369,7 +1366,7 @@ this is a result of largely using the same parameters ids over different project
 lot of information about its actual type;   
 Overall, \cref{tab:typeacc1} show that the \textit{Logical} and \textit{Natural} phases complements each other and thus their combination in \projectname greatly improves our type inference capabilities.
 
-\subsection{Comparison with DeepTyper and  LambdaNet}~\label{ssec:typesubproblem}
+\subsection{Comparison with DeepTyper and  LambdaNet}\label{ssec:typesubproblem}
 
 \begin{table*}[t]
 	\centering
@@ -1439,7 +1436,7 @@ The comparison with LambdaNet is straightforward because they provide a pretrain
 \cref{tab:typeacc2} shows that our accuracy is on par with LambdaNet's, and indeed somewhat better.
 The closely comparable performances of the two approaches is strong evidence that logical constraints are critical to accurate type prediction. 
 
-As we have discussed (See \autoref{sec:related} for details), 
+As we have discussed (See \cref{sec:related} for details), 
 LambdaNet's predictions may not type check.  We have found examples where this occurs. \cref{fig:LambdaNet} shows two examples.  
 The parameters on lines 3 and 4 actually have type Window and Event, as you can see in \cref{lst:gold}, which contains the developer-annotated ground truth.
 \cref{lst:lncode}, the figure on the right, shows that LambdaNet mispredicts their types as String and Number.
@@ -1460,8 +1457,7 @@ This difference in performance between the two approaches will crop up whenever 
 % transform.ts:112
 % (y): Type 'Event' is not assignable to type 'y'.
 
-\subsection{Comparison with JSNice}~\label{}
-
+\subsection{Comparison with JSNice}
 Only portions of the JSNice~\cite{raychev15} system have been made open source. 
 The portion of the implementation that the authors have made public is not sufficient to retrain the JSNice models. 
 Instead, we follow the approach of~\citet{hellendoorn18} and~\citet{wei20} and manually compare JSNice and \projectname over a smaller dataset. 
@@ -1515,13 +1511,13 @@ Additionally, \projectname's grouping together of names that share a type despit
 % reasons:
 
 
-\section{Related Work}~\label{sec:related}
+\section{Related Work}\label{sec:related}
 
 \projectname is a new form of probabilistic type inference that optimises over
 both logical and natural constraints.  Related work spans classical, deterministic
 type inference, soft logic for the relaxation of the constraints, and earlier machine learning approaches.
 
-\subsection{Classical Type Inference}~\label{}
+\subsection{Classical Type Inference}
 
 % \adg{There are purely statically typed languages, with powerful inference, so that annotations are infrequent.
 % 	Any work to date on ML for statically typed languages?  Not AFAIK}
@@ -1589,7 +1585,7 @@ source of information in our type inference framework. We
 could capture results from dynamic analysis by adding a new term to our objective\eqref{eq:objective}.
 
  
-\subsection{Soft Logic}~\label{ssec:softlogic}
+\subsection{Soft Logic}\label{ssec:softlogic}
 
 Recently, there is a resurgence of interest for \textit{soft logic} in the context of machine learning. By soft, logic we mean a many-valued logic, where the truth values lie on the unit interval $[0,1]$. The 
 reason for this resurgence is twofold: First,
@@ -1606,7 +1602,7 @@ would require relaxations. For
 deep learning, this logic is also important as it 
 allows backpropagation~\cite{evans18}.
 
-\subsection{Probabilistic Type Inference}~\label{sec:ml:over:source}
+\subsection{Probabilistic Type Inference}\label{sec:ml:over:source}
 
 Although the interdisciplinary field between machine learning and programming
 languages is still young, complete reviews of this area are
@@ -1662,7 +1658,7 @@ and only at the places where is needed, absorbing information from the natural c
 a probability vector over types, which our approach can take as its input to the
 \textit{natural} part of our combined optimisation equation \eqref{eq:objective}.
 
-\section{Conclusion}~\label{sec:conclusion}
+\section{Conclusion}\label{sec:conclusion}
 
 This paper addresses the lack of rich type inference process for dynamically typed languages.
 To tackle this, we combine \textit{logical} constraints, deterministic information from a type system, with \textit{natural} constraints, uncertain information about types, learnt by machine learning techniques, while focusing on the satisfaction of the typing rules dictated by the language.
