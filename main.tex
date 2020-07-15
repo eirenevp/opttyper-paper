@@ -1,7 +1,7 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
 
 %ivp for submission add ,review,anonymous remove nonacm
-\documentclass[acmsmall,nonacm]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\documentclass[acmsmall, review, anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
 
 %% Lengths
 % linewidth = textwidth = 395.8225pt
@@ -354,7 +354,7 @@ linewidth=\linewidth
 	%   The main insight of our method is to relax the problem of type inference into a problem of numerical continuous optimisation.
 	%problem by using a continuous representation of the logical constraints part.
 	
-	As a proof of concept, we build a tool called \projectname to predict missing types for TypeScript files.
+	As proof of concept, we build a tool called \projectname to predict missing types for TypeScript files.
 	%
 	\projectname 
 	combines a continuous interpretation of logical constraints derived by a simple program transformation and static analysis of TypeScript code, with natural constraints obtained from a deep learning model, which learns naming conventions for types from a large codebase. 
@@ -1339,12 +1339,12 @@ So, following related work~\cite{wei20}, we use accuracy to refer to this metric
 
 \begin{table*}[t]
 	\centering
-	\caption{Ablation analysis of \projectname, the cells report accuracy; FN refers to return types of functions and PARAM
+	\caption{Ablation analysis of \projectname, the cells report accuracy; FUN refers to return types of functions and PARAM
 	represents parameters.}
 \label{tab:typeacc1}
 	\begin{tabular}{ccccccc}
 		\toprule
-		Tool  & $\textit{FN}$ & 
+		Tool  & $\textit{FUN}$ & 
 		$\textit{PARAM}$ & $\textit{TOTAL}$ \\
 		
 		\midrule
@@ -1602,6 +1602,8 @@ suitable since the other two are non-smooth and
 would require relaxations. For 
 deep learning, this logic is also important as it 
 allows backpropagation~\cite{evans18}.
+
+\ivpcomment{add references \citet{ryan20} \citet{yao20}}
 
 \subsection{Probabilistic Type Inference}\label{sec:ml:over:source}
 
